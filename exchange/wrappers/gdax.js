@@ -59,6 +59,7 @@ const recoverableErrors = [
   'Response code 5',
   'GDAX is currently under maintenance.',
   'HTTP 408 Error',
+  'HTTP 409 Error',
   'HTTP 504 Error',
   'HTTP 503 Error',
   'socket hang up',
