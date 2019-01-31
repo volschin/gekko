@@ -39,6 +39,7 @@ var candle5 = {};
 
 // Prepare everything our method needs
 strat.init = function() {
+  this.name = "RSI + Candle";
   this.requiredHistory = config.tradingAdvisor.historySize;
 
   // since we're relying on batching 1 minute candles into 5 minute candles
@@ -70,7 +71,7 @@ strat.update = function(candle) {
   // Send message 
   counter++;
   if (counter == 1440){
-    log.remote('Bot is still working.');
+    log.remote(this.name, ' - Bot is still working.');
     counter = 0;
   }
 

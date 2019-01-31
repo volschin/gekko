@@ -234,6 +234,10 @@ var strat = {
 	
 	}, // check()
 
+	onTrade: function(trade){
+		log.info(trade);
+	},
+
 	onCommand: function(cmd){
         var command = cmd.command;
         if (command == 'start') {
