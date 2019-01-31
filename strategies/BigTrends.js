@@ -120,8 +120,8 @@ strat.check = function() {
       this.buy("RSI Buy - Exited Oversold");
   }
 
-  // Buy if DPO > 0 and turn off stopLossed
-  if (!advised && dpo5.result > 0) {
+  // Buy if DPO > 0 and stopLossed, turn off stopLossed
+  if (!advised && stopLossed && dpo5.result > 0) {
     this.buy("DPO Buy - Above 0");
     stopLossed = false;
   }
@@ -161,8 +161,8 @@ strat.onTrade = function(trade) {
   if (trade.action == 'buy') {
     buyPrice = trade.price;
     advised = true;
-    log.remote(config.watch.asset, '/', config.watch.currency, 'Buy ', trade.price, 
-    '\nStrategy: ', this.name, '\n', message );
+    log.remote(config.watch.asset, '/', config.watch.currency, 'Buy', trade.price, 
+    '\nStrategy:', this.name, '\n', message );
   }
 
   if (trade.action == 'sell') {
@@ -184,7 +184,7 @@ strat.onTrade = function(trade) {
     '\nWinning Trades ' + winningTrades + 
     '\nLosing Trades ' + losingTrades;
 
-    log.remote(config.watch.asset, '/', config.watch.currency, 'Sell ', trade.price, 
+    log.remote(config.watch.asset, '/', config.watch.currency, 'Sell', trade.price, 
     '\nStrategy: ', this.name, '\n', message );
   }
 }
