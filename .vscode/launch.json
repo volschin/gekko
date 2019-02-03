@@ -10,7 +10,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/gekko.js",
             "args": [
-                "--config", "config-papertrader-telegram.js"
+                "--config", "config-live.js"
             ]
         }
     ]

@@ -103,9 +103,17 @@ Actor.prototype.emitStratCandle = function(candle) {
   this.strategy.tick(candle, next);
 }
 
+Actor.prototype.processPortfolioChange = function(portfolio) {
+  this.strategy.updatePortfolio(portfolio);
+}
+
 Actor.prototype.processTradeCompleted = function(trade) {
   this.strategy.processTrade(trade);
 }
+
+// Actor.prototype.processTradeErrored = function(trade) {
+//   this.strategy.processTrade(trade);
+// }
 
 Actor.prototype.processCommand = function(command) {
   this.strategy.processCommand(command);

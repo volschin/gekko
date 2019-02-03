@@ -128,7 +128,7 @@ strat.check = function() {
 
   // Sell
   // If current Price < SMA 200, sell as soon as RSI starts falling after hitting 70
-  if (advised && currentPrice < sma5.result && rsi5History[8] > rsi5.result ) {
+  if (advised && currentPrice < sma5.result && rsi5History[8] > 70 && rsi5History[8] > rsi5.result ) {
     this.sell('Sell - Below 200 SMA and RSI > 70 but falling');
   }
 
@@ -233,7 +233,7 @@ strat.buy = function(reason) {
     message = reason + '\nRSI History: ' + rsi5History[8] + ', ' + rsi5History[9];
   } 
   if (reason == "DPO Buy - Above 0") {
-    message = reason + '\nDPO: ' + dpo5.result;
+    message = reason + '\nDPO: ' + dpo5.result.toFixed(2);
   }
   if (reason == "Manual buy order from telegram") {
     message = reason;
@@ -258,14 +258,16 @@ strat.onCommand = function(cmd) {
       cmd.handled = true;
       cmd.response = config.watch.currency + "/" + config.watch.asset +
       "\nPrice: " + currentPrice +
-      "\nRSI: " + rsi5.result.toFixed(2) +
+      "\nSMA: " + sma5.result.toFixed(2) +
+      "\nSMA-Up: " + (sma5.result * 1.01).toFixed(2) +
+      "\nDPO: " + dpo5.result.toFixed(2) +
       "\nRSI History: " + rsi5History[7].toFixed(2) + ", " + rsi5History[8].toFixed(2) + ", " + rsi5History[9].toFixed(2) +
       "\nPortfolio: ";
       
-      var i;
-      for (i = 0; i < config.currentIndicatorValues.portfolio.length; i++){
-        cmd.response = cmd.response + "\n" + config.currentIndicatorValues.portfolio[i].name + ": " + config.currentIndicatorValues.portfolio[i].amount;
-      }
+      // var i;
+      // for (i = 0; i < config.currentIndicatorValues.portfolio.length; i++){
+      //   cmd.response = cmd.response + "\n" + config.currentIndicatorValues.portfolio[i].name + ": " + config.currentIndicatorValues.portfolio[i].amount;
+      // }
   }
   if (command == 'help') {
   cmd.handled = true;
