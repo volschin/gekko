@@ -33,7 +33,7 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'RSI_BULL_BEAR_ADX',
+  method: 'RSI_BULL_BEAR_ADX_TF',
   candleSize: 1,
   historySize: 60,
 }
