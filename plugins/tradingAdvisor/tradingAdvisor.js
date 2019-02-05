@@ -107,6 +107,10 @@ Actor.prototype.processPortfolioChange = function(portfolio) {
   this.strategy.updatePortfolio(portfolio);
 }
 
+Actor.prototype.processPortfolioValueChange = function(portfolioValue) {
+  this.strategy.newPortfolioValue(portfolioValue);
+}
+
 Actor.prototype.processTradeCompleted = function(trade) {
   this.strategy.processTrade(trade);
 }

@@ -139,6 +139,13 @@ config.pushover = {
   user: ''
 }
 
+config.blotter = {
+  enabled: true,
+  filename: 'blotter.csv',
+  dateFormat: 'l LT',
+  timezone: -300, // EST -5:00, only used if exchange doesn't provide correct timezone
+}
+
 // want Gekko to send a mail on buy or sell advice?
 config.mailer = {
   enabled: false,       // Send Emails if true, false to turn off

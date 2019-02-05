@@ -18,12 +18,13 @@ strat.init = function() {
 // What happens on every new candle?
 strat.update = function(candle) {
   // your code!
-  log.info('asset', asset, 'currency', currency);
+
 }
 
 // For debugging purposes.
 strat.log = function() {
   // your code!
+
 
 }
 
@@ -32,6 +33,7 @@ strat.log = function() {
 // update or not.
 strat.check = function(candle) {
   // your code!
+  log.info('asset', asset, 'currency', currency);
 }
 
 // Optional for executing code
@@ -51,7 +53,9 @@ strat.onPortfolioChange = function(portfolio) {
   currency = portfolio.currency;
 }
 
-
+strat.onPortfolioValueChange = function(portfolioValue) {
+  log.info('new portfolio value', portfolioValue);
+}
 
 
 

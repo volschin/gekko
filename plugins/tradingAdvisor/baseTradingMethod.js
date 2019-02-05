@@ -71,6 +71,9 @@ var Base = function(settings) {
   if(!this.onPortfolioChange) 
     this.onPortfolioChange = function() {};
 
+  if(!this.onPortfolioValueChange)
+    this.onPortfolioValueChange = function() {};
+
   // let's run the implemented starting point
   this.init();
 
@@ -226,6 +229,10 @@ Base.prototype.processTrade = function(trade) {
 
 Base.prototype.updatePortfolio = function(portfolio) {
   this.onPortfolioChange(portfolio);
+}
+
+Base.prototype.newPortfolioValue = function(portfolioValue) {
+  this.onPortfolioValueChange(portfolioValue);
 }
 
 Base.prototype.processCommand = function(command) {

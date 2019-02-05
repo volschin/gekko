@@ -3,14 +3,9 @@ const util = require('../../core/util.js');
 const config = util.getConfig();
 const dirs = util.dirs();
 const moment = require('moment');
-const fsw = require('fs');
 
 const log = require(dirs.core + 'log');
 const Broker = require(dirs.broker + '/gekkoBroker');
-
-var headerset = '';
-var currentBalance = 50.0;
-var buyPrice = 0.0;
 
 require(dirs.gekko + '/exchange/dependencyCheck');
 
@@ -111,13 +106,9 @@ Trader.prototype.setPortfolio = function() {
   }
 }
 
-Trader.prototype.setBalance = function() {  
-  if (this.portfolio.currency > currentBalance) {
-  this.balance = currentBalance + this.portfolio.asset * this.price;
-} else {
+Trader.prototype.setBalance = function() {
   this.balance = this.portfolio.currency + this.portfolio.asset * this.price;
-}  
-this.exposure = (this.portfolio.asset * this.price) / this.balance;
+  this.exposure = (this.portfolio.asset * this.price) / this.balance;
   // if more than 10% of balance is in asset we are exposed
   this.exposed = this.exposure > 0.1;
 }
@@ -190,16 +181,11 @@ Trader.prototype.processAdvice = function(advice) {
       });
     }
 
-    if (this.portfolio.currency < currentBalance) {
-      amount = this.portfolio.currency / this.price * 0.99;
-    } else {
-      amount = currentBalance / this.price * 0.997;
-    }
+    amount = this.portfolio.currency / this.price * 0.95;
 
     log.info(
-      'Trader',
-      'Received advice to go long.',
-      'Buying ', this.brokerConfig.asset
+      'Trader received advice to go long.',
+      'Buying', this.brokerConfig.asset, 'at ~', this.price
     );
 
   } else if(direction === 'sell') {
@@ -231,9 +217,8 @@ Trader.prototype.processAdvice = function(advice) {
     amount = this.portfolio.asset;
 
     log.info(
-      'Trader',
-      'Received advice to go short.',
-      'Selling ', this.brokerConfig.asset
+      'Trader received advice to go short.',
+      'Selling', this.brokerConfig.asset, 'at ~', this.price
     );
   }
 
@@ -308,15 +293,6 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
       }
 
       log.info('[ORDER] summary:', summary);
-      // If summary.price is 0, do not report as the trade was rejected, didn't execute
-      if (summary.price != 0 && summary.amount != 0) {
-        // Only update tradeable balance from sell
-        if (side == 'sell') {
-          currentBalance = summary.price * summary.amount;
-        } 
-
-        log.debug('Current Limit Balance: ', currentBalance);
-      }
       this.order = null;
       this.sync(() => {
 
@@ -337,40 +313,11 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
           effectivePrice = summary.price;
         }
 
-        grreadtime = summary.date.format('l LT');
-
-        headertxt = "date,price,amount,side,tradeable balance, P&L\n";
-
-        if (side === 'buy'){
-          buyPrice = summary.price;
-          outtxt = grreadtime + "," + summary.price.toFixed(2) + "," + summary.amount.toFixed(8) + "," + side + "," + currentBalance.toFixed(2) + "\n";
-        } else {
-          outtxt = grreadtime + "," + summary.price.toFixed(2) + "," + summary.amount.toFixed(8) + "," + side + "," + currentBalance.toFixed(2) + "," + (summary.price - buyPrice).toFixed(2) + "\n";
-        }
-
-        fsw.readFile("blotter.csv", (err, _) => {
-          if (!err)
-            headerset = "1";
-        });
-
-        if(headerset==""){
-
-          fsw.appendFileSync("blotter.csv", headertxt, encoding='utf8'); 
-          headerset = "1";
-
-        }
-
-        // If summary.price is 0, do not report as the info inisde summary is useless
-        if (summary.price != 0 && summary.amount != 0)
-          fsw.appendFileSync("blotter.csv", outtxt, encoding='utf8');
-
-        outtxt = "";
-
         this.deferredEmit('tradeCompleted', {
           id,
           adviceId: advice.id,
           action: summary.side,
-          cost,
+          cost: cost,
           amount: summary.amount,
           price: summary.price,
           portfolio: this.portfolio,
