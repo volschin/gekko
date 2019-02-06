@@ -8,6 +8,7 @@ const log = require('../core/log.js');
 var strat = {};
 var asset = 0;
 var currency = 0;
+var advised = false;
 
 // Prepare everything our strat needs
 strat.init = function() {
@@ -17,6 +18,10 @@ strat.init = function() {
 // What happens on every new candle?
 strat.update = function(candle) {
   // your code!
+  if (!advised) {
+   this.advice('long');
+   advised = true;
+  }
 
   //log.info('asset', asset, 'currency', currency);
 }
@@ -34,8 +39,6 @@ strat.log = function() {
 strat.check = function(candle) {
   // your code!
 
-  
-
 
 }
 
@@ -49,7 +52,9 @@ strat.end = function() {
 }
 
 strat.onTrade = function(trade) {
-  
+  if (trade.action == 'buy') {
+    this.advice('short');
+  }
 }
 
 
@@ -73,40 +78,6 @@ strat.onPortfolioChange = function(portfolio) {
 strat.onPortfolioValueChange = function(portfolioValue) {
   log.info('new portfolio value', portfolioValue.balance);
 }
-
-
-
-
-
-
-
-
-
-strat.onTrade = function(trade) { 
-  console.log('trade: ', trade);
-  buyPrice = trade.price;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 strat.onCommand = function(cmd) {
