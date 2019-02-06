@@ -218,6 +218,10 @@ Trader.prototype.checkOrder = function(order, callback) {
     } if (status === 'done' || status === 'settled') {
       return callback(undefined, { executed: true, open: false });
     } else if (status === 'rejected') {
+      if (data.reject_reason == 'post only' ) {
+        console.log ('post only error');
+        return callback(new Error('post only error'));
+    }
       return callback(undefined, { executed: false, open: false });
     } else if(status === 'open' || status === 'active') {
       return callback(undefined, { executed: false, open: true, filledAmount: parseFloat(data.filled_size) });
