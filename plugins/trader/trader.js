@@ -89,7 +89,8 @@ Trader.prototype.relayPortfolioChange = function() {
 
 Trader.prototype.relayPortfolioValueChange = function() {
   this.deferredEmit('portfolioValueChange', {
-    balance: this.balance
+    balance: this.balance,
+    hodling: this.exposed,
   });
 }
 

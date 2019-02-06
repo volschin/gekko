@@ -1,13 +1,14 @@
-// TelegramRC - A strat that doesn't do anything
-// except to let you remotely control Gekko via
-// Telegram
+// Smart Strategy Template
+// This is 
 // Only works with this modded version of Gekko
+// https://github.com/crypto49er/moddedgekko
 
 const log = require('../core/log.js');
 
 var strat = {};
 var asset = 0;
 var currency = 0;
+var counter = 0;
 
 // Prepare everything our strat needs
 strat.init = function() {
@@ -18,7 +19,13 @@ strat.init = function() {
 strat.update = function(candle) {
   // your code!
 
-  //log.info('asset', asset, 'currency', currency);
+    // Send message that bot is still working after 24 hours (assuming minute candles)
+    counter++;
+    if (counter == 1440){
+      log.remote(this.name, ' - Bot is still working.');
+      counter = 0;
+    }
+
 }
 
 // For debugging purposes.
@@ -34,8 +41,6 @@ strat.log = function() {
 strat.check = function(candle) {
   // your code!
 
-  
-
 
 }
 
@@ -48,13 +53,34 @@ strat.end = function() {
   // your code!
 }
 
+// This runs whenever a trade is completed
+// as per information from the exchange.
+// The trade object looks like this:
+// {
+//   id: [string identifying this unique trade],
+//   adviceId: [number specifying the advice id this trade is based on],
+//   action: [either "buy" or "sell"],
+//   price: [number, average price that was sold at],
+//   amount: [number, how much asset was trades (excluding "cost")],
+//   cost: [number the amount in currency representing fee, slippage and other execution costs],
+//   date: [moment object, exchange time trade completed at],
+//   portfolio: [object containing amount in currency and asset],
+//   balance: [number, total worth of portfolio],
+//   feePercent: [the cost in fees],
+//   effectivePrice: [executed price - fee percent, if effective price of buy is below that of sell you are ALWAYS in profit.]
+// }
 strat.onTrade = function(trade) {
   
 }
 
-
-
-
+// This runs whenever the portfolio changes
+// including when Gekko starts up to talk to 
+// the exhange to find out the portfolio balance.
+// This is how the portfolio object looks like:
+// {
+//   currency: [number, portfolio amount of currency],
+//   asset: [number, portfolio amount of asset],
+// }
 strat.onPortfolioChange = function(portfolio) {
 
   // Sell if we start out holding a bag
@@ -70,45 +96,12 @@ strat.onPortfolioChange = function(portfolio) {
 
 }
 
+// 
 strat.onPortfolioValueChange = function(portfolioValue) {
   log.info('new portfolio value', portfolioValue.balance);
 }
 
-
-
-
-
-
-
-
-
-strat.onTrade = function(trade) { 
-  console.log('trade: ', trade);
-  buyPrice = trade.price;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// This runs when a commad is sent via Telegram
 strat.onCommand = function(cmd) {
   var command = cmd.command;
   if (command == 'start') {
