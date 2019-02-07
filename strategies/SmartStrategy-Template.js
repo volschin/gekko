@@ -1,6 +1,5 @@
 // Smart Strategy Template
-// This is 
-// Only works with this modded version of Gekko
+// This only works with this modded version of Gekko
 // https://github.com/crypto49er/moddedgekko
 
 const log = require('../core/log.js');
