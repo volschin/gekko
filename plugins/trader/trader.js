@@ -185,7 +185,8 @@ Trader.prototype.processAdvice = function(advice) {
     amount = this.portfolio.currency / this.price * 0.95;
 
     log.info(
-      'Trader received advice to go long.',
+      'Trader',
+      'received advice to go long.',
       'Buying', this.brokerConfig.asset, 'at ~', this.price
     );
 
@@ -218,7 +219,8 @@ Trader.prototype.processAdvice = function(advice) {
     amount = this.portfolio.asset;
 
     log.info(
-      'Trader received advice to go short.',
+      'Trader',
+      'received advice to go short.',
       'Selling', this.brokerConfig.asset, 'at ~', this.price
     );
   }
