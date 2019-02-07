@@ -65,7 +65,7 @@ var Base = function(settings) {
   if(!this.onTrade)
     this.onTrade = function() {};
 
-  if(!this.onCommand)
+    if(!this.onCommand)
     this.onCommand = function() {};
 
   if(!this.onPortfolioChange) 
@@ -73,6 +73,9 @@ var Base = function(settings) {
 
   if(!this.onPortfolioValueChange)
     this.onPortfolioValueChange = function() {};
+
+  if(!this.onPendingTrade)
+    this.onPendingTrade = function() {};
 
   // let's run the implemented starting point
   this.init();
@@ -227,6 +230,9 @@ Base.prototype.processTrade = function(trade) {
   this.onTrade(trade);
 }
 
+Base.prototype.processPendingTrade = function(pendingTrade) {
+  this.onPendingTrade(pendingTrade);
+}
 Base.prototype.updatePortfolio = function(portfolio) {
   this.onPortfolioChange(portfolio);
 }
@@ -297,9 +303,10 @@ Base.prototype.advice = function(newDirection) {
     newDirection = newDirection.direction;
   }
 
-  if(newDirection === this._currentDirection) {
-    return;
-  }
+  // I commented this out so Gekko will buy even if it bought previously 
+  // if(newDirection === this._currentDirection) {
+  //   return;
+  // }
 
   if(newDirection === 'short' && this._pendingTriggerAdvice) {
     this._pendingTriggerAdvice = null;
