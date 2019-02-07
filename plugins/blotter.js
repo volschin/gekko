@@ -24,7 +24,7 @@ var Blotter = function(done) {
 
 Blotter.prototype.setup = function(done) {
 
-  this.headertxt = "Date,Price,Amount,Side,Fees,Value,P&L,Notes\n";
+  this.headertxt = "Date,Price,Amount,Side,Fee %,Value,P&L,Notes\n";
 
   fsw.readFile(this.filename, (err, _) => {
     if (err) {
@@ -62,7 +62,7 @@ Blotter.prototype.processTradeCompleted = function(trade) {
   if (trade.action === 'buy') {
     //time, price, amount, side, fees, value at buy
     this.outtxt = this.time + "," + trade.effectivePrice.toFixed(2) + "," + trade.amount.toFixed(8) + "," + trade.action + "," + trade.feePercent + "," + this.valueAtBuy;
-    if ((trade.price == 0 || isNaN(trade.price)) && (trade.amount == 0|| isNaN(trade.amount))) {
+    if (trade.price == 0 || isNaN(trade.price) || trade.amount == 0 || isNaN(trade.amount)) {
       this.outtxt = this.outtxt + "," + ",Trade probably went through but didn't receive correct price/amount info\n";
     } else {
       this.outtxt = this.outtxt  + "\n";
