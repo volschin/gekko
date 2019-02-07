@@ -170,17 +170,17 @@ Trader.prototype.processAdvice = function(advice) {
 
   if(direction === 'buy') {
 
-    if(this.exposed) {
-      log.info('NOT buying, already exposed');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(this.exposed) {
+    //   log.info('NOT buying, already exposed');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     amount = this.portfolio.currency / this.price * 0.95;
 
@@ -192,17 +192,17 @@ Trader.prototype.processAdvice = function(advice) {
 
   } else if(direction === 'sell') {
 
-    if(!this.exposed) {
-      log.info('NOT selling, already no exposure');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(!this.exposed) {
+    //   log.info('NOT selling, already no exposure');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     // clean up potential old stop trigger
     if(this.activeStopTrigger) {
