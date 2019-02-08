@@ -43,14 +43,14 @@ strat.check = function(candle) {
 
 }
 
-// Optional for executing code
-// after completion of a backtest.
-// This block will not execute in
-// live use as a live gekko is
-// never ending.
-strat.end = function() {
-  // your code!
+// This is called when trader.js initiates a 
+// trade. Perfect place to put a block so your
+// strategy won't issue more trader orders
+// until this trade is processed.
+strat.onPendingTrade = function(pendingTrade) {
+
 }
+
 
 // This runs whenever a trade is completed
 // as per information from the exchange.
@@ -95,9 +95,20 @@ strat.onPortfolioChange = function(portfolio) {
 
 }
 
-// 
+// This reports the portfolio value as the price of the asset
+// fluctuates. Reports every minute when you are hodling.
 strat.onPortfolioValueChange = function(portfolioValue) {
   log.info('new portfolio value', portfolioValue.balance);
+  log.info('Holding more than 10% of asset =', portfolioValue.hodling);
+}
+
+// Optional for executing code
+// after completion of a backtest.
+// This block will not execute in
+// live use as a live gekko is
+// never ending.
+strat.end = function() {
+  // your code!
 }
 
 // This runs when a commad is sent via Telegram
