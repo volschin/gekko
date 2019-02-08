@@ -233,6 +233,14 @@ Base.prototype.processTrade = function(trade) {
 Base.prototype.processPendingTrade = function(pendingTrade) {
   this.onPendingTrade(pendingTrade);
 }
+
+Base.prototype.processTerminatedTrades = function(terminatedTrades) {
+  if (!terminatedTrades.reason) {
+    terminatedTrades.reason = 'Cancelled';
+  }
+  this.onTerminatedTrades(terminatedTrades);
+}
+
 Base.prototype.updatePortfolio = function(portfolio) {
   this.onPortfolioChange(portfolio);
 }

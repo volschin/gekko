@@ -107,6 +107,18 @@ Actor.prototype.processTradeInitiated = function(pendingTrade) {
   this.strategy.processPendingTrade(pendingTrade);
 }
 
+Actor.prototype.processTradeAborted = function(abortedTrade) {
+  this.strategy.processTerminatedTrades(abortedTrade);
+}
+
+Actor.prototype.processTradeCancelled = function(cancelledTrade) {
+  this.strategy.processTerminatedTrades(cancelledTrade);
+}
+
+Actor.prototype.processTradeErrored = function(tradeError) {
+  this.strategy.processTerminatedTrades((tradeError);
+}
+
 Actor.prototype.processPortfolioChange = function(portfolio) {
   this.strategy.updatePortfolio(portfolio);
 }

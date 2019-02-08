@@ -12,6 +12,7 @@ var counter = 0;
 // Prepare everything our strat needs
 strat.init = function() {
   // your code!
+  this.tradeInitiated = false;
 }
 
 // What happens on every new candle?
@@ -40,6 +41,21 @@ strat.log = function() {
 strat.check = function(candle) {
   // your code!
 
+  // If there are no active trades, send signal
+  if (!this.tradeInitiated) { // Add logic to use other indicators
+    
+    //Old method to send buy signal
+    this.advice('long');
+
+    // New method with trailing stoploss
+    this.advice({ direction: 'long',
+      trigger: {
+        type: 'trailingStop',
+        trailPercentage: 1
+      },
+    });
+  }
+
 
 }
 
@@ -48,6 +64,7 @@ strat.check = function(candle) {
 // strategy won't issue more trader orders
 // until this trade is processed.
 strat.onPendingTrade = function(pendingTrade) {
+  this.tradeInitiated = true;
 
 }
 
@@ -69,7 +86,14 @@ strat.onPendingTrade = function(pendingTrade) {
 //   effectivePrice: [executed price - fee percent, if effective price of buy is below that of sell you are ALWAYS in profit.]
 // }
 strat.onTrade = function(trade) {
+  this.tradeInitiated = false;
   
+}
+
+// Trades that didn't complete with a buy/sell
+strat.onTerminatedTrades = function(terminatedTrades) {
+  log.info('Trade failed. Reason:', terminatedTrades.reason);
+  this.tradeInitiated = false;
 }
 
 // This runs whenever the portfolio changes
