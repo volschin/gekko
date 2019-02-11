@@ -116,7 +116,7 @@ Actor.prototype.processTradeCancelled = function(cancelledTrade) {
 }
 
 Actor.prototype.processTradeErrored = function(tradeError) {
-  this.strategy.processTerminatedTrades((tradeError);
+  this.strategy.processTerminatedTrades((tradeError));
 }
 
 Actor.prototype.processPortfolioChange = function(portfolio) {
