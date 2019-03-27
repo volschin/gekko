@@ -5,7 +5,6 @@ ENV PORT 3000
 
 # Update
 RUN apt-get update && \
-    npm update \
     apt-get install git convnetjs mathjs
 
 # Create app directory
