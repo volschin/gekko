@@ -35,14 +35,14 @@ RUN cpanm -n install Parallel::ForkManager Time::Elapsed Getopt::Long List::More
 COPY . /usr/src/app
 
 # Update Gekko strategies
+RUN git clone https://github.com/xFFFFF/Gekko-Strategies
 WORKDIR ./Gekko-Strategies
-RUN git pull --no-edit https://github.com/xFFFFF/Gekko-Strategies
 RUN bash ./install.sh /usr/src/app
 WORKDIR ../
 
 # Update Gekko BacktestTool
+RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
 WORKDIR ./Gekko-BacktestTool
-RUN git pull --no-edit https://github.com/xFFFFF/Gekko-BacktestTool.git
 WORKDIR ../
 
 EXPOSE 3000
