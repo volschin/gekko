@@ -5,7 +5,7 @@ ENV PORT 3000
 
 # Update
 RUN apt-get update && \
-    apt-get install git convnetjs mathjs nano
+    apt-get install git nano
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -18,7 +18,7 @@ RUN npm install -g --production node-gyp && \
 # Install Gekko dependencies
 COPY package.json .
 RUN npm install --production && \
-    npm install --production redis@0.10.0 talib tulind pg && \
+    npm install --production redis@0.10.0 talib tulind pg convnetjs mathjs && \
     npm cache clean --force
 
 # Install Gekko Broker dependencies
