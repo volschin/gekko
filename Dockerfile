@@ -5,7 +5,7 @@ ENV PORT 3000
 
 # Update
 RUN apt-get update && \
-    apt-get install git convnetjs mathjs
+    apt-get install git convnetjs mathjs nano
 
 # Create app directory
 RUN mkdir -p /usr/src/app
