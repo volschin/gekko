@@ -1,5 +1,5 @@
 # Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status](https://travis-ci.org/askmike/gekko.png)](https://travis-ci.org/askmike/gekko) [![Build status](https://ci.appveyor.com/api/projects/status/github/askmike/gekko?branch=stable&svg=true)](https://ci.appveyor.com/project/askmike/gekko)
-
+ Added some gekko strategies and backtest tool for docker container autobuild
 ![Gordon Gekko](http://mikevanrossum.nl/static/gekko.jpg)
 
 *The most valuable commodity I know of is information.*
