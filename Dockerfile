@@ -5,7 +5,7 @@ ENV PORT 3000
 
 # Update
 RUN apt-get update && \
-    apt-get install git nano
+    apt-get install git
 
 # Create app directory
 RUN mkdir -p /usr/src/app
