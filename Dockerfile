@@ -3,9 +3,6 @@ FROM node:8
 ENV HOST localhost
 ENV PORT 3000
 
-# Update
-RUN apt-get update && \
-    apt-get install git
 
 # Create app directory
 RUN mkdir -p /usr/src/app
