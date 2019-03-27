@@ -3,9 +3,14 @@ FROM node:8
 ENV HOST localhost
 ENV PORT 3000
 
+# Update
+RUN apt-get update && \
+    npm update \
+    apt-get install git
+
 # Create app directory
 RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app 
 
 # Install GYP dependencies globally, will be used to code build other dependencies
 RUN npm install -g --production node-gyp && \
