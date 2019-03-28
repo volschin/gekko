@@ -41,10 +41,17 @@ RUN git clone https://github.com/xFFFFF/Gekko-Strategies && \
     bash ./install.sh /usr/src/app
 WORKDIR ../
 
+# add Neuralnet zchro 
+WORKDIR ./gekko-neuralnet
+RUN git clone -b e2166e3e6dabc36f16e5a67d77970037e7bdd5c2 https://github.com/zschro/gekko-neuralnet.git && \
+    cd gekko-neuralnet && \
+    cp ../install.sh . && \
+    bash ./install.sh /usr/src/app
+WORKDIR ../
+
 # Update Gekko BacktestTool
 WORKDIR ./Gekko-BacktestTool
 RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
-
 WORKDIR ../
 
 EXPOSE 3000
