@@ -43,7 +43,7 @@ WORKDIR ../
 RUN rm -R Gekko-Strategies
 
 # add Neuralnet zchro 
-RUN git clone -b e2166e3e6dabc36f16e5a67d77970037e7bdd5c2 https://github.com/zschro/gekko-neuralnet.git
+RUN git clone -b e2166e3e6d https://github.com/zschro/gekko-neuralnet.git
 WORKDIR ./gekko-neuralnet
     RUN cp ../install.sh . && \
     bash ./install.sh /usr/src/app
