@@ -38,14 +38,14 @@ COPY . /usr/src/app
 
 RUN git clone https://github.com/xFFFFF/Gekko-Strategies
 WORKDIR ./Gekko-Strategies
-    bash ./install.sh /usr/src/app
+    RUN bash ./install.sh /usr/src/app
 WORKDIR ../
 RUN rm -R Gekko-Strategies
 
 # add Neuralnet zchro 
 RUN git clone -b e2166e3e6dabc36f16e5a67d77970037e7bdd5c2 https://github.com/zschro/gekko-neuralnet.git
 WORKDIR ./gekko-neuralnet
-    cp ../install.sh . && \
+    RUN cp ../install.sh . && \
     bash ./install.sh /usr/src/app
 WORKDIR ../
 
