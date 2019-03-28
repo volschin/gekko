@@ -48,7 +48,7 @@ WORKDIR ./gekko-neuralnet
     RUN cp ../install.sh . && \
     bash ./install.sh /usr/src/app
 WORKDIR ../
-RUN rm -R gekko-neuralnet
+RUN rm -R ./gekko-neuralnet
 
 # Update Gekko BacktestTool
 #WORKDIR ./Gekko-BacktestTool
