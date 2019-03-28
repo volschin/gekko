@@ -1,13 +1,13 @@
-# Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status]](https://travis-ci.org/askmike/gekko) [![Build status](https://ci.appveyor.com/api/projects/status/github/askmike/gekko?branch=stable&svg=true)](https://ci.appveyor.com/project/askmike/gekko)
- Added some gekko strategies and backtest tool for docker container autobuild
+# Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status]](https://travis-ci.org/askmike/gekko)
+ 
+ ##  Add some Gekko strategies from FFF and backtest tool for docker container autobuild
+ 
  Build on LTS Nodejs 10 ...
-![Gordon Gekko](http://mikevanrossum.nl/static/gekko.jpg)
 
-*The most valuable commodity I know of is information.*
+Somes dependency were added to initial script from b16b00b5.
 
--Gordon Gekko
 
-Gekko is a Bitcoin TA trading and backtesting platform that connects to popular Bitcoin exchanges. It is written in JavaScript and runs on [Node.js](http://nodejs.org).
+Gekko is a Bitcoin TA trading and backtesting platform that connects to popular Bitcoin exchanges. It is written in JavaScript and runs on [Node.js 10](http://nodejs.org).
 
 *Use Gekko at your own risk.*
 
