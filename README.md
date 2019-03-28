@@ -1,5 +1,6 @@
-# Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status](https://travis-ci.org/askmike/gekko.png)](https://travis-ci.org/askmike/gekko) [![Build status](https://ci.appveyor.com/api/projects/status/github/askmike/gekko?branch=stable&svg=true)](https://ci.appveyor.com/project/askmike/gekko)
+# Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status]](https://travis-ci.org/askmike/gekko) [![Build status](https://ci.appveyor.com/api/projects/status/github/askmike/gekko?branch=stable&svg=true)](https://ci.appveyor.com/project/askmike/gekko)
  Added some gekko strategies and backtest tool for docker container autobuild
+ Build on LTS Nodejs 10 ...
 ![Gordon Gekko](http://mikevanrossum.nl/static/gekko.jpg)
 
 *The most valuable commodity I know of is information.*
@@ -10,13 +11,10 @@ Gekko is a Bitcoin TA trading and backtesting platform that connects to popular 
 
 *Use Gekko at your own risk.*
 
-## Documentation
+## Install with docker
 
-See [the documentation website](https://gekko.wizb.it/docs/introduction/about_gekko.html).
+Before start container set the correct IP adress and local Port.
 
-## Installation & Usage
-
-See [the installing Gekko doc](https://gekko.wizb.it/docs/installation/installing_gekko.html).
 
 ## Community & Support
 
