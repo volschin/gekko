@@ -35,23 +35,24 @@ RUN cpanm -n install Parallel::ForkManager Time::Elapsed Getopt::Long List::More
 COPY . /usr/src/app
 
 # Update Gekko strategies
+
+RUN git clone https://github.com/xFFFFF/Gekko-Strategies
 WORKDIR ./Gekko-Strategies
-RUN git clone https://github.com/xFFFFF/Gekko-Strategies && \
     bash ./install.sh /usr/src/app
 WORKDIR ../
 RUN rm -R Gekko-Strategies
 
 # add Neuralnet zchro 
+RUN git clone -b e2166e3e6dabc36f16e5a67d77970037e7bdd5c2 https://github.com/zschro/gekko-neuralnet.git
 WORKDIR ./gekko-neuralnet
-RUN git clone -b e2166e3e6dabc36f16e5a67d77970037e7bdd5c2 https://github.com/zschro/gekko-neuralnet.git && \
     cp ../install.sh . && \
     bash ./install.sh /usr/src/app
 WORKDIR ../
 
 # Update Gekko BacktestTool
-WORKDIR ./Gekko-BacktestTool
+#WORKDIR ./Gekko-BacktestTool
 RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
-WORKDIR ../
+#WORKDIR ../
 
 EXPOSE 3000
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
