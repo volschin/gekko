@@ -1,4 +1,4 @@
-# Gekko [![npm](https://img.shields.io/npm/dm/gekko.svg)]() [![Build Status]](https://travis-ci.org/askmike/gekko)
+# Gekko [![npm]]() [![Build Status]]
  
  ##  Add some Gekko strategies from FFF and backtest tool for docker container autobuild
  
