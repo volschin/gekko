@@ -1,4 +1,4 @@
-# Gekko [![npm]]() [![Build Status]]
+# Gekko
  
  ##  Add some Gekko strategies from FFF and backtest tool for docker container autobuild
  
@@ -15,6 +15,8 @@ Gekko is a Bitcoin TA trading and backtesting platform that connects to popular 
 
 Before start container set the correct IP adress and local Port.
 
+## TODO
+- Clean dependency and somes strategies who doesnt work.
 
 ## Community & Support
 
