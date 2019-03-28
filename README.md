@@ -1,6 +1,6 @@
 # Gekko
  
- ##  Add some Gekko strategies from FFF and backtest tool for docker container autobuild
+ ##  Add some Gekko strategies from xFFFFF and backtest tool for docker container autobuild
  
  Build on LTS Nodejs 10 ...
 
