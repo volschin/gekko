@@ -3,11 +3,12 @@
  ##  Add somes Gekko strategies from xFFFFF and backtest tool for docker container autobuild
  
  ## Build on:
- -LTS Nodejs 10 ...
- -Redis 2.8.0
- -mathjs
- -convnet
- -tulind and talib (lastest)
+ 
+ - LTS Nodejs 10 ...
+ - Redis 2.8.0
+ - mathjs
+ - convnet
+ - tulind and talib (lastest)
  
  ## Added
  -Gekko strategies
