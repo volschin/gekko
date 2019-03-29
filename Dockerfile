@@ -15,7 +15,7 @@ RUN npm install -g --production node-gyp && \
 # Install Gekko dependencies
 COPY package.json .
 RUN npm install --production && \
-    npm install --production redis@0.10.0 talib tulind pg convnetjs mathjs && \
+    npm install --production redis talib tulind pg convnetjs mathjs && \
     npm cache clean --force
 
 # Install Gekko Broker dependencies
