@@ -10,7 +10,7 @@ Gekko is a Bitcoin TA trading and backtesting platform that connects to popular 
  - Redis 2.8.0
  - mathjs
  - convnet
- - tulind and talib (lastest)
+ - tulind and talib
  
  ## Added
  - Gekko strategies
