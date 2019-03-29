@@ -50,10 +50,17 @@ WORKDIR ./gekko-neuralnet
 WORKDIR ../
 RUN rm -R ./gekko-neuralnet
 
-# Update Gekko BacktestTool
+# Install Gekko BacktestTool
 #WORKDIR ./Gekko-BacktestTool
 RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
 #WORKDIR ../
+
+# Install Genetic Algorithm for solving optimization of trading strategies using Gekko
+RUN git clone https://github.com/gekkowarez/gekkoga.git
+WORKDIR ./gekkoga
+    RUN npm install 
+WORKDIR ../
+
 
 EXPOSE 3000
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
