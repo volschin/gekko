@@ -25,6 +25,8 @@ Before start container set the correct IP adress and local Port.
 If you change Ip: localhost to another and start container and it be wrong IP. change manualy IP on
 nano /usr/src/app/web/vue/dist/UIconfig.js or delete container and rebuild
 
+Ajust MEMORYNODE for max memory size under the limit of memory of container -10% was good
+
 ## TODO
 - Clean dependency and somes strategies who doesnt work.
 
