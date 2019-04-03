@@ -4,7 +4,8 @@ ENV HOST localhost
 ENV PORT 3000
 
 # Add some extra tool
-RUN apt-get install nano
+RUN apt-get update && \
+    apt-get install nano
 
 # Create app directory
 RUN mkdir -p /usr/src/app
