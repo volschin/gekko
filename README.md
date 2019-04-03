@@ -23,7 +23,7 @@ Somes dependency were added to initial script from b16b00b5.
 
 Before start container set the correct IP adress and local Port.
 If you change Ip: localhost to another and start container and it be wrong IP. change manualy IP on
-nano /usr/src/app/web/vue/dist/UIconfig.js 
+nano /usr/src/app/web/vue/dist/UIconfig.js or delete container and rebuild
 
 ## TODO
 - Clean dependency and somes strategies who doesnt work.
