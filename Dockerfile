@@ -3,6 +3,8 @@ FROM node:10
 ENV HOST localhost
 ENV PORT 3000
 
+# Add some extra tool
+RUN apt-get install nano
 
 # Create app directory
 RUN mkdir -p /usr/src/app
