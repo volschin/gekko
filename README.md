@@ -30,6 +30,9 @@ Ajust MEMORYNODE for max memory size under the limit of memory of container -10%
 ## TODO
 - Clean dependency and somes strategies who doesnt work.
 
+## Go to these GITHUB to add some new fonction for all
+https://github.com/viking76/gekko.git
+
 ## Community & Support
 
 Gekko has [a forum](https://forum.gekko.wizb.it/) that is the place for discussions on using Gekko, automated trading and exchanges. In case you rather want to chat in realtime about Gekko feel free to join the [Gekko Support Discord](https://discord.gg/26wMygt).
