@@ -17,14 +17,9 @@ config.silent = false;
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'gdax',
-  currency: 'USD',
-  asset: 'LTC',
-
-  // You can set your own tickrate (refresh rate).
-  // If you don't set it, the defaults are 2 sec for
-  // okcoin and 20 sec for all other exchanges.
-  // tickrate: 20
+  exchange: 'binance',
+  currency: 'USDT',
+  asset: 'BTC',
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,10 +135,10 @@ config.pushover = {
 }
 
 config.blotter = {
-  enabled: true,
+  enabled: false,
   filename: 'blotter.csv',
   dateFormat: 'l LT',
-  timezone: -300, // EST -5:00, only used if exchange doesn't provide correct timezone
+  timezone: -300, // -300 minutes for EST(-5:00), only used if exchange doesn't provide correct timezone
 }
 
 // want Gekko to send a mail on buy or sell advice?
@@ -373,6 +368,12 @@ config.mongodb = {
     module: 'mongojs',
     version: '2.4.0'
   }]
+}
+
+config.candleUploader = {
+  enabled: false,
+  url: '',
+  apiKey: ''
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

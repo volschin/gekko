@@ -180,6 +180,13 @@ var plugins = [
     modes: ['realtime']
   },
   {
+    name: 'Candle Uploader',
+    description: 'Upload candles to an extneral server',
+    slug: 'candleUploader',
+    async: true,
+    modes: ['realtime']
+  },
+  {
     name: 'Twitter',
     description: 'Sends trades to twitter.',
     slug: 'twitter',
