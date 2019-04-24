@@ -8,9 +8,11 @@ const log = require('../core/log.js');
 const config = require ('../core/util.js').getConfig();
 const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
+const SMA = require('../strategies/indicators/SMA.js');
 
 var strat = {};
 var rsi5 = new RSI({ interval: 14 });
+var sma60 = new SMA(200);
 var asset = 0;
 var currency = 0;
 var currentPrice = 0;
@@ -19,13 +21,17 @@ var buyPrice = 0; // Get it from onTrade
 var watchPrice = 0.0;
 var lowestPrice = Infinity;
 var sellPrice = Infinity;
+var hugeGainSell = Infinity;
 var advised = false;
 var candle5 = {};
+var candle60 = {};
+var exposed = false;
+var highestExposedPrice = 0;
 
 
 /*** Set Buy/Sell Limits Here */
 var buyLimit = 500; // How much to buy
-var sellLimit = 88.33; // Ho much asset to sell
+var sellLimit = 88.33; // How much asset to sell
 
 
 // Prepare everything our strat needs
@@ -46,10 +52,38 @@ strat.init = function() {
   // supply callbacks for 5 minute candle function
   this.batcher5.on('candle', this.update5);
 
+  // create candle batchers for 60 minute candles
+  this.batcher60 = new CandleBatcher(60);
+
+  // supply callbacks for 60 minute candle function
+  this.batcher60.on('candle', this.update60);
+
 
   // Add an indicator even though we won't be using it because
   // Gekko won't use historical data unless we define the indicator here
   this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
+
+  // User recovery file if it exists and live trading
+  if (config.trader.enabled) {
+    fs.readFile(this.name + '-recovery.json', (_, contents) => {
+      var fileObj = {};
+      try {
+        fileObj = JSON.parse(contents);
+        watchPrice = fileObj.watchPrice;
+        lowestPrice = fileObj.lowestPrice;
+        sellPrice = fileObj.sellPrice;
+        hugeGainSell = fileObj.hugeGainSell;
+        highestExposedPrice = fileObj.highestExposedPrice;
+        advised = fileObj.advised;
+        sellPrice = fileObj.sellPrice;
+        advised = fileObj.advised;
+        }
+        catch (err) {
+        log.error('Recovery file not available');
+        }
+
+    });
+  }
 
   fs.readFile(this.name + '-balanceTracker.json', (err, contents) => {
     var fileObj = {};
@@ -81,11 +115,14 @@ strat.init = function() {
 
 // What happens on every new candle?
 strat.update = function(candle) {
-  // your code!
 
     // write 1 minute candle to 5 minute batchers
     this.batcher5.write([candle]);
     this.batcher5.flush();
+
+    //write 1 minute candle to 60 minute batchers
+    this.batcher60.write([candle]);
+    this.batcher60.flush();
 
     // Send message that bot is still working after 24 hours (assuming minute candles)
     counter++;
@@ -107,29 +144,42 @@ strat.update5 = function(candle) {
 
 }
 
+strat.update60 = function(candle) {
+  sma60.update(candle.close);
+
+  candle60 = this.batcher5.calculatedCandles[0];
+}
+
 // Based on the newly calculated
 // information, check if we should
 // update or not.
 strat.check = function(candle) {
-  // your code!
+// if we're waiting to sell, update highest price
+if(exposed && highestExposedPrice < candle5.close) {
+  highestExposedPrice = candle5.close;
+}
 
-  if(watchPrice == 0){
+if(watchPrice == 0){
     watchPrice = candle.close * 0.98;
 }
-if(candle.close <= watchPrice){
+if(candle.close <= watchPrice && candle.close < lowestPrice){
     lowestPrice = candle.close;
 }
-if(candle5.close > lowestPrice && !advised && !this.tradeInitiated){
+// Buy if price recover from lowest price and less than 200 SMA hourly
+if(candle5.close > lowestPrice && sma60.result > candle5.close && !advised && !this.tradeInitiated){
     this.advice({
       direction: 'long',
       amount: buyLimit,
     });
     log.info('Buying at', candle.close);
     sellPrice = candle.close * 1.05;
+    hugeGainSell = candle.close * 1.5;
     advised = true;
+    this.writeRecoveryFile();
     return;
 }
-if(candle5.close > sellPrice && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
+// Sell if 5% gain but still less than SMA200 hourly
+if(candle5.close > sellPrice && sma60.result > candle5.close && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
     this.advice({
       direction: 'short',
       amount: sellLimit,
@@ -138,13 +188,66 @@ if(candle5.close > sellPrice && watchPrice != 0 && lowestPrice != Infinity && ad
     watchPrice = 0;
     lowestPrice = Infinity;
     sellPrice = Infinity;
+    hugeGainSell = Infinity;
     advised = false;
+    highestExposedPrice = 0;
+    this.writeRecoveryFile();
     return;
 }
+// Sell if 50% gain
+if(candle5.close > hugeGainSell && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
+  this.advice({
+    direction: 'short',
+    amount: sellLimit,
+  });
+  log.info('Selling at', candle.close);
+  watchPrice = 0;
+  lowestPrice = Infinity;
+  sellPrice = Infinity;
+  hugeGainSell = Infinity;
+  advised = false;
+  highestExposedPrice = 0;
+  this.writeRecoveryFile();
+  return;
+}
+// Sell if price falls 5% below highest recorded while exposed & current price less than 5% target
+// if(highestExposedPrice > candle5.close * 1.05 && candle5.close > sellPrice * 0.98 && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
+//   this.advice({
+//     direction: 'short',
+//     amount: sellLimit,
+//   });
+//   log.info('Selling at', candle.close);
+//   watchPrice = 0;
+//   lowestPrice = Infinity;
+//   sellPrice = Infinity;
+//   hugeGainSell = Infinity;
+//   advised = false;
+//   highestExposedPrice = 0;
+//   this.writeRecoveryFile();
+//   return;
+// }
 
-log.info('Watch Price', watchPrice, ', Lowest Price', lowestPrice, ', Five Minute Close', candle5.close);
+log.info(candle.start.format('l LT'), ' Watch', watchPrice, ', Lowest', lowestPrice, ', 5 Min Close', candle5.close, 'SMA', sma60.result);
 
 
+}
+
+strat.writeRecoveryFile = function() {
+  if (config.trader.enabled) {
+    var recFileObj = {
+      watchPrice: watchPrice,
+      lowestPrice: lowestPrice,
+      sellPrice: sellPrice,
+      hugeGainSell: hugeGainSell,
+      highestExposedPrice: highestExposedPrice,
+      advised: advised,
+    }
+    fs.writeFile(this.name + '-recovery.json', JSON.stringify(recFileObj), (err) => {
+      if(err) {
+        log.error('Unable to write to recovery file');
+      }
+    })
+  }
 }
 
 // This is called when trader.js initiates a 
@@ -178,23 +281,26 @@ strat.onTrade = function(trade) {
   if (trade.action == 'buy') {
     buyPrice = trade.price;
     sellLimit = buyLimit / trade.price;
+    exposed = true;
   }
 
   if (trade.action == 'sell') {
     log.info('Bought at', buyPrice, 'Sold at', trade.price);
     buyLimit = trade.amount * trade.price;
+    exposed = false;
   }
+
+  // Write balance tracker
   var fileObj = {
     sellLimit: sellLimit,
     buyLimit: buyLimit,
   }
   fs.writeFile(this.name + '-balanceTracker.json', JSON.stringify(fileObj), (err) => {
-  if(err) {
-    log.error('Unable to write to balance tracker file');
-  }
+    if(err) {
+      log.error('Unable to write to balance tracker file');
+    }
   });
 
-  
 }
 
 // Trades that didn't complete with a buy/sell
@@ -251,8 +357,13 @@ strat.onCommand = function(cmd) {
   }
   if (command == 'status') {
       cmd.handled = true;
-      cmd.response = config.watch.currency + "/" + config.watch.asset +
-      "\nPrice: " + currentPrice;
+      if (lowestPrice < Infinity) {
+        cmd.response = config.watch.currency + "/" + config.watch.asset +
+        "\nPrice: " + currentPrice + "\nWill buy when price goes above " + lowestPrice;
+      } else {
+        cmd.response = config.watch.currency + "/" + config.watch.asset +
+        "\nPrice: " + currentPrice + "\nWaiting for price to drop below " + watchPrice;
+      }
       
   }
   if (command == 'help') {
@@ -276,6 +387,23 @@ strat.onCommand = function(cmd) {
       amount: sellLimit,
     });
   }
+  if (command == 'setLowestPrice') {
+    cmd.handled = true;
+    if (cmd.arguments[0]) {
+      if (typeof cmd.arguments[0] == 'number') {
+        lowestPrice = cmd.arguments[0];
+      }
+    }
+  }
+  if (command == 'setSellPrice') {
+    cmd.handled = true;
+    if (cmd.arguments[0]) {
+      if (typeof cmd.arguments[0] == 'number') {
+        sellPrice = cmd.arguments[0];
+      }
+    }
+  }
+
 }
 
 
