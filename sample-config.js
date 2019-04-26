@@ -19,11 +19,6 @@ config.watch = {
   exchange: 'binance',
   currency: 'USDT',
   asset: 'BTC',
-
-  // You can set your own tickrate (refresh rate).
-  // If you don't set it, the defaults are 2 sec for
-  // okcoin and 20 sec for all other exchanges.
-  // tickrate: 20
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -110,6 +105,13 @@ config.pushover = {
   tag: '[GEKKO]',
   key: '',
   user: ''
+}
+
+config.blotter = {
+  enabled: false,
+  filename: 'blotter.csv',
+  dateFormat: 'l LT',
+  timezone: -300, // -300 minutes for EST(-5:00), only used if exchange doesn't provide correct timezone
 }
 
 // want Gekko to send a mail on buy or sell advice?
@@ -326,6 +328,12 @@ config.mongodb = {
     module: 'mongojs',
     version: '2.4.0'
   }]
+}
+
+config.candleUploader = {
+  enabled: false,
+  url: '',
+  apiKey: ''
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
