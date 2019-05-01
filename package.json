@@ -39,7 +39,13 @@
     "stats-lite": "^2.0.4",
     "tiny-promisify": "^0.1.1",
     "toml": "^2.3.0",
-    "ws": "^6.0.0"
+    "ws": "^6.0.0",
+    "redis": "^0.x",
+    "talib": "^0.x",
+    "tulind": "^0.x",
+    "pg": "^0.x",
+    "convnetjs": "^0.x",
+    "mathjs": "^0.x",
   },
   "devDependencies": {
     "chai": "^4.1.2",
