@@ -7,6 +7,10 @@ ENV MEMORYNODE 2048
 # Add some extra tool
 RUN apt-get update && \
     apt-get install nano
+    # Clean
+RUN apt-get clean && \
+    apt-get autoclean
+RUN rm -rf /var/lib/apt/lists/*
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -64,10 +68,8 @@ RUN git clone https://github.com/gekkowarez/gekkoga.git
 WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
-# Clean
-RUN npm cache clean --force
-RUN apt-get clean
-RUN apt-get autoclean
+
+
 
 EXPOSE 3000
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
