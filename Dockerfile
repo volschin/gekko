@@ -65,7 +65,7 @@ WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
 # Clean
-RUN npm cache clean
+RUN npm cache clean --force
 RUN apt-get clean
 RUN apt-get autoclean
 
