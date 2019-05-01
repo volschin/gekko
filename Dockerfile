@@ -64,7 +64,10 @@ RUN git clone https://github.com/gekkowarez/gekkoga.git
 WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
-
+# Clean
+RUN npm cache clean
+RUN apt-get clean
+RUN apt-get autoclean
 
 EXPOSE 3000
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
