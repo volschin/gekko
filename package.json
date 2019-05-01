@@ -44,8 +44,8 @@
     "talib": "^0.x",
     "tulind": "^0.x",
     "pg": "^0.x",
-    "convnetjs": "^0.x",
-    "mathjs": "^0.x",
+    "convnetjs": "^0.3.x",
+    "mathjs": "^5.9.x",
   },
   "devDependencies": {
     "chai": "^4.1.2",
