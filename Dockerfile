@@ -1,4 +1,4 @@
-FROM node:12.2
+FROM node:10
 
 ENV HOST localhost
 ENV PORT 3000
