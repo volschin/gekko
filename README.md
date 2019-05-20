@@ -19,13 +19,25 @@ Gekko is a Bitcoin TA trading and backtesting platform that connects to popular 
 
 Somes dependency were added to initial script from b16b00b5.
 
-## Install with docker
+# Install with docker
+
+## Environnement variable
+HOST 192.168.x.x
+PORT 3000
+MEMORYNODE 2048
+USE_SSL 0
+
+Prefer to use the real ip of the machine to test.
+Ajust MEMORYNODE for max memory size under the limit of memory of container -10% was good
+ 
+
+
 
 Before start container set the correct IP adress and local Port.
 If you change Ip: localhost to another and start container and it be wrong IP. change manualy IP on
 nano /usr/src/app/web/vue/dist/UIconfig.js or delete container and rebuild
 
-Ajust MEMORYNODE for max memory size under the limit of memory of container -10% was good
+
 
 ## TODO
 - Clean dependency and somes strategies who doesnt work.
