@@ -22,9 +22,13 @@ Somes dependency were added to initial script from b16b00b5.
 # Install with docker
 
 ## Environnement variable
+
 HOST 192.168.x.x
+
 PORT 3000
+
 MEMORYNODE 2048
+
 USE_SSL 0
 
 Prefer to use the real ip of the machine to test.
