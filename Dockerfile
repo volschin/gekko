@@ -63,7 +63,7 @@ RUN rm -R ./gekko-neuralnet
 #WORKDIR ./Gekko-BacktestTool
 RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
 WORKDIR ./Gekko-BacktestTool
-COPY . /usr/src/app
+RUN cp *.* /usr/src/app
 WORKDIR ../
 RUN rm -R ./Gekko-BacktestTool
 
