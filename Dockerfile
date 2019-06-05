@@ -62,7 +62,10 @@ RUN rm -R ./gekko-neuralnet
 # Install Gekko BacktestTool
 #WORKDIR ./Gekko-BacktestTool
 RUN git clone https://github.com/xFFFFF/Gekko-BacktestTool.git
-#WORKDIR ../
+WORKDIR ./Gekko-BacktestTool
+COPY . /usr/src/app
+WORKDIR ../
+RUN rm -R ./Gekko-BacktestTool
 
 # Install Genetic Algorithm for solving optimization of trading strategies using Gekko
 RUN git clone https://github.com/gekkowarez/gekkoga.git
