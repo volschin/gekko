@@ -73,6 +73,8 @@ WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
 
+# Install Gekko Automated Backtest
+RUN git clone https://github.com/tommiehansen/gab.git
 
 
 EXPOSE 3000
