@@ -17,7 +17,7 @@ config.js
 api-keys.js
 .cache
 .project
-.settings
+#.settings
 .tmproj
 nbproject
 *.sublime-project
