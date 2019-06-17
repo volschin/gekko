@@ -537,4 +537,11 @@ config['tulip-adx'] = {
 // Not sure? Read this first: https://github.com/askmike/gekko/issues/201
 config['I understand that Gekko only automates MY OWN trading strategies'] = true;
 
+// CUSTOM, plugins:
+// neuralnet (https://github.com/gekkowarez/gekko-neuralnet):
+config.filewriter = { nnfilepath: __dirname + "/nn_files/" };
+config.zuki_nn = { threshold_buy : 1.0, threshold_sell : -1.0, learning_rate : 0.01, momentum : 0.1,
+  decay : 0.01, stoploss_enabled : false, stoploss_threshold : 0.85, hodl_threshold : 1,
+  price_buffer_len : 100, min_predictions : 1000 }
+
 module.exports = config;
