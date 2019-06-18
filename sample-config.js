@@ -16,9 +16,9 @@ config.debug = true; // for additional logging / debugging
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'binance',
-  currency: 'USDT',
-  asset: 'BTC',
+  exchange: 'bitfinex',
+  currency: 'USD',
+  asset: 'XRP',
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,26 +27,24 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'MACD',
-  candleSize: 60,
-  historySize: 10,
+  method: 'neuralnet',
+  candleSize: 15,
+  historySize: 1000,
 }
 
-// MACD settings:
-config.MACD = {
-  // EMA weight (α)
-  // the higher the weight, the more smooth (and delayed) the line
-  short: 10,
-  long: 21,
-  signal: 9,
-  // the difference between the EMAs (to act as triggers)
-  thresholds: {
-    down: -0.025,
-    up: 0.025,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 1
-  }
+// neuralnet settings:
+config.neuralnet = {
+  threshold_buy: 0.86,
+  threshold_sell: -0.99,
+  method: 'adadelta',
+  learning_rate: 1.62,                                                                    
+  momentum: 1.89,
+  decay: 0.13,                                                                            
+  stoploss_enabled: false,                                                                
+  stoploss_threshold: 0.85,                                                               
+  hodl_threshold: 6,                                                                      
+  price_buffer_len: 100,                                                                  
+  min_predictions: 1100,
 };
 
 // settings for other strategies can be found at the bottom, note that only
