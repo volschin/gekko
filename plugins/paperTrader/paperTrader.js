@@ -76,14 +76,14 @@ PaperTrader.prototype.setStartBalance = function() {
 // after every succesfull trend ride we hopefully end up
 // with more BTC than we started with, this function
 // calculates Gekko's profit in %.
-PaperTrader.prototype.updatePosition = function(what) {
+PaperTrader.prototype.updatePosition = function(advice) {
 
   let cost;
   let amount;
 
   // virtually trade all {currency} to {asset}
   // at the current price (minus fees)
-  if(what === 'long') {
+  if(advice.recommendation === 'long') {
     cost = (1 - this.fee) * this.portfolio.currency;
     // if (this.candle.volume < avgVol) {
     //   this.portfolio.asset += this.extractFee(this.portfolio.currency / this.candle.high);
@@ -93,6 +93,11 @@ PaperTrader.prototype.updatePosition = function(what) {
     this.portfolio.asset += this.extractFee(this.portfolio.currency / this.price);
 
     amount = this.portfolio.asset;
+
+    if (advice.amount) {
+      amount = advice.amount / this.price;
+    }
+
     this.portfolio.currency = 0;
 
     this.exposed = true;
@@ -101,7 +106,7 @@ PaperTrader.prototype.updatePosition = function(what) {
 
   // virtually trade all {currency} to {asset}
   // at the current price (minus fees)
-  else if(what === 'short') {
+  else if(advice.recommendation === 'short') {
     cost = (1 - this.fee) * (this.portfolio.asset * this.price);
     // if (this.candle.volume < avgVol) {
     //   this.portfolio.currency += this.extractFee(this.portfolio.asset * this.candle.low);
@@ -113,7 +118,7 @@ PaperTrader.prototype.updatePosition = function(what) {
     // }
 
     this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
-    amount = this.portfolio.currency / this.price;
+    amount = advice.amount * this.price;
 
     this.portfolio.asset = 0;
 
@@ -198,7 +203,7 @@ if (this.candle.volume < avgVol && !this.waitForVolume) {
     date: advice.date,
   });
 
-  const { cost, amount, effectivePrice } = this.updatePosition(advice.recommendation);
+  const { cost, amount, effectivePrice } = this.updatePosition(advice);
 
   this.relayPortfolioChange();
   this.relayPortfolioValueChange();

@@ -1,5 +1,17 @@
 // Step Gains
 // This only works with this modded version of Gekko
+//
+// This strat begins by waiting for the current price
+// to drop 2% (watchPrice). If it drop further, it will
+// populate lowestPrice. When current price > lowestPrice
+// and it is less than 200 SMA hourly, it will buy. 
+// It will sell when there's a 5% gain but still less than
+// 200 SMA hourly.
+// Once it goes above 200 SMA hourly, it won't sell until
+// it makes 50% gains.
+// It has a trailing stop loss of 5% (it will sell if 
+// price drops 5%) but still greater than 5% gain.
+//
 // https://github.com/crypto49er/moddedgekko
 //
 
@@ -18,8 +30,8 @@ var currency = 0;
 var currentPrice = 0;
 var counter = 0;
 var buyPrice = 0; // Get it from onTrade
-var watchPrice = 0.0;
-var lowestPrice = Infinity;
+var watchPrice = 0.0; // 98% of price when bot is started
+var lowestPrice = Infinity; // Sets when current price is below watchPrice
 var sellPrice = Infinity;
 var hugeGainSell = Infinity;
 var advised = false;
@@ -30,8 +42,8 @@ var highestExposedPrice = 0;
 
 
 /*** Set Buy/Sell Limits Here */
-var buyLimit = 500; // How much to buy
-var sellLimit = 88.33; // How much asset to sell
+var buyLimit = 10; // How much to buy
+var sellLimit = 1.7; // How much asset to sell
 
 
 // Prepare everything our strat needs
@@ -40,7 +52,7 @@ strat.init = function() {
   this.name = 'StepGains';
   this.tradeInitiated = false;
 
-    // since we're relying on batching 1 minute candles into 5 minute candles
+  // since we're relying on batching 1 minute candles into 5 minute candles
   // lets throw if the settings are wrong
   if (config.tradingAdvisor.candleSize !== 1) {
     throw "This strategy must run with candleSize=1";
@@ -58,12 +70,16 @@ strat.init = function() {
   // supply callbacks for 60 minute candle function
   this.batcher60.on('candle', this.update60);
 
-
   // Add an indicator even though we won't be using it because
   // Gekko won't use historical data unless we define the indicator here
   this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
 
-  // User recovery file if it exists and live trading
+  // Recovery: If Gekko crashes and PM2 is enabled,
+  // we want Gekko to recover the state it was in
+  // so it won't miss good trades or execute bad trades
+  // (Ex: Sell at loss because it forgot buy price)
+
+  // Use recovery file if it exists and live trading
   if (config.trader.enabled) {
     fs.readFile(this.name + '-recovery.json', (_, contents) => {
       var fileObj = {};
@@ -194,8 +210,8 @@ if(candle5.close > sellPrice && sma60.result > candle5.close && watchPrice != 0 
     this.writeRecoveryFile();
     return;
 }
-// Sell if 50% gain
-if(candle5.close > hugeGainSell && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
+// Sell if 50% gain and > SMA200 hourly
+if(candle5.close > hugeGainSell && sma60.result < candle5.close && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
   this.advice({
     direction: 'short',
     amount: sellLimit,
@@ -210,22 +226,22 @@ if(candle5.close > hugeGainSell && watchPrice != 0 && lowestPrice != Infinity &&
   this.writeRecoveryFile();
   return;
 }
-// Sell if price falls 5% below highest recorded while exposed & current price less than 5% target
-// if(highestExposedPrice > candle5.close * 1.05 && candle5.close > sellPrice * 0.98 && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
-//   this.advice({
-//     direction: 'short',
-//     amount: sellLimit,
-//   });
-//   log.info('Selling at', candle.close);
-//   watchPrice = 0;
-//   lowestPrice = Infinity;
-//   sellPrice = Infinity;
-//   hugeGainSell = Infinity;
-//   advised = false;
-//   highestExposedPrice = 0;
-//   this.writeRecoveryFile();
-//   return;
-// }
+// Trailing stop - Sell if price falls 5% below highest recorded but still > sellPrice
+if(highestExposedPrice > candle5.close * 1.05 && candle5.close > sellPrice && watchPrice != 0 && lowestPrice != Infinity && advised && !this.tradeInitiated){
+  this.advice({
+    direction: 'short',
+    amount: sellLimit,
+  });
+  log.info('Selling at', candle.close);
+  watchPrice = 0;
+  lowestPrice = Infinity;
+  sellPrice = Infinity;
+  hugeGainSell = Infinity;
+  advised = false;
+  highestExposedPrice = 0;
+  this.writeRecoveryFile();
+  return;
+}
 
 log.info(candle.start.format('l LT'), ' Watch', watchPrice, ', Lowest', lowestPrice, ', 5 Min Close', candle5.close, 'SMA', sma60.result);
 

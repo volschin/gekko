@@ -10,7 +10,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/gekko.js",
             "args": [
-                "--config", "config-live-sandbox.js"
+                "--config", "config-paper.js", "--backtest"
             ]
         }
     ]
