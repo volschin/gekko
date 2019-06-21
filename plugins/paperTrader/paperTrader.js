@@ -81,7 +81,11 @@ PaperTrader.prototype.updatePosition = function(what) {
   // at the current price (minus fees)
   if(what === 'long') {
     cost = (1 - this.fee) * this.portfolio.currency;
-    this.portfolio.asset += this.extractFee(this.portfolio.currency / this.price);
+    this.portfolio.asset += this.extractFee(
+        this.portfolio.currency /
+            (this.price + (this.meta.config.spread ? this.meta.config.spread : 0))
+    );
+    console.log('updatePosition: ' + this.price + ', asset: ' + this.portfolio.asset + ', spread: ' + this.meta.config.spread);
     amount = this.portfolio.asset;
     this.portfolio.currency = 0;
 
@@ -101,7 +105,7 @@ PaperTrader.prototype.updatePosition = function(what) {
     this.trades++;
   }
 
-  const effectivePrice = this.price * this.fee;
+  const effectivePrice = (this.price + (what === 'long'?  this.meta.config.spread : 0)) * this.fee;
 
   return { cost, amount, effectivePrice };
 }

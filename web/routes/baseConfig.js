@@ -21,10 +21,10 @@ config.candleWriter = {
 }
 
 config.backtestResultExporter = {
-  enabled: false,
-  writeToDisk: false,
+  enabled: true,
+  writeToDisk: true,
   data: {
-    stratUpdates: false,
+    stratUpdates: true,
     roundtrips: true,
     stratCandles: true,
     trades: true

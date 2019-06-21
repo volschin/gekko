@@ -11,7 +11,12 @@
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha test/*.js --recursive test -u tdd --reporter spec",
-    "start": "node ./gekko --config config.js --ui"
+    "start-ui": "node ./gekko --ui",
+    "start-server": "node ./gekko --config config.js",
+    "debug-ui": "node %NODE_DEBUG_OPTION% ./gekko --ui",
+    "debug-server-backtest": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-backtest.js --backtest > logs/backtest.txt --backtest",
+    "debug-server-paper": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-papertrading.js",
+    "debug-server-live": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-livetrading.js"
   },
   "author": "Mike van Rossum <mike@mvr.me>",
   "dependencies": {
