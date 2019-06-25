@@ -39,6 +39,7 @@ dwsync.xml
 
 node_modules
 candles.csv
+blotter.csv
 cexio.db
 history
 TMP_*

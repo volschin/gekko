@@ -11,7 +11,7 @@ const QUERY_DELAY = 350;
 const marketData = require('./coinbase-markets.json');
 
 const Trader = function(config) {
-  this.post_only = true;
+  this.post_only = false;
   this.use_sandbox = false;
   this.name = 'GDAX';
   this.scanback = false;
@@ -59,6 +59,7 @@ const recoverableErrors = [
   'Response code 5',
   'GDAX is currently under maintenance.',
   'HTTP 408 Error',
+  'HTTP 409 Error',
   'HTTP 504 Error',
   'HTTP 503 Error',
   'socket hang up',
@@ -217,6 +218,10 @@ Trader.prototype.checkOrder = function(order, callback) {
     } if (status === 'done' || status === 'settled') {
       return callback(undefined, { executed: true, open: false });
     } else if (status === 'rejected') {
+      if (data.reject_reason == 'post only' ) {
+        console.log ('post only error');
+        return callback(new Error('post only error'));
+    }
       return callback(undefined, { executed: false, open: false });
     } else if(status === 'open' || status === 'active') {
       return callback(undefined, { executed: false, open: true, filledAmount: parseFloat(data.filled_size) });
