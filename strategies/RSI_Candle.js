@@ -39,9 +39,9 @@ var sma5History = [];
 var highestRSI = 0; // highestRSI in last 5 candles
 var candle5 = {};
 
-const STOP_LOSS_COEF = 0.996;
+const STOP_LOSS_COEF = 0.9;
 // const STOP_LOSS_COEF = 0.99;
-const TAKE_PROFIT_COEF = 1.01;
+const TAKE_PROFIT_COEF = 1.1;
 
 // Prepare everything our method needs
 strat.init = function() {
@@ -142,6 +142,8 @@ strat.check = function() {
 
   // Sell when RSI > 70
   if (rsi5.result > 70 && advised || currentPrice >= buyPrice * TAKE_PROFIT_COEF) {
+  // if (rsi5.result > 70 && advised) {
+    console.log(`currentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
     this.sell('Take Profit - RSI past 70');
   }
 
