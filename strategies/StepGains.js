@@ -4,12 +4,12 @@
 // This strat begins by waiting for the current price
 // to drop 2% (watchPrice). If it drop further, it will
 // populate lowestPrice. When current price > lowestPrice
-// and it is less than 200 SMA hourly, it will buy. 
+// and it is less than 200 SMA hourly, it will buy.
 // It will sell when there's a 5% gain but still less than
 // 200 SMA hourly.
 // Once it goes above 200 SMA hourly, it won't sell until
 // it makes 50% gains.
-// It has a trailing stop loss of 5% (it will sell if 
+// It has a trailing stop loss of 5% (it will sell if
 // price drops 5%) but still greater than 5% gain.
 //
 // https://github.com/crypto49er/moddedgekko
@@ -80,7 +80,7 @@ strat.init = function() {
   // (Ex: Sell at loss because it forgot buy price)
 
   // Use recovery file if it exists and live trading
-  if (config.trader.enabled) {
+  if (config.trader && config.trader.enabled) {
     fs.readFile(this.name + '-recovery.json', (_, contents) => {
       var fileObj = {};
       try {
@@ -126,7 +126,7 @@ strat.init = function() {
     }
   });
 
-  
+
 }
 
 // What happens on every new candle?
@@ -249,7 +249,7 @@ log.info(candle.start.format('l LT'), ' Watch', watchPrice, ', Lowest', lowestPr
 }
 
 strat.writeRecoveryFile = function() {
-  if (config.trader.enabled) {
+  if (config.trader && config.trader.enabled) {
     var recFileObj = {
       watchPrice: watchPrice,
       lowestPrice: lowestPrice,
@@ -266,7 +266,7 @@ strat.writeRecoveryFile = function() {
   }
 }
 
-// This is called when trader.js initiates a 
+// This is called when trader.js initiates a
 // trade. Perfect place to put a block so your
 // strategy won't issue more trader orders
 // until this trade is processed.
@@ -326,7 +326,7 @@ strat.onTerminatedTrades = function(terminatedTrades) {
 }
 
 // This runs whenever the portfolio changes
-// including when Gekko starts up to talk to 
+// including when Gekko starts up to talk to
 // the exhange to find out the portfolio balance.
 // This is how the portfolio object looks like:
 // {
@@ -337,7 +337,7 @@ strat.onPortfolioChange = function(portfolio) {
 
   // Sell if we start out holding a bag
   // We determine this as currency and asset starts out
-  // at 0 before we get the info from the exchange. 
+  // at 0 before we get the info from the exchange.
   // if (asset == 0 && currency == 0 && portfolio.asset > 0) {
   //   log.info('Starting with a sell as Gekko probably crashed after a buy')
   //   this.advice('short');
@@ -380,12 +380,12 @@ strat.onCommand = function(cmd) {
         cmd.response = config.watch.currency + "/" + config.watch.asset +
         "\nPrice: " + currentPrice + "\nWaiting for price to drop below " + watchPrice;
       }
-      
+
   }
   if (command == 'help') {
   cmd.handled = true;
-      cmd.response = "Supported commands: \n\n /buy - Buy at next candle" + 
-      "\n /sell - Sell at next candle " + 
+      cmd.response = "Supported commands: \n\n /buy - Buy at next candle" +
+      "\n /sell - Sell at next candle " +
       "\n /status - Show indicators and current portfolio";
   }
   if (command == 'buy') {
@@ -394,7 +394,7 @@ strat.onCommand = function(cmd) {
       direction: 'long',
       amount: buyLimit,
     });
-  
+
   }
   if (command == 'sell') {
     cmd.handled = true;
