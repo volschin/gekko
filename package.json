@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha test/*.js --recursive test -u tdd --reporter spec",
-    "start-ui": "node ./gekko --ui",
+    "start-ui": "node ./gekko --ui  --config config.js",
     "start-server": "node ./gekko --config config.js",
     "debug-ui": "node %NODE_DEBUG_OPTION% ./gekko --ui",
     "debug-server-backtest": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-backtest.js --backtest > logs/backtest.txt --backtest",
