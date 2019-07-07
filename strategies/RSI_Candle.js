@@ -140,9 +140,13 @@ strat.check = function() {
     this.buy('Buy because RSI less than 30 and candle is a hammer');
   }
 
+  /*// Sell when RSI > 70
+  if (rsi5.result > 70 && advised) {
+    this.sell('Take Profit - RSI past 70');
+  }*/
   // Sell when RSI > 70
-  if (rsi5.result > 70 && advised || currentPrice >= buyPrice * TAKE_PROFIT_COEF) {
-  // if (rsi5.result > 70 && advised) {
+  if (rsi5.result > 70 && advised || (currentPrice >= buyPrice * TAKE_PROFIT_COEF) && advised) {
+    // if (rsi5.result > 70 && advised) {
     console.log(`currentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
     this.sell('Take Profit - RSI past 70');
   }
