@@ -21,7 +21,7 @@ var config = require ('../core/util.js').getConfig();
 const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
-
+let rsiArr = [];
 // Let's create our own strat
 var strat = {};
 var buyPrice = 0.0;
@@ -36,7 +36,8 @@ var disableTrading = false;
 var waitForRejectedRetry = 0;
 var priceHistory = [];
 var sma5History = [];
-var highestRSI = 0; // highestRSI in last 5 candles
+let highestRSI = 0; // highestRSI in last 5 candles
+let lowestRSI = 100; // lowestRSI in last 5 candles
 var candle5 = {};
 
 const STOP_LOSS_COEF = 0.9;
@@ -45,13 +46,13 @@ const STOP_LOSS_COEF = 0.9;
 const TAKE_PROFIT_COEF = 1.01;
 
 // const ATR_LOW_SELL = 0.00001848;
-const ATR_LOW_SELL = 0.000032;
-const ATR_HIGH_BUY = 0.000036;
-const RSI_HIGH_SELL = 55;
-const RSI_LOW_BUY = 30;
 
+let THRESHOLDS = {};
 // Prepare everything our method needs
 strat.init = function() {
+  THRESHOLDS = this.settings.thresholds;
+  //console.log(`THRESHOLDS.ATR_LOW_SELL: ${ THRESHOLDS.ATR_LOW_SELL} `);
+
   this.requiredHistory = config.tradingAdvisor.historySize;
 
   // since we're relying on batching 1 minute candles into 5 minute candles
@@ -72,13 +73,15 @@ strat.init = function() {
   this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
 
 
-  var customATRSettings = {
+  let customATRSettings = {
     optInTimePeriod: 14,
   }
   // add the indicator to the strategy
   this.addTulipIndicator('atr', 'atr', customATRSettings);
   this.addTulipIndicator('rsi', 'rsi', { optInTimePeriod: 14 });
 
+  this.tradeInitiated = false;
+  console.log(`SETTINGS: ${JSON.stringify(this.settings)}`);
 }
 
 // What happens on every new candle?
@@ -92,7 +95,7 @@ strat.update = function(candle) {
   // Send message
   counter++;
   if (counter == 1440){
-    console.log('Bot is still working.');
+    //console.log('Bot is still working.');
     counter = 0;
   }
 
@@ -130,9 +133,15 @@ strat.update5 = function(candle) {
   }
 
   highestRSI = 0;
-  for (i=5;i<=rsi5History.length-1;i++){
+  for (let i=5;i<=rsi5History.length-1;i++){
     if(rsi5History[i] > highestRSI) {
       highestRSI = rsi5History[i];
+    }
+  }
+  lowestRSI = 100;
+  for (let i=5;i<=rsi5History.length-1;i++){
+    if(rsi5History[i] < lowestRSI) {
+      lowestRSI = rsi5History[i];
     }
   }
 
@@ -143,6 +152,9 @@ strat.update5 = function(candle) {
 // Based on the newly calculated
 // information, check if we should
 // update or not.
+let rsiPrevPrevPrev = 0;
+let rsiPrevPrev = 0;
+let rsiPrev = 0;
 strat.check = function() {
   if(false) {
 
@@ -158,14 +170,14 @@ strat.check = function() {
     }
 
     // Sell when RSI > 70
-    if (rsi5.result > 70 && advised || currentPrice >= buyPrice * TAKE_PROFIT_COEF) {
+    if (rsi5.result > 70 && advised || currentPrice >= buyPrice * THRESHOLDS.TAKE_PROFIT_COEF) {
       // if (rsi5.result > 70 && advised) {
       //console.log(`currentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
       this.sell('Take Profit - RSI past 70');
     }
 
     // Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
-    if (currentPrice <= buyPrice * STOP_LOSS_COEF && advised) {
+    if (currentPrice <= buyPrice * THRESHOLDS.STOP_LOSS_RATIO && advised) {
       this.sell('Stop Loss - 1% loss');
     }
   }
@@ -177,41 +189,101 @@ strat.check = function() {
     let time = JSON.stringify(this.candle.start);
     // console.log(`time: ${ time }`);
     let rsi = this.tulipIndicators.rsi.result.result;
-    //console.log(`all: ${ time }, ${ atr }, ${ rsi }`);
+    //console.log(`INFO ${ time }, ${ atr }, ${ rsi }`)
 
-    if (atr >= ATR_HIGH_BUY) {
-      //console.log(`ATR_HIGH_BUY!!! ${ time }, ${ atr }, ${ rsi5.result }`)
-    }
-    if ((atr >= ATR_HIGH_BUY) && (rsi < RSI_LOW_BUY)) {
-      this.buy('RSI+ATR: BUY!!');
-      console.log(`ATR_HIGH_BUY && RSI_LOW_BUY !!! ${time}, ${atr}, ${rsi5.result}`);
-    }
+    if (atr && rsi && rsi !== 0) {
 
-    if (atr <= ATR_LOW_SELL) {
-    }
-    if ((atr <= ATR_LOW_SELL) && (rsi > RSI_HIGH_SELL)) {
-      this.sell('RSI+ATR: SELL!!');
-      console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${rsi5.result}`);
-    }
+      if (atr >= THRESHOLDS.ATR_HIGH_BUY) {
+        // console.log(`ATR_HIGH_BUY ${ time }, ${ atr }, ${ rsi }, rsiPrev: ${rsiPrev}, rsiPrevPrev: ${rsiPrevPrev}`)
+      }
+      if (atr >= THRESHOLDS.ATR_HIGH_BUY
+        && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY
+          || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY|| rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY )) {
+        this.buy('RSI+ATR: BUY!!');
+        if(!this.tradeInitiated) {
+      //    console.log(`ATR_HIGH_BUY && RSI_LOW_BUY !!! ${time}, ${atr}, ${rsi}, this.tradeInitiated: ${this.tradeInitiated}`);
+        }
+      }
 
-
+      if (atr <= THRESHOLDS.ATR_LOW_SELL) {
+        //console.log(`ATR_LOW_SELL ${ time }, ${ atr }, ${ rsi }`)
+      }
+      if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
+        this.sell('RSI+ATR: SELL!!');
+        //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
+      }
+      if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
+        this.sell('RSI_HIGH_SELL_ALWAYS: SELL!!');
+        //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
+      }
+      /*// Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
+      if (currentPrice <= buyPrice * THRESHOLDS.STOP_LOSS_RATIO && advised) {
+        this.sell('Stop Loss - 1% loss');
+        console.log(`Stop Loss - 1% loss !!! ${time}, ${atr}, ${ rsi }`);
+      }*/
+    }
+    rsiPrev = rsi;
+    rsiPrevPrev = rsiPrev;
+    rsiPrevPrevPrev = rsiPrevPrev;
   }
 }
 
 strat.sell = function(reason) {
+
   this.advice('short');
-  log.info(reason);
+  // log.info(reason);
   advised = false;
   buyPrice = 0;
+  if (this.tradeInitiated) { // Add logic to use other indicators
+    this.tradeInitiated = false;
+  }
 }
 
 strat.buy = function(reason) {
-  this.advice('long');
-  log.info(reason);
-  advised = true;
-  buyPrice = currentPrice;
-}
 
+  // If there are no active trades, send signal
+  if (!this.tradeInitiated) { // Add logic to use other indicators
+    this.advice('long');
+    // log.info(reason);
+    advised = true;
+    buyPrice = currentPrice;
+    this.tradeInitiated = true;
+  }
+}
+// This is called when trader.js initiates a
+// trade. Perfect place to put a block so your
+// strategy won't issue more trader orders
+// until this trade is processed.
+// ash: NOT WORKING!! SEE .buy
+strat.onPendingTrade = function(pendingTrade) {
+  this.tradeInitiated = true;
+
+}
+// This runs whenever a trade is completed
+// as per information from the exchange.
+// The trade object looks like this:
+// {
+//   id: [string identifying this unique trade],
+//   adviceId: [number specifying the advice id this trade is based on],
+//   action: [either "buy" or "sell"],
+//   price: [number, average price that was sold at],
+//   amount: [number, how much asset was trades (excluding "cost")],
+//   cost: [number the amount in currency representing fee, slippage and other execution costs],
+//   date: [moment object, exchange time trade completed at],
+//   portfolio: [object containing amount in currency and asset],
+//   balance: [number, total worth of portfolio],
+//   feePercent: [the cost in fees],
+//   effectivePrice: [executed price - fee percent, if effective price of buy is below that of sell you are ALWAYS in profit.]
+// }
+strat.onTrade = function(trade) {
+  //this.tradeInitiated = false;
+
+}
+// Trades that didn't complete with a buy/sell
+strat.onTerminatedTrades = function(terminatedTrades) {
+  log.info('Trade failed. Reason:', terminatedTrades.reason);
+  this.tradeInitiated = false;
+}
 strat.onCommand = function(cmd) {
   var command = cmd.command;
   if (command == 'start') {
@@ -225,7 +297,7 @@ strat.onCommand = function(cmd) {
       "\nRSI: " + rsi5.result.toFixed(2) +
       "\nRSI History: " + rsi5History[7].toFixed(2) + ", " + rsi5History[8].toFixed(2) + ", " + rsi5History[9].toFixed(2);
   }
-  if (command == 'help') {
+  if (command === 'help') {
     cmd.handled = true;
     cmd.response = "Supported commands: \n\n /buy - buy at next candle" +
       "\n /sell - sell at next candle " +
@@ -252,7 +324,10 @@ strat.onCommand = function(cmd) {
     }
   }
 }
-
+strat.end = function(a, b, c) {
+  // your code!
+  //console.log(`END: ${ a }, ${b}, ${c}`);
+}
 
 
 module.exports = strat;
