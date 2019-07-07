@@ -45,6 +45,13 @@ var plugins = [
     path: config => 'tradingAdvisor/tradingAdvisor.js',
   },
   {
+    name: "Plotly",
+    description: "Plots Gekko data onto a Plotly chart for easier analysis",
+    slug: "plotly",
+    async: false,
+    modes: ["backtest"]
+  },
+  {
     name: 'IRC bot',
     description: 'IRC module lets you communicate with Gekko on IRC.',
     slug: 'ircbot',
