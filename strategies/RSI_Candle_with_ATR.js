@@ -208,11 +208,11 @@ strat.check = function() {
       if (atr <= THRESHOLDS.ATR_LOW_SELL) {
         //console.log(`ATR_LOW_SELL ${ time }, ${ atr }, ${ rsi }`)
       }
-      if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
+      if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL && advised) {
         this.sell('RSI+ATR: SELL!!');
         //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
       }
-      if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
+      if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS && advised) {
         this.sell('RSI_HIGH_SELL_ALWAYS: SELL!!');
         //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
       }
@@ -234,18 +234,18 @@ strat.sell = function(reason) {
   // log.info(reason);
   advised = false;
   buyPrice = 0;
-  if (this.tradeInitiated) { // Add logic to use other indicators
+  //if (this.tradeInitiated) { // Add logic to use other indicators
     this.tradeInitiated = false;
-  }
+  //}
 }
 
 strat.buy = function(reason) {
+  advised = true;
 
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     // log.info(reason);
-    advised = true;
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
