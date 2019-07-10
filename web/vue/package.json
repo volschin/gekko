@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "marked": "^0.4.0",
+    "socket.io-client": "^2.2.0",
     "superagent": "^3.8.3",
     "superagent-no-cache": "github:uditalias/superagent-no-cache",
     "vue": "^2.5.16",
@@ -21,7 +22,9 @@
     "copy-webpack-plugin": "^4.5.2",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
-    "vue-template-compiler": "^2.5.16"
+    "vue-template-compiler": "^2.5.16",
+    "node-sass": "~4.9.4",
+    "sass-loader": "~7.1.0"
   },
   "postcss": {
     "plugins": {

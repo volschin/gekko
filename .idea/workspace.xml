@@ -1,0 +1,904 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dc60abbb-8689-4795-beca-392a88b92b23" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/D:\projects\bot\gekko-fork\nn_files\trained.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/app.cc1727b4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/app.cc1727b4.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/charting_library.min.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/charting_library.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/datafeed-api.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ar-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/22.d344a511955b43dbefcc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/33.bf2a2fc98cda3004cc87.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/add-compare-dialog.99e6e22e5d6b137269e9.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/change-interval-dialog.90d98fd5c50c9ae968da.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/chart-bottom-toolbar.1831f202498024e77558.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/chart-widget-gui.f7226f20f800bbc6bec0.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/confirm-inputs-dialog.e8333025d1520384f361.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/confirm-symbol-input-dialog.741858b9ef54b3611d31.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/create-dialog.b388c187425e521c5a70.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/crosshair.6c091f7d5427d0c5e6d9dc3a90eb2b20.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/dot.ed68e83c16f77203e73dbc4c3a7c7fa1.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/drawing-toolbar.37fd80f32e27f9adff7c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/ds-property-pages.d4223322c10f0f7857b4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/editobjectdialog.4a71a4d935ef0bc68003.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/eraser.0579d40b812fa2c3ffe72e5803a6e14c.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/export-data.1f128f60b181cb7e556c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/floating-toolbars.a37519a9a72c97ec0ff1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/go-to-date-dialog-impl.46a234f324ca2b224b41.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/grab.bc156522a6b55a60be9fae15c14b66c5.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/grabbing.1c0862a8a8c0fb02885557bc97fdafe7.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/hammerjs.9f017652d0f77438961c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/header-toolbar.cf3b92914ff2b79584e6.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/ie-fallback-logos.ecdc2f1255ecbff1dc5f.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/lazy-jquery-ui.15f27a20ada0be559796.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/lazy-velocity.b369bcf3fef7b3d24234.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/library.a1e40c9db8bb95dd3984e2095548d0f3.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/library.a1e40c9db8bb95dd3984e2095548d0f3.rtl.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/library.b2ee7224c8cc9f809bca.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/line-tools-icons.d4bcd6d038b2fea6feed.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/load-chart-layout-dialog.642c73fda2f41fa2fd16.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/lt-pane-views.f615773c99d12f423e91.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/objecttreedialog.b9fa79f3c22b36c514bf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/propertypagesfactory.42f63d141baef6e836f7.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/restricted-toolset.bbc61138ca4ee5d2fa1c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/series-icons-map.359d3b9b312cf5f56733.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/series-pane-views.1ef988f4c3e8149e0428.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/study-market.74fb802b68f3dcd94b91.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/study-pane-views.d406bf2e4fc2b39d5015.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/symbol-info-dialog-impl.00fc03c11b8e921b3437.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/symbolsearch.2971ae2a9c7830395e0c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/take-chart-image-dialog-impl.bea5cbbc7f5966618a0a.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/vendors.4103ca2e65289b14aad5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/bundles/zoom.e21f24dd632c7069139bc47ae89c54b5.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/cs-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/da_DK-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/de-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/el-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/en-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/es-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/et_EE-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/fa-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/fonts/fontawesome-webfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/fonts/fontawesome-webfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/fonts/fontawesome-webfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/fr-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/he_IL-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/hu_HU-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/id_ID-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/balloon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/bar-loader.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/button-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/charting_library/logo-widget-copyright-faded.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/charting_library/logo-widget-copyright.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/controlll.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/delayed.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/dialogs/checkbox.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/dialogs/close-flat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/dialogs/large-slider-handle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/dialogs/linewidth-slider.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/dialogs/opacity-slider.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/icons.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/prediction-clock-black.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/prediction-clock-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/prediction-failure-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/prediction-success-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/price_label.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/select-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/svg/chart/bucket2.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/svg/chart/font.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/svg/chart/large-slider-handle.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/svg/chart/pencil2.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/svg/question-mark-rounded.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/tvcolorpicker-bg-gradient.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/tvcolorpicker-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/tvcolorpicker-check.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/images/tvcolorpicker-sprite.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/it-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ja-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ko-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ms_MY-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/nl_NL-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/no-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/pl-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/pt-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ro-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/ru-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/sk_SK-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/sv-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/th-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/tr-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/vi-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/zh-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/charting_library/static/zh_TW-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.7f5241a2.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.7f5241a2.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/charting_library.min.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/charting_library.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/datafeed-api.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ar-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/22.d344a511955b43dbefcc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/33.bf2a2fc98cda3004cc87.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/add-compare-dialog.99e6e22e5d6b137269e9.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/change-interval-dialog.90d98fd5c50c9ae968da.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/chart-bottom-toolbar.1831f202498024e77558.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/chart-widget-gui.f7226f20f800bbc6bec0.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/confirm-inputs-dialog.e8333025d1520384f361.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/confirm-symbol-input-dialog.741858b9ef54b3611d31.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/create-dialog.b388c187425e521c5a70.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/crosshair.6c091f7d5427d0c5e6d9dc3a90eb2b20.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/dot.ed68e83c16f77203e73dbc4c3a7c7fa1.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/drawing-toolbar.37fd80f32e27f9adff7c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/ds-property-pages.d4223322c10f0f7857b4.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/editobjectdialog.4a71a4d935ef0bc68003.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/eraser.0579d40b812fa2c3ffe72e5803a6e14c.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/export-data.1f128f60b181cb7e556c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/floating-toolbars.a37519a9a72c97ec0ff1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/go-to-date-dialog-impl.46a234f324ca2b224b41.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/grab.bc156522a6b55a60be9fae15c14b66c5.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/grabbing.1c0862a8a8c0fb02885557bc97fdafe7.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/hammerjs.9f017652d0f77438961c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/header-toolbar.cf3b92914ff2b79584e6.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/ie-fallback-logos.ecdc2f1255ecbff1dc5f.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/lazy-jquery-ui.15f27a20ada0be559796.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/lazy-velocity.b369bcf3fef7b3d24234.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/library.a1e40c9db8bb95dd3984e2095548d0f3.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/library.a1e40c9db8bb95dd3984e2095548d0f3.rtl.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/library.b2ee7224c8cc9f809bca.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/line-tools-icons.d4bcd6d038b2fea6feed.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/load-chart-layout-dialog.642c73fda2f41fa2fd16.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/lt-pane-views.f615773c99d12f423e91.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/objecttreedialog.b9fa79f3c22b36c514bf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/propertypagesfactory.42f63d141baef6e836f7.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/restricted-toolset.bbc61138ca4ee5d2fa1c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/series-icons-map.359d3b9b312cf5f56733.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/series-pane-views.1ef988f4c3e8149e0428.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/study-market.74fb802b68f3dcd94b91.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/study-pane-views.d406bf2e4fc2b39d5015.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/symbol-info-dialog-impl.00fc03c11b8e921b3437.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/symbolsearch.2971ae2a9c7830395e0c.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/take-chart-image-dialog-impl.bea5cbbc7f5966618a0a.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/vendors.4103ca2e65289b14aad5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/bundles/zoom.e21f24dd632c7069139bc47ae89c54b5.cur" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/cs-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/da_DK-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/de-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/el-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/en-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/es-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/et_EE-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/fa-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/fonts/fontawesome-webfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/fonts/fontawesome-webfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/fonts/fontawesome-webfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/fr-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/he_IL-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/hu_HU-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/id_ID-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/balloon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/bar-loader.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/button-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/charting_library/logo-widget-copyright-faded.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/charting_library/logo-widget-copyright.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/controlll.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/delayed.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/dialogs/checkbox.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/dialogs/close-flat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/dialogs/large-slider-handle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/dialogs/linewidth-slider.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/dialogs/opacity-slider.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/icons.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/prediction-clock-black.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/prediction-clock-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/prediction-failure-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/prediction-success-white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/price_label.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/select-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/svg/chart/bucket2.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/svg/chart/font.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/svg/chart/large-slider-handle.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/svg/chart/pencil2.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/svg/question-mark-rounded.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/tvcolorpicker-bg-gradient.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/tvcolorpicker-bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/tvcolorpicker-check.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/images/tvcolorpicker-sprite.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/it-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ja-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ko-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ms_MY-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/nl_NL-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/no-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/pl-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/pt-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ro-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/ru-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/sk_SK-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/sv-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/th-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/tr-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/vi-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/zh-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/public/charting_library/static/zh_TW-tv-chart.e6c523133ea801233691.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/api/historyProvider.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/api/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/api/stream.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/charting_library.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewChartContainer.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewWrapper(widget).vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/strategies/RSI_Candle_with_ATR.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config/strategies/RSI_Candle_with_ATR.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample-config.js" beforeDir="false" afterPath="$PROJECT_DIR$/sample-config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/baseUIconfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/baseUIconfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/routes/baseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/routes/baseConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/UIconfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/dist/UIconfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.ad4526a6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.ad4526a6.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.d2308c37.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/dist/app.29a02bc5.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.60b7076d.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.60b7076d.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/src/components/backtester/backtestConfigBuilder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/src/components/backtester/backtestConfigBuilder.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/src/components/backtester/backtester.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/src/components/backtester/backtester.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/src/components/backtester/result/result.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/src/components/backtester/result/result.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/vue/src/components/global/configbuilder/stratpicker.vue" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/src/components/global/configbuilder/stratpicker.vue" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/backtester.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/configbuilder/stratpicker.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="29" column="50" lean-forward="true" selection-start-line="29" selection-start-column="50" selection-end-line="29" selection-end-column="69" />
+              <folding>
+                <element signature="e#1131#1153#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/configbuilder/datasetpicker.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="562">
+              <caret line="85" column="6" selection-start-line="85" selection-start-column="6" selection-end-line="85" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/backtestConfigBuilder.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="18" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewChartContainer.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="203" column="59" selection-start-line="203" selection-start-column="59" selection-end-line="203" selection-end-column="59" />
+              <folding>
+                <element signature="e#85#106#0" expanded="true" />
+                <element signature="e#686#1820#0" />
+                <element signature="e#700#762#0" />
+                <element signature="e#1860#1912#0" />
+                <element signature="e#6404#7623#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/config/strategies/RSI_Candle_with_ATR.toml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/result/result.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="17" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="17" />
+              <folding>
+                <element signature="e#363#404#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/App.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="896">
+              <caret line="64" selection-start-line="64" selection-end-line="64" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/result/summary.vue">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="10" selection-start-line="15" selection-start-column="10" selection-end-line="15" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/vue/public/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="60" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>v-on:dataset</find>
+      <find>v-bind:</find>
+      <find>props:</find>
+      <find>'dataset'</find>
+      <find>start</find>
+      <find>datasetPicker</find>
+      <find>data:</find>
+      <find>timezone</find>
+      <find>widget =</find>
+      <find>5432</find>
+      <find>version</find>
+      <find>libraryPath</find>
+      <find>backtest</find>
+      <find>textarea</find>
+      <find>stratpicker</find>
+      <find>.btn--primary</find>
+      <find>study</find>
+      <find>config</find>
+      <find>my1</find>
+      <find>w100--s</find>
+      <find>drawBacktestResult</find>
+      <find>w100--</find>
+      <find>Backtest</find>
+      <find>stratPicker</find>
+      <find>console.</find>
+      <find>removeall</find>
+      <find>strat</find>
+      <find>drawTimeRangeBorders</find>
+      <find>reloadChart</find>
+      <find>/ 1000</find>
+    </findStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/web/vue/src/components/tradingview/api</dir>
+      <dir>$PROJECT_DIR$/web/vue/src/components</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/result/tradingviewWrapper.vue" />
+        <option value="$PROJECT_DIR$/web/vue/dist/vendor/tradingview.js" />
+        <option value="$PROJECT_DIR$/web/vue/package.json" />
+        <option value="$PROJECT_DIR$/web/vue/dist/index.html" />
+        <option value="$PROJECT_DIR$/web/vue/public/index.html" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/result/tradingviewChartContainer.vue" />
+        <option value="$PROJECT_DIR$/web/vue/src/tradingview/charting_library.min.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/tradingview/api/stream.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/tradingview/api/historyProvider.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/tradingview/api/index.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/tradingviewChartContainer.vue" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/result/result.vue" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/tradingview/api/index.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/backtestConfigBuilder.vue" />
+        <option value="$PROJECT_DIR$/config.js" />
+        <option value="$PROJECT_DIR$/web/routes/baseConfig.js" />
+        <option value="$PROJECT_DIR$/sample-config.js" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/tradingview/charting_library.min.js" />
+        <option value="$PROJECT_DIR$/config/strategies/RSI_BULL_BEAR.toml" />
+        <option value="$PROJECT_DIR$/config/strategies/RSI.toml" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/global/configbuilder/stratpicker.vue" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/backtester/backtester.vue" />
+        <option value="$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewChartContainer.vue" />
+        <option value="$PROJECT_DIR$/config/strategies/RSI_Candle_with_ATR.toml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1680" />
+    <option name="height" value="1050" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+              <item name="strategies" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="strategies" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="strategies" type="462c0819:PsiDirectoryNode" />
+              <item name="indicators" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+              <item name="charting_library" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="global" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="global" type="462c0819:PsiDirectoryNode" />
+              <item name="configbuilder" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="gekko" type="b2602c69:ProjectViewProjectNode" />
+              <item name="gekko" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="vue" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="tradingview" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="editor.config.ad.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/vue/src/components/tradingview" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/vue/src/components" />
+      <recent name="$PROJECT_DIR$/web/vue/src/tradingview" />
+      <recent name="$PROJECT_DIR$/web/vue/src/components/backtester" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/vue/src/components/tradingview" />
+      <recent name="$PROJECT_DIR$/web/vue/public/charting_library" />
+      <recent name="$PROJECT_DIR$/web/vue/dist/charting_library" />
+      <recent name="$PROJECT_DIR$/web/vue/dist" />
+      <recent name="$PROJECT_DIR$/web/vue/public" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="start" />
+      <arguments value="-ui" />
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dc60abbb-8689-4795-beca-392a88b92b23" name="Default Changelist" comment="" />
+      <created>1562567051639</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1562567051639</updated>
+      <workItem from="1562567052838" duration="29944000" />
+      <workItem from="1562697826218" duration="3139000" />
+      <workItem from="1562745358161" duration="281000" />
+      <workItem from="1562745842014" duration="7233000" />
+      <workItem from="1562776393571" duration="5916000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="46513000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24954791" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="npm" order="2" side_tool="true" />
+      <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3291536" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39916405" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="GraphQL" order="9" />
+      <window_info anchor="bottom" id="TypeScript" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="12" visible="true" weight="0.3291536" />
+      <window_info anchor="bottom" id="Messages" order="13" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/web/vue/public/UIconfig.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="45" column="2" selection-start-line="45" selection-start-column="2" selection-end-line="45" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/dist/vendor/tradingview.js" />
+    <entry file="file://$PROJECT_DIR$/web/vue/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/public/charting_library/static/fonts/fontawesome-webfont.svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/dist/charting_library/static/fonts/fontawesome-webfont.svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/dist/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="987" selection-start-column="987" selection-end-column="987" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewWrapper(widget).vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="433">
+          <caret line="59" column="23" selection-start-line="59" selection-start-column="23" selection-end-line="59" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/api/stream.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2010">
+          <caret line="134" column="1" selection-start-line="134" selection-start-column="1" selection-end-line="134" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/ws.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" selection-start-line="1" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/api/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="26" column="22" lean-forward="true" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/api/historyProvider.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="543">
+          <caret line="53" column="1" selection-start-line="53" selection-start-column="1" selection-end-line="53" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/tools/ajax.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/result/chartWrapper.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="1" selection-start-line="1" selection-start-column="1" selection-end-line="1" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="136" column="36" lean-forward="true" selection-start-line="136" selection-start-column="36" selection-end-line="136" selection-end-column="36" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/charting_library.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="30" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/public/charting_library/charting_library.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="1396" selection-start-column="1396" selection-end-column="1396" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/public/charting_library/charting_library.min.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/strategies/RSI.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/strategies/RSI_BULL_BEAR.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/result/summary.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="10" selection-start-line="15" selection-start-column="10" selection-end-line="15" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="60" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/configbuilder/papertrader.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="53" lean-forward="true" selection-start-line="7" selection-start-column="53" selection-end-line="7" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/configbuilder/datasetpicker.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="562">
+          <caret line="85" column="6" selection-start-line="85" selection-start-column="6" selection-end-line="85" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/App.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="896">
+          <caret line="64" selection-start-line="64" selection-end-line="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/global/configbuilder/stratpicker.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="29" column="50" lean-forward="true" selection-start-line="29" selection-start-column="50" selection-end-line="29" selection-end-column="69" />
+          <folding>
+            <element signature="e#1131#1153#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/result/result.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="17" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="17" />
+          <folding>
+            <element signature="e#363#404#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/backtester.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/backtester/backtestConfigBuilder.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/dist/charting_library/charting_library.min.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="603" column="2" selection-start-line="603" selection-start-column="2" selection-end-line="603" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/vue/src/components/tradingview/tradingviewChartContainer.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="203" column="59" selection-start-line="203" selection-start-column="59" selection-end-line="203" selection-end-column="59" />
+          <folding>
+            <element signature="e#85#106#0" expanded="true" />
+            <element signature="e#686#1820#0" />
+            <element signature="e#700#762#0" />
+            <element signature="e#1860#1912#0" />
+            <element signature="e#6404#7623#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/strategies/RSI_Candle_with_ATR.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
