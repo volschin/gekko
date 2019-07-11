@@ -402,6 +402,13 @@ class StickyOrder extends BaseOrder {
       return false;
     }
 
+    if (error.message == 'post only error') {
+      this.price = this.calculatePrice(this.data.ticker);
+      console.log('Reissue trade order at', this.price);
+      this.createOrder();
+      return true;
+    }
+
     console.log(new Date, '[sticky order] FATAL ERROR', error.message);
     console.log(new Date, error);
     this.status = states.ERROR;

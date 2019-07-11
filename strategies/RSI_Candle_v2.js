@@ -1,19 +1,17 @@
-// RSI + Candle
+// RSI + Candle 
 // Created by Crypto49er
 // Version 2 (Version 1 was made for my heavily modded version of Gekko, version 2 is for based version of Gekko)
 //
 // This strategy is designed for 5 minute candles.
-// Idea 1: When RSI drops aggressively (>18 points) and goes way below 30 (< 12), there's an
-// excellent chance the price shoots back up and over 70 RSI.
-// Idea 2: When RSI drops below 30 and candle creates a hammer, it means the bears are
+// Idea 1: When RSI drops aggressively (>18 points) and goes way below 30 (< 12), there's an 
+// excellent chance the price shoots back up and over 70 RSI. 
+// Idea 2: When RSI drops below 30 and candle creates a hammer, it means the bears are 
 // exhausted and immediate gains should occur in the new few candles.
 
 // Buy when RSI < 12 and RSI dropped more than 18 points compared to previous 2 candles
 // Buy when RSI < 30 and candle is a hammer
-// Sell when RSI > 70
+// Sell when RSI > 70 
 // Sell when 1% stop loss
-//
-//https://www.youtube.com/watch?v=erlPbF0B6BY
 
 var log = require('../core/log');
 var config = require ('../core/util.js').getConfig();
@@ -39,12 +37,9 @@ var sma5History = [];
 var highestRSI = 0; // highestRSI in last 5 candles
 var candle5 = {};
 
-const STOP_LOSS_COEF = 0.9;
-// const STOP_LOSS_COEF = 0.99;
-const TAKE_PROFIT_COEF = 1.1;
-
 // Prepare everything our method needs
 strat.init = function() {
+  this.name = "RSI + Candle";
   this.requiredHistory = config.tradingAdvisor.historySize;
 
   // since we're relying on batching 1 minute candles into 5 minute candles
@@ -73,10 +68,10 @@ strat.update = function(candle) {
   this.batcher5.write([candle]);
   this.batcher5.flush();
 
-  // Send message
+  // Send message 
   counter++;
   if (counter == 1440){
-    console.log('Bot is still working.');
+    log.remote(this.name, ' - Bot is still working.');
     counter = 0;
   }
 
@@ -119,7 +114,7 @@ strat.update5 = function(candle) {
       highestRSI = rsi5History[i];
     }
   }
-
+  
   //Send price and RSI to console every 5 minutes
   //log.info('Price', currentPrice, 'SMA', sma5.result, 'RSI', rsi5.result.toFixed(2));
 }
@@ -131,30 +126,24 @@ strat.check = function() {
 
   // Buy when RSI < 12 and RSI dropped more than 18 points compared to previous 2 candles
   if (rsi5.result < 12 && (rsi5History[7] > rsi5.result + 18 || rsi5History[8] > rsi5.result + 18 ) && !advised && !disableTrading){
-    this.buy('Buy because RSI less than 12');
+      this.buy('Buy because RSI less than 12');
   }
 
-
+  
   // //Buy when RSI < 30 and candle is a hammer
   if (rsi5.result < 30 && candle5.open > candle5.low && candle5.open - candle5.low > candle5.low * 0.006 && candle5.open > candle5.close && (candle5.open - candle5.close)/(candle5.open - candle5.low) < 0.25 && !advised && !disableTrading){
     this.buy('Buy because RSI less than 30 and candle is a hammer');
   }
 
-  /*// Sell when RSI > 70
-  if (rsi5.result > 70 && advised) {
-    this.sell('Take Profit - RSI past 70');
-  }*/
   // Sell when RSI > 70
-  if (rsi5.result > 70 && advised || (currentPrice >= buyPrice * TAKE_PROFIT_COEF) && advised) {
-    // if (rsi5.result > 70 && advised) {
-    console.log(`currentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
+  if (rsi5.result > 70 && advised) {
     this.sell('Take Profit - RSI past 70');
   }
 
   // Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
-  if (currentPrice <= buyPrice * STOP_LOSS_COEF && advised){
+  if (currentPrice <= buyPrice * 0.99 && advised){
     this.sell('Stop Loss - 1% loss');
-  }
+  } 
 
 }
 
@@ -175,30 +164,30 @@ strat.buy = function(reason) {
 strat.onCommand = function(cmd) {
   var command = cmd.command;
   if (command == 'start') {
-    cmd.handled = true;
-    cmd.response = "Hi. I'm Gekko. Ready to accept commands. Type /help if you want to know more.";
+      cmd.handled = true;
+      cmd.response = "Hi. I'm Gekko. Ready to accept commands. Type /help if you want to know more.";
   }
   if (command == 'status') {
-    cmd.handled = true;
-    cmd.response = config.watch.currency + "/" + config.watch.asset +
+      cmd.handled = true;
+      cmd.response = config.watch.currency + "/" + config.watch.asset +
       "\nPrice: " + currentPrice +
       "\nRSI: " + rsi5.result.toFixed(2) +
       "\nRSI History: " + rsi5History[7].toFixed(2) + ", " + rsi5History[8].toFixed(2) + ", " + rsi5History[9].toFixed(2);
   }
   if (command == 'help') {
-    cmd.handled = true;
-    cmd.response = "Supported commands: \n\n /buy - buy at next candle" +
-      "\n /sell - sell at next candle " +
+  cmd.handled = true;
+      cmd.response = "Supported commands: \n\n /buy - buy at next candle" + 
+      "\n /sell - sell at next candle " + 
       "\n /status - show RSI and current portfolio" +
       "\n /stop - disable buying";
-  }
+    }
   if (command == 'buy') {
-    cmd.handled = true;
-    this.buy('Manual buy order from telegram');
+  cmd.handled = true;
+  this.buy('Manual buy order from telegram');
   }
   if (command == 'sell') {
-    cmd.handled = true;
-    this.sell('Manual sell order from telegram');
+  cmd.handled = true;
+  this.sell('Manual sell order from telegram');
   }
   if (command == 'stop') {
     cmd.handled = true;

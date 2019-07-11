@@ -89,7 +89,8 @@ Trader.prototype.relayPortfolioChange = function() {
 
 Trader.prototype.relayPortfolioValueChange = function() {
   this.deferredEmit('portfolioValueChange', {
-    balance: this.balance
+    balance: this.balance,
+    hodling: this.exposed,
   });
 }
 
@@ -169,39 +170,39 @@ Trader.prototype.processAdvice = function(advice) {
 
   if(direction === 'buy') {
 
-    if(this.exposed) {
-      log.info('NOT buying, already exposed');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(this.exposed) {
+    //   log.info('NOT buying, already exposed');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     amount = this.portfolio.currency / this.price * 0.95;
 
     log.info(
       'Trader',
-      'Received advice to go long.',
-      'Buying ', this.brokerConfig.asset
+      'received advice to go long.',
+      'Buying', this.brokerConfig.asset, 'at ~', this.price
     );
 
   } else if(direction === 'sell') {
 
-    if(!this.exposed) {
-      log.info('NOT selling, already no exposure');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(!this.exposed) {
+    //   log.info('NOT selling, already no exposure');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     // clean up potential old stop trigger
     if(this.activeStopTrigger) {
@@ -219,8 +220,8 @@ Trader.prototype.processAdvice = function(advice) {
 
     log.info(
       'Trader',
-      'Received advice to go short.',
-      'Selling ', this.brokerConfig.asset
+      'received advice to go short.',
+      'Selling', this.brokerConfig.asset, 'at ~', this.price
     );
   }
 
@@ -249,7 +250,7 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
     });
   }
 
-  log.debug('Creating order to', side, amount, this.brokerConfig.asset);
+  log.debug('Creating order to', side, amount, this.brokerConfig.asset, ' at ~', this.price);
 
   this.deferredEmit('tradeInitiated', {
     id,
@@ -319,7 +320,7 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
           id,
           adviceId: advice.id,
           action: summary.side,
-          cost,
+          cost: cost,
           amount: summary.amount,
           price: summary.price,
           portfolio: this.portfolio,

@@ -234,18 +234,19 @@ strat.sell = function(reason) {
   // log.info(reason);
   advised = false;
   buyPrice = 0;
-  if (this.tradeInitiated) { // Add logic to use other indicators
+
+  //if (this.tradeInitiated) { // Add logic to use other indicators
     this.tradeInitiated = false;
-  }
+  //}
 }
 
 strat.buy = function(reason) {
+  advised = true;
 
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     // log.info(reason);
-    advised = true;
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
