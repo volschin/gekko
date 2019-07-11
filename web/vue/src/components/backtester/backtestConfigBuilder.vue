@@ -1,6 +1,8 @@
 <template lang='pug'>
   div
     dataset-picker.my2(v-on:dataset='updateDataset').contain
+    //.hr.contain
+    //tradingviewChart(:height='500', config={asdf: "a"})
     .hr
     strat-picker.my2(v-on:stratConfig='updateStrat').contain
     .hr
@@ -15,6 +17,7 @@ import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
 import _ from 'lodash'
 import { get } from '../../tools/ajax'
+// import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
 
 export default {
   created: function() {
@@ -34,7 +37,8 @@ export default {
   components: {
     stratPicker,
     datasetPicker,
-    paperTrader
+    paperTrader,
+    // tradingviewChart,
   },
   computed: {
     market: function() {

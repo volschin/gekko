@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha test/*.js --recursive test -u tdd --reporter spec",
-    "start-ui": "node ./gekko --ui",
+    "start-ui": "node ./gekko --ui  --config config.js",
     "start-server": "node ./gekko --config config.js",
     "debug-ui": "node %NODE_DEBUG_OPTION% ./gekko --ui",
     "debug-server-backtest": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-backtest.js --backtest > logs/backtest.txt --backtest",
@@ -57,6 +57,7 @@
     "chai": "^4.1.2",
     "mocha": "^5.0.0",
     "proxyquire": "^1.7.10",
+    "ramda": "^0.26.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "sinon": "^4.2.0"

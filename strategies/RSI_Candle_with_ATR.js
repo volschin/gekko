@@ -234,6 +234,7 @@ strat.sell = function(reason) {
   // log.info(reason);
   advised = false;
   buyPrice = 0;
+
   //if (this.tradeInitiated) { // Add logic to use other indicators
     this.tradeInitiated = false;
   //}
