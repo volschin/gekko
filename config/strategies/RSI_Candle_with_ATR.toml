@@ -1,4 +1,4 @@
-interval = 1 #should be always 1
+ATR_Period = 14
 
 [thresholds]
 ATR_LOW_SELL = 0.000032

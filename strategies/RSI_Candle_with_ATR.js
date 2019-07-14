@@ -70,11 +70,11 @@ strat.init = function() {
 
   // Add an indicator even though we won't be using it because
   // Gekko won't use historical data unless we define the indicator here
-  this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
+  //this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
 
 
   let customATRSettings = {
-    optInTimePeriod: 14,
+    optInTimePeriod: this.settings.ATR_Period || 14,
   }
   // add the indicator to the strategy
   this.addTulipIndicator('atr', 'atr', customATRSettings);
