@@ -128,7 +128,9 @@ strat.update5 = function(candle) {
 // information, check if we should
 // update or not.
 strat.check = function() {
-
+  if(candle5.open > candle5.low && candle5.open - candle5.low > candle5.low * 0.006 && candle5.open > candle5.close && (candle5.open - candle5.close)/(candle5.open - candle5.low) < 0.25){
+    console.log(`ALL STATS: advised: ${advised}, rsi5.result: ${rsi5.result}, rsi5History[7]:${rsi5History[7]}, rsi5History[8]${rsi5History[8]}, isHammer:${candle5.open > candle5.low && candle5.open - candle5.low > candle5.low * 0.006 && candle5.open > candle5.close && (candle5.open - candle5.close)/(candle5.open - candle5.low) < 0.25}, currentPrice: ${currentPrice}, buyPrice: ${buyPrice}`);
+  }
   // Buy when RSI < 12 and RSI dropped more than 18 points compared to previous 2 candles
   if (rsi5.result < 12 && (rsi5History[7] > rsi5.result + 18 || rsi5History[8] > rsi5.result + 18 ) && !advised && !disableTrading){
     this.buy('Buy because RSI less than 12');
@@ -141,9 +143,9 @@ strat.check = function() {
   }
 
   // Sell when RSI > 70
-  if (rsi5.result > 70 && advised || currentPrice >= buyPrice * TAKE_PROFIT_COEF) {
-  // if (rsi5.result > 70 && advised) {
-    console.log(`currentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
+  // if (rsi5.result > 70 && advised || currentPrice >= buyPrice * TAKE_PROFIT_COEF) {
+  if (rsi5.result > 70 && advised) {
+  //   console.log(`ascurrentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
     this.sell('Take Profit - RSI past 70');
   }
 
