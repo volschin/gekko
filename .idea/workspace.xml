@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc60abbb-8689-4795-beca-392a88b92b23" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="dc60abbb-8689-4795-beca-392a88b92b23" name="Default Changelist" comment="Merge branch 'tradingview' of https://github.com/agent48co/gekko into tradingview&#10;&#10;# Conflicts:&#10;#&#9;strategies/RSI_Candle.js&#10;#&#9;strategies/RSI_Candle_with_ATR.js">
       <change beforePath="$PROJECT_DIR$/web/routes/baseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/routes/baseConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.29a02bc5.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.cc1727b4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/app.cc1727b4.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.7f5241a2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/chunk-vendors.7f5241a2.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/vue/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/vue/dist/index.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -97,8 +89,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
+            <state relative-caret-position="390">
+              <caret line="51" column="20" lean-forward="true" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -389,7 +381,7 @@
       <workItem from="1562697826218" duration="3139000" />
       <workItem from="1562745358161" duration="281000" />
       <workItem from="1562745842014" duration="7233000" />
-      <workItem from="1562776393571" duration="19895000" />
+      <workItem from="1562776393571" duration="20088000" />
     </task>
     <task id="LOCAL-00001" summary="added tradingview">
       <created>1562790908442</created>
@@ -426,11 +418,18 @@
       <option name="project" value="LOCAL" />
       <updated>1563178656326</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="small stuff">
+      <created>1563180497062</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1563180497062</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="60492000" />
+    <option name="totallyTimeSpent" value="60685000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
@@ -479,7 +478,8 @@
     <MESSAGE value="few small fixes" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="Merge branch 'tradingview' of https://github.com/agent48co/gekko into tradingview&#10;&#10;# Conflicts:&#10;#&#9;strategies/RSI_Candle.js&#10;#&#9;strategies/RSI_Candle_with_ATR.js" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'tradingview' of https://github.com/agent48co/gekko into tradingview&#10;&#10;# Conflicts:&#10;#&#9;strategies/RSI_Candle.js&#10;#&#9;strategies/RSI_Candle_with_ATR.js" />
+    <MESSAGE value="small stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="small stuff" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/web/vue/src/main.js">
@@ -838,8 +838,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
+        <state relative-caret-position="390">
+          <caret line="51" column="20" lean-forward="true" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
         </state>
       </provider>
     </entry>
