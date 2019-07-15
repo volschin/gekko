@@ -7,11 +7,19 @@
     top: 60px;
     width: 250px;
     right: 80px;
+    z-index: 10;
   }
   .button--backtest-fixed {
     position: fixed;
     top: 300px;
     right: 150px;
+    z-index: 10;
+  }
+  .txt--backtest-fixed {
+    position: fixed;
+    top: 360px;
+    right: 150px;
+    z-index: 10;
   }
 </style>
 <script>
@@ -129,7 +137,22 @@ export default {
       let elem = window.document.getElementsByClassName('control--toml-input');
       elem && elem[0] && elem[0].classList.add('control--toml-input-fixed');
       let elem1 = window.document.getElementsByClassName('button--backtest');
-      elem1 && elem1[0] && elem1[0].classList.add('button--backtest-fixed');
+      if(elem1 && elem1[0]){
+        let elem1C = elem1[0].cloneNode(true);
+        elem1[0].parentElement.appendChild(elem1C);
+        elem1C.classList.add('button--backtest-fixed');
+        elem1C.onclick = function(){
+          elem1[0].click();
+          return false;
+        }
+      }
+      // elem1 && elem1[0] && elem1[0].classList.add('button--backtest-fixed');
+      let elem2 = window.document.querySelectorAll('.price.profit, .price.loss');
+      if(elem2[0]) {
+        let elem2C = elem2[0].cloneNode(true);
+        elem2[0].parentElement.appendChild(elem2C);
+        elem2C.classList.add('txt--backtest-fixed');
+      }
     },
     reloadChart(config, symbol, interval, dateFrom, dateTo, indicators) {
       const chart = this.tvWidget.chart();
@@ -193,98 +216,23 @@ export default {
           ret = 'D';
           break;
       }
+
+      //temp:
+      ret = '60';
       return ret;
     },
     calculateTimeframe(config){
       return "1234D"
     },
     drawBacktestResult(result) {
-      let boughtPrice, diff, tradeSuccessful, curShape;
+      let boughtPrice, diff, tradeSuccessful, curShape, curText;
       allExecutionShapes.forEach(s=>{
         // s. // todo: executionShape.remove() (for arrows)
       })
       _.each(result.trades, (trade)=> {
 
       });
-      if(true){
-        // draw execution shapes (arrow w/text):
-        _.each(result.trades, (trade)=>{
-          if (trade.action === 'buy') {
-            boughtPrice = trade.price;
-          } else {
-            if (boughtPrice) {
-              diff = trade.price - boughtPrice;
-              if (diff > 0) {
-                tradeSuccessful = true;
-              } else {
-                tradeSuccessful = false;
-              }
-              boughtPrice = null;
-            }
-          }
-          if(trade.action === 'buy'){
-            curShape = this.tvWidget.chart().createExecutionShape()
-              .setText(``)
-              .setTooltip(`Bought @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) }`)
-              .setTextColor("rgba(0,0,255,0.8)")
-              .setArrowColor("#00f")
-              .setDirection("buy")
-              .setTime(trade.date)
-              .setPrice(trade.price);
-          } else {
-            curShape = this.tvWidget.chart().createExecutionShape()
-              .setText(``)
-              .setTooltip(`Sold @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, Profit ${ diff }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) } `)
-              .setTextColor(tradeSuccessful? "rgba(0,255,0,0.8)": "rgba(255,0,0,0.8)")
-              .setArrowColor(tradeSuccessful? "#0F0": "#F00")
-              .setDirection("sell")
-              .setTime(trade.date)
-              .setPrice(trade.price);
-          }
-        });
-      }
-      if(false) {
-        // draw simple icons:
-        _.each(result.trades, (trade) => {
-          if (trade.action === 'buy') {
-            widget.chart().createShape({ time: trade.date },
-              {
-                shape: 'icon',
-                lock: true,
-                disableSelection: true,
-                overrides: {
-                  size: 20,
-                  color: '#0f0',
-                  icon: 0xf00c //f041 - pin
-                },
-              });
-          } else {
-            widget.chart().createShape({ time: trade.date },
-              {
-                shape: 'icon',
-                lock: true,
-                disableSelection: true,
-                overrides: {
-                  size: 20,
-                  color: '#f00',
-                  icon: 0xf00d
-                },
-              });
-            /*widget.chart().createShape({ time: trade.date },
-            {
-              shape: 'flag',
-              color: '#F00',
-              backgroundcolor: '#F00',
-              overrides: {
-                linewidth: 3,
-                linecolor: '#F00',
-                color: '#F00',
-                backgroundcolor: '#F00',
-              },
-            });*/
-          }
-        });
-      }
+
       _.each(result.trades, (trade) => {
         if (trade.action === 'buy') {
           boughtPrice = trade.price;
@@ -300,7 +248,7 @@ export default {
           }
         }
         if (trade.action === 'buy') {
-          widget.chart().createShape({ time: trade.date, price: trade.price },
+          curShape = widget.chart().createShape({ time: trade.date, price: trade.price },
             {
               shape: 'note',
               // lock: true,
@@ -311,32 +259,25 @@ export default {
                 markerColor: '#1976d2',
               },
             });
+          widget.chart().getShapeById(curShape).setProperties({
+            text: `Bought @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) }`
+          })
         } else {
-          widget.chart().createShape({ time: trade.date, price: trade.price },
-            {
-              shape: tradeSuccessful? 'arrow_up': 'arrow_down',
-              // lock: true,
-              disableSelection: true,
-              overrides: {
-                text: `@${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }`, // bug
-                // backgroundColor: '#0f0',
-                color: tradeSuccessful?'#0f0': '#f00',
-              },
-            });
-          // for a sell let's show dif icons, depending on result:
-
-          /*widget.chart().createShape({ time: trade.date },
+          curShape = widget.chart().createShape({ time: trade.date, price: trade.price },
             {
               shape: 'note',
               // lock: true,
               disableSelection: true,
               overrides: {
-                text: `@${ trade.price } Sell ${ trade.amount }, Balance ${ trade.balance }`, // this is bug in TV!
-                color: '#f00',
-                backgroundColor: '#f00',
-                markerColor: '#f00',
+                text: `@${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }`, // bug
+                // backgroundColor: '#0f0',
+                markerColor: tradeSuccessful?'#0f0': '#f00',
               },
-            });*/
+            });
+          widget.chart().getShapeById(curShape).setProperties({
+            text: `Sold @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, Profit ${ diff }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) } `
+          })
+
         }
       });
     },
