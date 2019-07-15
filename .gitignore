@@ -52,5 +52,7 @@ private-*.toml
 SECRET-api-keys.json
 exchange/nusadua
 
+web/vue/dist
+
 #zuki_nn strat:
 nn_files/trained.js
