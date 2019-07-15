@@ -198,7 +198,7 @@ strat.check = function() {
       }
       if (atr >= THRESHOLDS.ATR_HIGH_BUY
         && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY
-          || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY|| rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY )) {
+          || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY|| rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY ) && !advised) {
         this.buy('RSI+ATR: BUY!!');
         if(!this.tradeInitiated) {
       //    console.log(`ATR_HIGH_BUY && RSI_LOW_BUY !!! ${time}, ${atr}, ${rsi}, this.tradeInitiated: ${this.tradeInitiated}`);
@@ -240,12 +240,12 @@ strat.sell = function(reason) {
 }
 
 strat.buy = function(reason) {
+  advised = true;
 
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     // log.info(reason);
-    advised = true;
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
@@ -276,7 +276,7 @@ strat.onPendingTrade = function(pendingTrade) {
 //   effectivePrice: [executed price - fee percent, if effective price of buy is below that of sell you are ALWAYS in profit.]
 // }
 strat.onTrade = function(trade) {
-  //this.tradeInitiated = false;
+  this.tradeInitiated = false;
 
 }
 // Trades that didn't complete with a buy/sell
