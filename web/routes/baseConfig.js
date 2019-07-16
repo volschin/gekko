@@ -76,6 +76,20 @@ config.mongodb = {
     version: '2.4.0'
   }]
 }
+config.telegrambotAsync = {
+  enabled: false,
+  emitUpdates: true,
+  token: 'xxx', // Talk to botFather on Telegram to get your token and bot name
+  botName: 'xxx'
+};
+
+config.slackAsync = {
+  enabled: true,
+  token: 'xxx',
+  sendMessageOnStart: true,
+  muteSoft: true,
+  channel: 'xxx'
+}
 
 config.adviceWriter = {
   enabled: false,
