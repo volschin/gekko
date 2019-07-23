@@ -60,9 +60,9 @@ strat.init = function() {
 
   // since we're relying on batching 1 minute candles into 5 minute candles
   // lets throw if the settings are wrong
-  if (config.tradingAdvisor.candleSize !== 1) {
-    throw "This strategy must run with candleSize=1";
-  }
+  /*if (config.tradingAdvisor.candleSize !== 60) {
+    throw "This strategy must run with candleSize=60(min)";
+  }*/
 
   // create candle batchers for 5 minute candles
   this.batcher5 = new CandleBatcher(5);
@@ -165,10 +165,10 @@ strat.check = function() {
   let time = JSON.stringify(this.candle.start);
   // console.log(`time: ${ time }`);
   let rsi = this.tulipIndicators.rsi.result.result;
-  log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  //log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  //, watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  //console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  //, watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
   // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
 
   // RSI Candle:

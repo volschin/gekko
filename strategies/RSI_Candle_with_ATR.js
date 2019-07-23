@@ -165,7 +165,10 @@ strat.check = function() {
   let time = JSON.stringify(this.candle.start);
   // console.log(`time: ${ time }`);
   let rsi = this.tulipIndicators.rsi.result.result;
-  console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }`);
+  log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
   // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
 
   // RSI Candle:
@@ -243,8 +246,10 @@ strat.check = function() {
 strat.sell = function(reason, rsi5Result, rsi, atr) {
 
   this.advice('short');
-  log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }`);
-  console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }`);
+  log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
   advised = false;
   buyPrice = 0;
   if (this.tradeInitiated) { // Add logic to use other indicators
@@ -259,8 +264,10 @@ strat.buy = function(reason, candle, rsi5Result, rsi, atr) {
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     buyTs = candle.start;
-    log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }`);
-    console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }`);
+    log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+      , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+    console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+      , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
