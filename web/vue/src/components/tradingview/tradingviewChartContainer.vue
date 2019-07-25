@@ -16,6 +16,7 @@
     z-index: 10;
   }
   .txt--backtest-fixed {
+    width: 120px;
     position: fixed;
     top: 360px;
     right: 150px;
@@ -114,8 +115,14 @@ export default {
   },
   watch: {
     config: function(config) {
+      let exchange = '';
       if(config && config.watch && config.watch.exchange && config.watch.asset && config.watch.currency){
-        const symba = `${ config.watch.exchange.toUpperCase() }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`; //'Poloniex:LTC/BTC'
+        if(config.watch.exchange.toUpperCase() === 'GDAX') {
+          exchange = 'COINBASE';
+        } else {
+          exchange = config.watch.exchange.toUpperCase();
+        }
+        const symba = `${ exchange }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`; //'Poloniex:LTC/BTC'
         let candleSize = config && config.tradingAdvisor && config.tradingAdvisor.candleSize;
         let from = config && config.backtest && config.backtest.daterange && config.backtest.daterange.from && new Date(config.backtest.daterange.from).getTime();
         let to = config && config.backtest && config.backtest.daterange && config.backtest.daterange.to && new Date(config.backtest.daterange.to).getTime();
@@ -225,6 +232,8 @@ export default {
       return "1234D"
     },
     drawBacktestResult(result) {
+      console.log(result);
+      window.r1 = result;
       let boughtPrice, diff, tradeSuccessful, curShape, curText;
       allExecutionShapes.forEach(s=>{
         // s. // todo: executionShape.remove() (for arrows)
