@@ -209,12 +209,17 @@ export default {
       let ret = 'D';
       switch(candleSize) {
         case 1:
-          // ret = '1';
+          /*// ret = '1';
           if(moment(to).diff(from, 'days') >= 7){
             ret = '60';
           } else {
             ret = '1';
-          }
+          }*/
+          ret = '1';
+
+          break;
+        case 15:
+          ret = '15';
           break;
         case 60:
           ret = '60';
@@ -247,8 +252,8 @@ export default {
           boughtPrice = trade.price;
         } else {
           if (boughtPrice) {
-            diff = trade.price - boughtPrice;
-            if (diff > 0) {
+            diff = (trade.price - boughtPrice) / trade.price ;
+            if (diff >= (trade.feePercent * 2)) {
               tradeSuccessful = true;
             } else {
               tradeSuccessful = false;
