@@ -135,7 +135,8 @@ SlackAsync.prototype.createResponse = function(color, message) {
 };
 
 SlackAsync.prototype.createUserName = function() {
-  return config.watch.exchange[0].toUpperCase() + config.watch.exchange.slice(1) + " - " + config.watch.currency + "/" + config.watch.asset;
+  const serverName = config.name || 'unknown server';
+  return config.watch.exchange[0].toUpperCase() + config.watch.exchange.slice(1) + " - " + config.watch.currency + "/" + config.watch.asset + ` (${ serverName })`;
 };
 
 SlackAsync.prototype.createIconUrl = function() {
