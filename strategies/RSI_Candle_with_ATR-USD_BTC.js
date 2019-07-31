@@ -165,11 +165,11 @@ strat.check = function() {
   let time = JSON.stringify(this.candle.start);
   // console.log(`time: ${ time }`);
   let rsi = this.tulipIndicators.rsi.result.result;
-  //log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  //, watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  //console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  //, watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
+  // log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  // , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
+  // , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  // // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
 
   // RSI Candle:
   if(true) {
@@ -231,11 +231,12 @@ strat.check = function() {
         }
       // }
 
-      /*// Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
-      if (currentPrice <= buyPrice * THRESHOLDS.STOP_LOSS_RATIO && advised) {
-        this.sell('Stop Loss - 1% loss');
-        console.log(`Stop Loss - 1% loss !!! ${time}, ${atr}, ${ rsi }`);
-      }*/
+      // Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
+      if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.STOP_LOSS_TIMEOUT
+          && currentPrice <= buyPrice * THRESHOLDS.STOP_LOSS_RATIO && advised) {
+        this.sell(`Stop Loss ${ 100 - THRESHOLDS.STOP_LOSS_RATIO * 100 }% loss`);
+        console.log(`Stop Loss - ${ 100 - THRESHOLDS.STOP_LOSS_RATIO * 100 }% loss !!! ${time}, ${atr}, ${ rsi }`);
+      }
     }
     rsiPrev = rsi;
     rsiPrevPrev = rsiPrev;
@@ -246,9 +247,9 @@ strat.check = function() {
 strat.sell = function(reason, rsi5Result, rsi, atr) {
 
   this.advice('short');
-  log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+  log.info(reason + `, rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
   , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+  console.log(reason + `, rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
   , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
   advised = false;
   buyPrice = 0;
@@ -264,9 +265,9 @@ strat.buy = function(reason, candle, rsi5Result, rsi, atr) {
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     buyTs = candle.start;
-    log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+    log.info(reason + `, rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
       , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-    console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
+    console.log(reason + `, rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
       , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
     buyPrice = currentPrice;
     this.tradeInitiated = true;
