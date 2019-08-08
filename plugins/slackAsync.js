@@ -5,6 +5,7 @@ const log = require('../core/log.js');
 const util = require('../core/util.js');
 const config = util.getConfig();
 const slackConfig = config.slackAsync;
+let optionsFromConfig;
 
 const SlackAsync = function(done) {
   _.bindAll(this);
@@ -16,7 +17,7 @@ const SlackAsync = function(done) {
   this.setupWebApi();
   //this.setupRTM(); // todo
 };
-const gekkoNameShort = `G-${ getRandomFromRange(100, 999) }`;
+const gekkoNameShort = `${ GetCodeLetterForGekkoName(config) }-${ getRandomFromRange(100, 999) }`;
 
 SlackAsync.prototype.setupWebApi = function(done) {
   let options = CreateOptionsFromConfig(config), text = '';
@@ -494,20 +495,32 @@ const ATTACHMENT_HEADER_TEMPLATE = (options, options2) => {
     'ts': date.unix(),
   };
 };
-const CreateOptionsFromConfig = (config) => {
-  const options = {
-    server: config.name,
-    exchange: config.watch.exchange.toUpperCase(),
-    strategy: config.tradingAdvisor.method,
-    pair: config.watch.currency + '/' + config.watch.asset,
-    type: config.type === 'paper trader'? 'Paper Trader': 'TRADE BOT!'
+
+function CreateOptionsFromConfig(config) {
+  if(!optionsFromConfig) {
+    const strategy = config.tradingAdvisor.method;
+    let type = (!strategy) ? 'Watcher' : config.type === 'paper trader' ? 'Paper Trader' : 'TRADE BOT!';
+    const options = {
+      server: config.name,
+      exchange: config.watch.exchange.toUpperCase(),
+      strategy: strategy,
+      pair: config.watch.currency + '/' + config.watch.asset,
+      type: type
+    }
+    optionsFromConfig = options;
   }
-  return options;
+  return optionsFromConfig;
 }
 
 const CreateNameHash = (options) => {
   options = options || {};
   let ret = `gekko_${ options.server }_${options.exchange}_${options.strategy}_${ options.pair }_${ gekkoNameShort }`;
+  return ret;
+}
+
+function GetCodeLetterForGekkoName(config1){
+  let ret = 'G', options = CreateOptionsFromConfig(config1 || config);
+  options && options.type && (ret = options.type.charAt(0).toUpperCase());
   return ret;
 }
 const GetParentGekkoMessage = ()=>{
@@ -545,7 +558,7 @@ const DETAILS_OVERFLOW_TEMPLATE = (options, that) => {
         {
           "text": {
             "type": "plain_text",
-            "text": options.strategy? `STRAT: ${options.strategy}`: `N/A (Watcher)`
+            "text": options.strategy? `STRAT: ${options.strategy}`: `STRAT: N/A (Watcher)`
           },
           "value": "value-1"
         },
