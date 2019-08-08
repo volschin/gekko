@@ -12,6 +12,7 @@ var macd = require('./indicators/MACD.js');
 // let's create our own strat
 var strat = {};
 
+let counter = 0;
 
 // prepare everything our strat needs
 strat.init = function () {
@@ -22,7 +23,7 @@ strat.init = function () {
     duration: 0,
     persisted: false,
     direction: '', //up, down
-    adviced: false 
+    adviced: false
   };
 
   this.requiredHistory = this.tradingAdvisor.historySize;
@@ -49,7 +50,7 @@ strat.update = function(candle) {
 // calculated parameters.
 strat.log = function (candle) {
    var digits = 8;
-   
+
    var bb = this.indicators.bb;
    var rsi = this.indicators.rsi;
    var macd = this.indicators.macd;
@@ -74,7 +75,7 @@ strat.log = function (candle) {
    log.debug('calculated RSI properties for candle:');
    log.debug('\t', 'rsi:', rsi.result.toFixed(digits));
    log.debug('\t', 'price:', candle.close.toFixed(digits));
-   
+
    //MACD logging
    log.debug('calculated MACD properties for candle:');
    log.debug('\t', 'short:', macd.short.result.toFixed(digits));
@@ -121,9 +122,9 @@ strat.check = function (candle) {
         this.trend.adviced = true;
         this.advice('long');
         return;
-      } 
+      }
   }
-  
+
   //downtrend
   if (price > bb.middle && rsiVal >= this.settings.rsi.high && macddiff < this.settings.macd.down) {
     // new trend detected
@@ -154,7 +155,7 @@ strat.check = function (candle) {
 
 }
 
-// This is called when trader.js initiates a 
+// This is called when trader.js initiates a
 // trade. Perfect place to put a block so your
 // strategy won't issue more trader orders
 // until this trade is processed.
@@ -181,7 +182,7 @@ strat.onPendingTrade = function(pendingTrade) {
 // }
 strat.onTrade = function(trade) {
   this.tradeInitiated = false;
-  
+
 }
 
 // Trades that didn't complete with a buy/sell
@@ -191,7 +192,7 @@ strat.onTerminatedTrades = function(terminatedTrades) {
 }
 
 // This runs whenever the portfolio changes
-// including when Gekko starts up to talk to 
+// including when Gekko starts up to talk to
 // the exhange to find out the portfolio balance.
 // This is how the portfolio object looks like:
 // {
@@ -223,18 +224,18 @@ strat.onCommand = function(cmd) {
       cmd.handled = true;
       cmd.response = config.watch.currency + "/" + config.watch.asset +
       "\nPrice: " + currentPrice;
-      
+
   }
   if (command == 'help') {
   cmd.handled = true;
-      cmd.response = "Supported commands: \n\n /buy - Buy at next candle" + 
-      "\n /sell - Sell at next candle " + 
+      cmd.response = "Supported commands: \n\n /buy - Buy at next candle" +
+      "\n /sell - Sell at next candle " +
       "\n /status - Show indicators and current portfolio";
   }
   if (command == 'buy') {
     cmd.handled = true;
     this.advice('long');
-  
+
   }
   if (command == 'sell') {
     cmd.handled = true;

@@ -3,8 +3,8 @@ const util = require('util');
 const log = require('../core/log.js');
 const config = require ('../core/util.js').getConfig();
 const candleBatcher = require('../core/candleBatcher');
-const TULIPASYNC = require('../strategies/indicators/TulipAsync.js');
-const TALIBASYNC = require('../strategies/indicators/TalibAsync.js');
+//const TULIPASYNC = require('../strategies/indicators/TulipAsync.js');
+//const TALIBASYNC = require('../strategies/indicators/TalibAsync.js');
 
 var stratBB = {};
 
@@ -14,7 +14,7 @@ stratBB.init = async function () {
     this.exposed = false;
     this.cb30 = new candleBatcher(30);
     this.cb30.on('candle', this.onCandle30M);
-    
+
     this.trend = {
         direction: 'none',
         duration: 0,

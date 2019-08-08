@@ -13,6 +13,7 @@
 // Sell when RSI > 70
 // Sell when 1% stop loss
 //
+// addon: selling gradually in time
 //https://www.youtube.com/watch?v=erlPbF0B6BY
 
 var log = require('../core/log');
@@ -159,77 +160,88 @@ let rsiPrevPrevPrev = 0;
 let rsiPrevPrev = 0;
 let rsiPrev = 0;
 strat.check = function() {
-  let atr = this.tulipIndicators.atr.result.result;
-  //console.log(`atr: ${ JSON.stringify(atr)}`);
-  // console.log(`candle5: ${ JSON.stringify(candle5)}`);
-  let time = JSON.stringify(this.candle.start);
-  // console.log(`time: ${ time }`);
-  let rsi = this.tulipIndicators.rsi.result.result;
-  log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
-
   // RSI Candle:
   if(true) {
     // Buy when RSI < 12 and RSI dropped more than 18 points compared to previous 2 candles
     if (rsi5.result < 12 && (rsi5History[7] > rsi5.result + 18 || rsi5History[8] > rsi5.result + 18) && !advised && !disableTrading) {
       isCandleBuy = true;
       isATRBuy = false;
-      this.buy('Buy because RSI less than 12', this.candle, rsi5.result, rsi, atr);
+      this.buy('Buy because RSI less than 12', this.candle);
     }
     // //Buy when RSI < 30 and candle is a hammer
     if (rsi5.result < 30 && candle5.open > candle5.low && candle5.open - candle5.low > candle5.low * 0.006 && candle5.open > candle5.close && (candle5.open - candle5.close) / (candle5.open - candle5.low) < 0.25 && !advised && !disableTrading) {
       isCandleBuy = true;
       isATRBuy = false;
-      this.buy('Buy because RSI less than 30 and candle is a hammer', this.candle, rsi5.result, rsi, atr);
+      this.buy('Buy because RSI less than 30 and candle is a hammer', this.candle);
     }
     if(advised && isCandleBuy){
       // Sell when RSI > 70
       if (rsi5.result > 70) {
         //   console.log(`ascurrentPrice: ${currentPrice}, buyPrice: ${ buyPrice } `);
-        this.sell('Take Profit - RSI past 70', rsi5.result, rsi, atr);
+        this.sell('Take Profit - RSI past 70');
       }
       // Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
-      /*if (currentPrice <= buyPrice * STOP_LOSS_COEF){
-        this.sell('Stop Loss - 1% loss', rsi5.result, rsi, atr);
-      }*/
+      if (currentPrice <= buyPrice * STOP_LOSS_COEF){
+        this.sell('Stop Loss - 1% loss');
+      }
     }
   }
   // RSI+ATR:
   if(true) {
-
+    let atr = this.tulipIndicators.atr.result.result;
+    //console.log(`atr: ${ JSON.stringify(atr)}`);
+    // console.log(`candle5: ${ JSON.stringify(candle5)}`);
+    let time = JSON.stringify(this.candle.start);
+    // console.log(`time: ${ time }`);
+    let rsi = rsi5.result;
+    // let rsi = this.tulipIndicators.rsi.result.result;
     // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
+    // console.log(`ALL INFO: ${time}, ${atr}, ${ rsi }, ${ rsi5.result }`);
 
     if (atr && rsi && rsi !== 0) {
-
       if (atr >= THRESHOLDS.ATR_HIGH_BUY
         && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY ) && !advised) {
         isCandleBuy = false; // false by default
         isATRBuy = true; // false by default
-        this.buy('RSI+ATR: BUY!!', this.candle, rsi5.result, rsi, atr);
-      } else if (rsi <= THRESHOLDS.RSI_LOW_BUY_ALWAYS && !advised) {
-        this.buy('RSI_LOW_BUY_ALWAYS: BUY!!', this.candle, rsi5.result, rsi, atr);
-        //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
+        this.buy('RSI+ATR: BUY!!', this.candle);
+      }
+      if (rsi < THRESHOLDS.RSI_LOW_BUY_ALWAYS  && !advised) {
+        this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${ rsi }`, this.candle);
+        // console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
+      }
+      if(atr >= THRESHOLDS.ATR_HIGH_BUY) {
+        // console.error(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
+        //console.log(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
+      }
+      if(atr <= THRESHOLDS.ATR_LOW_SELL) {
+
       }
       // if(advised && isATRBuy) {
-        if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL && advised) {
-          this.sell('RSI+ATR: SELL!!', rsi5.result, rsi, atr);
+      if(advised) {
+        if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
+          this.sell('RSI+ATR: SELL!!');
           //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
-        } else if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS && advised) {
-          this.sell('RSI_HIGH_SELL_ALWAYS: SELL!!', rsi5.result, rsi, atr);
+        }
+        if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
+          this.sell('RSI_HIGH_SELL_ALWAYS: SELL!!');
           //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
-        } else if (buyTs && advised) {
-          // sell if trade is more than 1 hr(TIMEOUT_EXIT_MINUTES), coz usually it's a loss, if followed this strat rules
-          // , if TIMEOUT_EXIT_COEF > 1 - take profit condition, if TIMEOUT_EXIT_COEF< 1 - stop loss:
-
+        }
+        // sell if trade is more than 1 hr(TIMEOUT_EXIT_MINUTES), coz usually it's a loss, if followed this strat rules
+        // , if TIMEOUT_EXIT_COEF > 1 - take profit condition, if TIMEOUT_EXIT_COEF< 1 - stop loss:
+        if (buyTs) {
           //console.log(`asdf: ${buyTs}, diff: ${this.candle.start.diff(buyTs, 'minutes')}, currentPrice: ${currentPrice},buyPrice: ${buyPrice},buyPrice * THRESHOLDS.TAKE_PROFIT_COEF:${buyPrice * THRESHOLDS.TAKE_PROFIT_COEF}`);
-          if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF) {
-            this.sell('TAKE PROFIT AFTER TIMEOUT: SELL!!', rsi5.result, rsi, atr);
+          if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF) {
+            this.sell('TAKE PROFIT AFTER TIMEOUT: SELL!!');
+          } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_2
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_2) {
+            this.sell('TAKE PROFIT AFTER TIMEOUT-2: SELL!!');
+          } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_3
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_3) {
+            this.sell('TAKE PROFIT AFTER TIMEOUT-3: SELL!!');
           }
         }
-      // }
+      }
 
       /*// Sell if currentPrice <= buyPrice * 0.99 (1% stop loss)
       if (currentPrice <= buyPrice * THRESHOLDS.STOP_LOSS_RATIO && advised) {
@@ -243,13 +255,10 @@ strat.check = function() {
   }
 }
 
-strat.sell = function(reason, rsi5Result, rsi, atr) {
-
+strat.sell = function(reason) {
   this.advice('short');
-  log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-  console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
-  , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+  log.info(reason);
+  console.log(reason);
   advised = false;
   buyPrice = 0;
   if (this.tradeInitiated) { // Add logic to use other indicators
@@ -257,17 +266,15 @@ strat.sell = function(reason, rsi5Result, rsi, atr) {
   }
 }
 
-strat.buy = function(reason, candle, rsi5Result, rsi, atr) {
+strat.buy = function(reason, candle) {
   // console.log(JSON.stringify(candle));
   advised = true;
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
     this.advice('long');
     buyTs = candle.start;
-    log.info(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
-      , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
-    console.log(reason + `rsi5Result: ${ rsi5Result }, rsi: ${ rsi }, atr: ${ atr }
-      , watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
+    log.info(reason);
+    console.log(reason);
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
