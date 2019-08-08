@@ -500,6 +500,7 @@ const CreateOptionsFromConfig = (config) => {
     exchange: config.watch.exchange.toUpperCase(),
     strategy: config.tradingAdvisor.method,
     pair: config.watch.currency + '/' + config.watch.asset,
+    type: config.type === 'paper trader'? 'Paper Trader': 'TRADE BOT!'
   }
   return options;
 }
@@ -525,25 +526,19 @@ const DETAILS_OVERFLOW_TEMPLATE = (options, that) => {
       "text": " "
     },
     "accessory": {
-      /*"type": "static_select",
-      "placeholder": {
-        "type": "plain_text",
-        "text": "See Gekko Details",
-        "emoji": true
-      },*/
       "type": "overflow",
       "options": [
         {
           "text": {
             "type": "plain_text",
-            "text": `SERVER: ${ options.server }`
+            "text": `SERVER/TYPE: ${ options.server } / ${ options.type }`
           },
           "value": "value-1"
         },
         {
           "text": {
             "type": "plain_text",
-            "text": `EXCHANGE: ${options.exchange}`
+            "text": `EXCHANGE/PAIR: ${options.exchange} / ${ options.pair }`
           },
           "value": "value-1"
         },
@@ -551,13 +546,6 @@ const DETAILS_OVERFLOW_TEMPLATE = (options, that) => {
           "text": {
             "type": "plain_text",
             "text": options.strategy? `STRAT: ${options.strategy}`: `N/A (Watcher)`
-          },
-          "value": "value-1"
-        },
-        {
-          "text": {
-            "type": "plain_text",
-            "text": `PAIR: ${ options.pair }`
           },
           "value": "value-1"
         },
