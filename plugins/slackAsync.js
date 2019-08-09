@@ -1,4 +1,5 @@
 const moment = require('moment');
+const tomlJs = require('toml-js');
 const { WebClient } = require('@slack/web-api');
 const _ = require('lodash');
 const log = require('../core/log.js');
@@ -25,15 +26,18 @@ SlackAsync.prototype.setupWebApi = function(done) {
   this.slack = new WebClient(slackConfig.token);
 
   const setupSlack = function(error, result) {
-    // console.log('config,', config);
+    let attachments = [];
     if(options.strategy) {
       text = `Gekko started! (${ gekkoNameShort })`;
     } else {
       text = `Watcher started! (${ gekkoNameShort })`; // presumably this is a watcher
     }
     if (slackConfig.sendMessageOnStart) {
+      if(config && config.tradingAdvisor && options.strategy){
+        attachments.push(GEKKO_STRATEGY_SETTINGS());
+      }
       const body = this.createResponse(
-        [], [], text, {
+        attachments, [], text, {
           id: gekkoNameShort
         });
       this.send(body, gekkoNameHash);
@@ -46,6 +50,7 @@ SlackAsync.prototype.setupWebApi = function(done) {
 };
 
 // https://github.com/SlackAPI/node-slack-sdk#using-the-real-time-messaging-api
+// https://api.slack.com/incoming-webhooks
 SlackAsync.prototype.setupRTM = function(done) {
   const { RTMClient } = require('@slack/rtm-api');
 
@@ -525,6 +530,34 @@ function GetCodeLetterForGekkoName(config1){
 }
 const GetParentGekkoMessage = ()=>{
   return messagesHash[CreateNameHash(CreateOptionsFromConfig(config))];
+}
+const GEKKO_STRATEGY_SETTINGS = () => {
+  return tomlJs && tomlJs.dump && config && config.tradingAdvisor && {
+    "mrkdwn_in": [ "text" ],
+    "color": 'info',
+    "fields": [
+    {
+      "title": "Strategy",
+      "value": `${ config.tradingAdvisor.method }`,
+      "short": false
+    },
+    {
+      "title": "Candle Size",
+      "value": `${ config.tradingAdvisor.candleSize }`,
+      "short": true
+    },
+    {
+      "title": "History Size",
+      "value": `${ config.tradingAdvisor.historySize }`,
+      "short": true
+    },
+    {
+      "title": "Strategy Settings",
+      "value": `${ tomlJs.dump(config[config.tradingAdvisor.method]) }`,
+      "short": false
+    },
+  ],
+  }
 }
 const DETAILS_OVERFLOW_TEMPLATE = (options, that) => {
   options = options || {};
