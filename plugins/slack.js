@@ -5,6 +5,8 @@ const log = require('../core/log.js');
 const util = require('../core/util.js');
 const config = util.getConfig();
 const slackConfig = config.slack;
+let buyReason;
+let sellReason;
 
 const Slack = function(done) {
   _.bindAll(this);
@@ -123,7 +125,7 @@ let messagesHash = {}
 let lastBuyTrade;
 let initialBalance;
 
-Slack.prototype.processAdvice = function(advice) {
+Slack.prototype.processAdvice = function(advice, a, b, c) {
   return ; // don't show for now
   let text, color, options = {}, template;
   if (advice.recommendation === 'soft' && slackConfig.muteSoft) return;
@@ -138,6 +140,7 @@ Slack.prototype.processAdvice = function(advice) {
     // warning
     color = 'warning';
   }
+  console.log('adv:'+ JSON.stringify(advice));
   color = '';
   options.color = color;
   Object.assign(options, advice);
@@ -146,7 +149,7 @@ Slack.prototype.processAdvice = function(advice) {
 };
 
 Slack.prototype.processTradeInitiated = function(pendingTrade) {
-  let text, color, options = {}, template;
+  let text, color, options = {}, template, reason = 'N/A';
   if(!initialBalance){
     initialBalance = pendingTrade.balance;
   }
@@ -154,9 +157,11 @@ Slack.prototype.processTradeInitiated = function(pendingTrade) {
   if (pendingTrade.action === 'buy') {
     color = 'warning';
     text = `Trade Initiated: BUY`;
+    reason = buyReason;
   } else if (pendingTrade.action === 'sell') {
     color = 'warning';
     text = `Trade Initiated: SELL`;
+    reason = sellReason;
   } else {
     // warning
     color = 'warning';
@@ -169,6 +174,11 @@ Slack.prototype.processTradeInitiated = function(pendingTrade) {
       "mrkdwn_in": [ "text" ],
       "color": color,
       "fields": [
+        {
+          "title": "Reason",
+          "value": `${ reason }`,
+          "short": true
+        },
         {
           "title": "Asset",
           "value": `${ pendingTrade.portfolio.asset }`,
@@ -372,8 +382,14 @@ Slack.prototype.processTradeCompleted = function(trade) {
 };
 
 Slack.prototype.processStratNotification = function({ content }) {
-  const body = this.createResponse('#909399', content);
-  this.send(body);
+  console.log('processStratNotification', content);
+  if(content.type === 'buy advice' ){
+    buyReason = content.reason;
+  } else if( content.type === 'sell advice'){
+    sellReason = content.reason;
+  }
+  // const body = this.createResponse('#909399', content);
+  // this.send(body);
 };
 
 Slack.prototype.sendGekkoEvent = function(content, object) {

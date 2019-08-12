@@ -256,6 +256,10 @@ strat.check = function() {
 }
 
 strat.sell = function(reason) {
+  this.notify({
+    type: 'sell advice',
+    reason: reason,
+  });
   this.advice('short');
   log.info(reason);
   console.log(reason);
@@ -271,6 +275,10 @@ strat.buy = function(reason, candle) {
   advised = true;
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
+    this.notify({
+      type: 'buy advice',
+      reason: reason,
+    });
     this.advice('long');
     buyTs = candle.start;
     log.info(reason);

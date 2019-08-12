@@ -6,6 +6,8 @@ const log = require('../core/log.js');
 const util = require('../core/util.js');
 const config = util.getConfig();
 const slackConfig = config.slackAsync;
+let buyReason;
+let sellReason;
 let optionsFromConfig;
 
 const SlackAsync = function(done) {
@@ -157,7 +159,7 @@ SlackAsync.prototype.processAdvice = function(advice) {
 };
 
 SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
-  let text, color, options = {}, template;
+  let text, color, options = {}, template, reason = 'N/A';
   if(!initialBalance){
     initialBalance = pendingTrade.balance;
   }
@@ -165,9 +167,11 @@ SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
   if (pendingTrade.action === 'buy') {
     color = 'warning';
     text = `Trade Initiated: BUY`;
+    reason = buyReason;
   } else if (pendingTrade.action === 'sell') {
     color = 'warning';
     text = `Trade Initiated: SELL`;
+    reason = sellReason;
   } else {
     // warning
     color = 'warning';
@@ -180,6 +184,11 @@ SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
       "mrkdwn_in": [ "text" ],
       "color": color,
       "fields": [
+        {
+          "title": "Reason",
+          "value": `${ reason }`,
+          "short": true
+        },
         {
           "title": "Asset",
           "value": `${ pendingTrade.portfolio.asset }`,
@@ -413,8 +422,12 @@ SlackAsync.prototype.finalize = function(done) {
   done();
 }
 SlackAsync.prototype.processStratNotification = function({ content }) {
-  const body = this.createResponse('#909399', content);
-  this.send(body);
+  console.log('processStratNotification', content);
+  if(content.type === 'buy advice' ){
+    buyReason = content.reason;
+  } else if( content.type === 'sell advice'){
+    sellReason = content.reason;
+  }
 };
 
 SlackAsync.prototype.sendGekkoEvent = function(content, object) {
