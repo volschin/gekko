@@ -57,7 +57,7 @@ config.sqlite = {
 config.postgresql = {
   path: 'plugins/postgresql',
   version: 0.1,
-  connectionString: 'postgres://postgres:Slon48@localhost:5432', // if default port
+  connectionString: 'postgres://postgres:xxx@localhost:5434', // if default port
   database: 'gekko', // if set, we'll put all tables into a single database.
   schema: 'public',
   dependencies: [{
@@ -75,6 +75,20 @@ config.mongodb = {
     module: 'mongojs',
     version: '2.4.0'
   }]
+}
+config.telegrambotAsync = {
+  enabled: false,
+  emitUpdates: true,
+  token: 'xxx', // Talk to botFather on Telegram to get your token and bot name
+  botName: 'xxx'
+};
+
+config.slackAsync = {
+  enabled: true,
+  token: 'xxx',
+  sendMessageOnStart: true,
+  muteSoft: true,
+  channel: 'xxx'
 }
 
 config.adviceWriter = {

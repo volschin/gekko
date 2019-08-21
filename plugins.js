@@ -62,17 +62,31 @@ var plugins = [
       version: '0.5.2'
     }]
   },
-  {
+  /*{
     name: 'Telegram bot',
     description: 'Telegram module lets you communicate with Gekko on Telegram.',
     slug: 'telegrambot',
     async: false,
     modes: ['realtime'],
+    emits: ['command'],
     dependencies: [{
       module: 'node-telegram-bot-api',
       version: '0.24.0'
     }]
   },
+  {
+    name: 'Telegram bot async',
+    description: 'Telegram module lets you communicate with Gekko on Telegram.',
+    slug: 'telegrambotAsync',
+    async: true,
+    modes: ['realtime'],
+    // modes: ['realtime', 'backtest'],
+    emits: ['command'],
+    dependencies: [{
+      module: 'node-telegram-bot-api',
+      version: '0.30.0'
+    }]
+  },*/
   {
     name: 'XMPP bot',
     description: 'XMPP module lets you communicate with Gekko on Jabber.',
@@ -209,9 +223,34 @@ var plugins = [
     slug: 'slack',
     async: false,
     modes: ['realtime'],
+    // modes: ['realtime', 'backtest'], // remove backtest in prod!
     dependencies: [{
-      module: '@slack/client',
-      version: '3.13.0'
+      module: '@slack/web-api',
+      version: '^5.0.1'
+    }, {
+      module: '@slack/events-api',
+      version: '^2.2.0'
+    }, {
+      module: '@slack/rtm-api',
+      version: '^5.0.1'
+    }]
+  },
+  {
+    name: 'Slack Async',
+    description: 'Sends trades to slack channel (async).',
+    slug: 'slackAsync',
+    async: true,
+    modes: ['realtime'],
+    // modes: ['realtime', 'backtest'], // remove backtest in prod!
+    dependencies: [{
+      module: '@slack/web-api',
+      version: '^5.0.1'
+    }, {
+      module: '@slack/events-api',
+      version: '^2.2.0'
+    }, {
+      module: '@slack/rtm-api',
+      version: '^5.0.1'
     }]
   },
   {

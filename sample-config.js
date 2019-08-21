@@ -8,6 +8,7 @@ var config = {};
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 config.debug = true; // for additional logging / debugging
+config.silent = false;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                         WATCHING A MARKET
@@ -27,30 +28,55 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'MACD',
-  candleSize: 60,
-  historySize: 10,
+  method: 'RSI_BULL_BEAR_ADX_TF',
+  candleSize: 1,
+  historySize: 60,
 }
 
-// MACD settings:
-config.MACD = {
-  // EMA weight (α)
-  // the higher the weight, the more smooth (and delayed) the line
-  short: 10,
-  long: 21,
-  signal: 9,
-  // the difference between the EMAs (to act as triggers)
+// RSI Bull Bear ADX Settings
+config.RSI_BULL_BEAR_ADX_TF = { // Added "config.RSI_BULL_BEAR_ADX = ""
+// You need to remove all the quotes around each parameter
+  SMA: {
+    long: 60,
+    short: 5
+  },
+  BULL: {
+    rsi: 24,
+    high: 80,
+    low: 41,
+    mod_high: 7,
+    mod_low: -8
+  },
+  BEAR: {
+    rsi: 25,
+    high: 56,
+    low: 13,
+    mod_high: 20,
+    mod_low: -8
+  },
+  ADX: {
+    adx: 11,
+    high: 75,
+    low: 27
+  }
+}; // add semicolon at the end 
+
+// custom settings:
+config.custom = {
+  my_custom_setting: 10,
+}
+
+config['talib-macd'] = {
+  parameters: {
+    optInFastPeriod: 10,
+    optInSlowPeriod: 21,
+    optInSignalPeriod: 9
+  },
   thresholds: {
     down: -0.025,
     up: 0.025,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 1
   }
-};
-
-// settings for other strategies can be found at the bottom, note that only
-// one strategy is active per gekko, the other settings are ignored.
+}
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       CONFIGURING PLUGINS
@@ -64,11 +90,11 @@ config.paperTrader = {
   // start balance, on what the current balance is compared with
   simulationBalance: {
     // these are in the unit types configured in the watcher.
-    asset: 1,
-    currency: 100,
+    asset: 0,
+    currency: 1000,
   },
   // how much fee in % does each trade cost?
-  feeMaker: 0.15,
+  feeMaker: 0.0,
   feeTaker: 0.25,
   feeUsing: 'maker',
   // how much slippage/spread should Gekko assume per trade?
@@ -88,14 +114,15 @@ config.trader = {
   key: '',
   secret: '',
   username: '', // your username, only required for specific exchanges.
-  passphrase: '', // GDAX, requires a passphrase.
+  passphrase: '', // GDAX, requires a passphrase.  
+  orderUpdateDelay: 1, // Number of minutes to adjust unfilled order prices
 }
 
 config.eventLogger = {
-  enabled: false,
+  enabled: true,
   // optionally pass a whitelist of events to log, if not past
   // the eventLogger will log _all_ events.
-  // whitelist: ['portfolioChange', 'portfolioValueChange']
+  whitelist: ['tradeCompleted', 'tradeAborted', 'tradeErrored', 'tradeCancelled']
 }
 
 config.pushover = {
@@ -116,11 +143,11 @@ config.blotter = {
 
 // want Gekko to send a mail on buy or sell advice?
 config.mailer = {
-  enabled: false, // Send Emails if true, false to turn off
-  sendMailOnStart: true, // Send 'Gekko starting' message if true, not if false
+  enabled: false,       // Send Emails if true, false to turn off
+  sendMailOnStart: true,    // Send 'Gekko starting' message if true, not if false
 
-  email: '', // Your Gmail address
-  muteSoft: true, // disable advice printout if it's soft
+  email: 'yourNewAccount@gmail.com',    // Your Gmail address
+  muteSoft: false, // disable advice printout if it's soft
 
   // You don't have to set your password here, if you leave it blank we will ask it
   // when Gekko's starts.
@@ -132,40 +159,36 @@ config.mailer = {
   // WARNING: If you have NOT downloaded Gekko from the github page above we CANNOT
   // guarantuee that your email address & password are safe!
 
-  password: '', // Your Gmail Password - if not supplied Gekko will prompt on startup.
+  password: 'YourPassword',       // Your Gmail Password - if not supplied Gekko will prompt on startup.
 
-  tag: '[GEKKO] ', // Prefix all email subject lines with this
+  tag: '[GEKKO] ',      // Prefix all email subject lines with this
 
-  //       ADVANCED MAIL SETTINGS
-  // you can leave those as is if you
-  // just want to use Gmail
+            //       ADVANCED MAIL SETTINGS
+            // you can leave those as is if you
+            // just want to use Gmail
 
-  server: 'smtp.gmail.com', // The name of YOUR outbound (SMTP) mail server.
-  smtpauth: true, // Does SMTP server require authentication (true for Gmail)
-  // The following 3 values default to the Email (above) if left blank
-  user: '', // Your Email server user name - usually your full Email address 'me@mydomain.com'
-  from: '', // 'me@mydomain.com'
-  to: '', // 'me@somedomain.com, me@someotherdomain.com'
-  ssl: true, // Use SSL (true for Gmail)
-  port: '', // Set if you don't want to use the default port
+  server: 'smtp.gmail.com',   // The name of YOUR outbound (SMTP) mail server.
+  smtpauth: true,     // Does SMTP server require authentication (true for Gmail)
+          // The following 3 values default to the Email (above) if left blank
+  user: '',       // Your Email server user name - usually your full Email address 'me@mydomain.com'
+  from: '',       // 'me@mydomain.com'
+  to: 'yourEmailAddress@gmail.com',       // 'me@somedomain.com, me@someotherdomain.com'
+  ssl: true,        // Use SSL (true for Gmail)
+  port: '',       // Set if you don't want to use the default port
 }
 
 config.pushbullet = {
-  // sends pushbullets if true
+    // sends pushbullets if true
   enabled: false,
-  // Send 'Gekko starting' message if true
+    // Send 'Gekko starting' message if true
   sendMessageOnStart: true,
-  // Send Message for advice? Recommend Flase for paper, true for live
-  sendOnAdvice: true,
-  // Send Message on Trade Completion?
-  sendOnTrade: true,
-  // For Overall P/L calc. Pass in old balance if desired, else leave '0'
-  startingBalance: 0,
-  // your pushbullet API key
-  key: '',
-  // your email
-  email: 'jon_snow@westeros.com',
-  // Messages will start with this tag
+    // disable advice printout if it's soft
+  muteSoft: true,
+    // your pushbullet API key
+  key: 'xxx',
+    // your email, change it unless you are Azor Ahai
+  email: 'jon_snow@westeros.org',
+    // will make Gekko messages start mit [GEKKO]
   tag: '[GEKKO]'
 };
 
@@ -187,27 +210,44 @@ config.ircbot = {
 }
 
 config.telegrambot = {
+  enabled: true,
+  emitUpdates: true,
+  token: '', // Talk to botFather on Telegram to get your token and bot name
+  botName: ''
+};
+
+
+config.gforms = {
   enabled: false,
-  // Receive notifications for trades and warnings/errors related to trading
-  emitTrades: false,
-  token: 'YOUR_TELEGRAM_BOT_TOKEN',
+  //Form ID - the long code from the form url
+  formID: '',
+  //Form question ID's - get them from a prefilled link. May already be correct if you copied my form
+  exchange: '1346916648',
+  currency: '1743858251',
+  asset: '105864059',
+  action: '68010386',
+  assetCount: '3616735',
+  price: '1463011579',
+  currencyCount: '433943481',
+  balance: '620326103',
+  advicePrice: '1202282384'
 };
 
 config.twitter = {
-  // sends pushbullets if true
+    // sends pushbullets if true
   enabled: false,
-  // Send 'Gekko starting' message if true
+    // Send 'Gekko starting' message if true
   sendMessageOnStart: false,
-  // disable advice printout if it's soft
+    // disable advice printout if it's soft
   muteSoft: false,
   tag: '[GEKKO]',
-  // twitter consumer key
+    // twitter consumer key
   consumer_key: '',
-  // twitter consumer secret
+    // twitter consumer secret
   consumer_secret: '',
-  // twitter access token key
+    // twitter access token key
   access_token_key: '',
-  // twitter access token secret
+    // twitter access token secret
   access_token_secret: ''
 };
 
@@ -235,11 +275,11 @@ config.redisBeacon = {
   enabled: false,
   port: 6379, // redis default
   host: '127.0.0.1', // localhost
-  // On default Gekko broadcasts
-  // events in the channel with
-  // the name of the event, set
-  // an optional prefix to the
-  // channel name.
+    // On default Gekko broadcasts
+    // events in the channel with
+    // the name of the event, set
+    // an optional prefix to the
+    // channel name.
   channelPrefix: '',
   broadcast: [
     'candle'
@@ -306,11 +346,11 @@ config.sqlite = {
   dependencies: []
 }
 
-// Postgres adapter example config (please note: requires postgres >= 9.5):
+  // Postgres adapter example config (please note: requires postgres >= 9.5):
 config.postgresql = {
   path: 'plugins/postgresql',
   version: 0.1,
-  connectionString: 'postgres://user:pass@localhost:5432', // if default port
+  connectionString: 'postgres://user:pass@localhost:5434', // if default port
   database: null, // if set, we'll put all tables into a single database.
   schema: 'public',
   dependencies: [{
@@ -323,7 +363,7 @@ config.postgresql = {
 config.mongodb = {
   path: 'plugins/mongodb',
   version: 0.1,
-  connectionString: 'mongodb://localhost/gekko', // connection to mongodb server
+  connectionString: 'mongodb://mongodb/gekko', // connection to mongodb server
   dependencies: [{
     module: 'mongojs',
     version: '2.4.0'
@@ -337,6 +377,20 @@ config.candleUploader = {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//                       TEMPORARY STORAGE
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+config.currentIndicatorValues = {
+  rsi: 0,
+  BBUpper: 0,
+  BBLower: 0,
+  BBMiddle: 0,
+  SMA_long: 0,
+  SMA_short: 0,
+  buyPrice: 0,
+  currentPrice: 0
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       CONFIGURING BACKTESTING
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -344,12 +398,12 @@ config.candleUploader = {
 // @link: https://gekko.wizb.it/docs/commandline/backtesting.html
 
 config.backtest = {
-  daterange: 'scan',
-  // daterange: {
-  //   from: "2018-03-01",
-  //   to: "2018-04-28"
-  //},
-  batchSize: 50
+  daterange: {
+    // NOTE: these dates are in UTC
+    from: "2018-04-18 00:00:00",
+    to: "2018-04-21 23:59:59"
+  },
+  batchSize: 1000 //default is 50
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -359,169 +413,9 @@ config.backtest = {
 config.importer = {
   daterange: {
     // NOTE: these dates are in UTC
-    from: "2017-11-01 00:00:00",
-    to: "2017-11-20 00:00:00"
+    from: "2017-11-01 00:00:00"
   }
 }
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//                      OTHER STRATEGY SETTINGS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Exponential Moving Averages settings:
-config.DEMA = {
-  // EMA weight (α)
-  // the higher the weight, the more smooth (and delayed) the line
-  weight: 21,
-  // amount of candles to remember and base initial EMAs on
-  // the difference between the EMAs (to act as triggers)
-  thresholds: {
-    down: -0.025,
-    up: 0.025
-  }
-};
-
-// PPO settings:
-config.PPO = {
-  // EMA weight (α)
-  // the higher the weight, the more smooth (and delayed) the line
-  short: 12,
-  long: 26,
-  signal: 9,
-  // the difference between the EMAs (to act as triggers)
-  thresholds: {
-    down: -0.025,
-    up: 0.025,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 2
-  }
-};
-
-// Uses one of the momentum indicators but adjusts the thresholds when PPO is bullish or bearish
-// Uses settings from the ppo and momentum indicator config block
-config.varPPO = {
-  momentum: 'TSI', // RSI, TSI or UO
-  thresholds: {
-    // new threshold is default threshold + PPOhist * PPOweight
-    weightLow: 120,
-    weightHigh: -120,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 0
-  }
-};
-
-// RSI settings:
-config.RSI = {
-  interval: 14,
-  thresholds: {
-    low: 30,
-    high: 70,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 1
-  }
-};
-
-// TSI settings:
-config.TSI = {
-  short: 13,
-  long: 25,
-  thresholds: {
-    low: -25,
-    high: 25,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 1
-  }
-};
-
-// Ultimate Oscillator Settings
-config.UO = {
-  first: {
-    weight: 4,
-    period: 7
-  },
-  second: {
-    weight: 2,
-    period: 14
-  },
-  third: {
-    weight: 1,
-    period: 28
-  },
-  thresholds: {
-    low: 30,
-    high: 70,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 1
-  }
-};
-
-// CCI Settings
-config.CCI = {
-  constant: 0.015, // constant multiplier. 0.015 gets to around 70% fit
-  history: 90, // history size, make same or smaller than history
-  thresholds: {
-    up: 100, // fixed values for overbuy upward trajectory
-    down: -100, // fixed value for downward trajectory
-    persistence: 0 // filter spikes by adding extra filters candles
-  }
-};
-
-// StochRSI settings
-config.StochRSI = {
-  interval: 3,
-  thresholds: {
-    low: 20,
-    high: 80,
-    // How many candle intervals should a trend persist
-    // before we consider it real?
-    persistence: 3
-  }
-};
-
-
-// custom settings:
-config.custom = {
-  my_custom_setting: 10,
-}
-
-config['talib-macd'] = {
-  parameters: {
-    optInFastPeriod: 10,
-    optInSlowPeriod: 21,
-    optInSignalPeriod: 9
-  },
-  thresholds: {
-    down: -0.025,
-    up: 0.025,
-  }
-}
-
-config['talib-macd'] = {
-  parameters: {
-    optInFastPeriod: 10,
-    optInSlowPeriod: 21,
-    optInSignalPeriod: 9
-  },
-  thresholds: {
-    down: -0.025,
-    up: 0.025,
-  }
-}
-
-config['tulip-adx'] = {
-  optInTimePeriod: 10,
-  thresholds: {
-    down: -0.025,
-    up: 0.025,
-  }
-}
-
 
 // set this to true if you understand that Gekko will
 // invest according to how you configured the indicators.

@@ -27,7 +27,7 @@
       div
         h3 Parameters
         p {{ strategy }} Parameters:
-        textarea.params(v-model='rawStratParams')
+        textarea.params(v-model='rawStratParams').control--toml-input
         p.bg--red.p1(v-if='rawStratParamsError') {{ rawStratParamsError.message }}
 </template>
 

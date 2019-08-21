@@ -65,6 +65,18 @@ var Base = function(settings) {
   if(!this.onTrade)
     this.onTrade = function() {};
 
+    if(!this.onCommand)
+    this.onCommand = function() {};
+
+  if(!this.onPortfolioChange) 
+    this.onPortfolioChange = function() {};
+
+  if(!this.onPortfolioValueChange)
+    this.onPortfolioValueChange = function() {};
+
+  if(!this.onPendingTrade)
+    this.onPendingTrade = function() {};
+
   // let's run the implemented starting point
   this.init();
 
@@ -218,6 +230,29 @@ Base.prototype.processTrade = function(trade) {
   this.onTrade(trade);
 }
 
+Base.prototype.processPendingTrade = function(pendingTrade) {
+  this.onPendingTrade(pendingTrade);
+}
+
+Base.prototype.processTerminatedTrades = function(terminatedTrades) {
+  if (!terminatedTrades.reason) {
+    terminatedTrades.reason = 'Cancelled';
+  }
+  this.onTerminatedTrades(terminatedTrades);
+}
+
+Base.prototype.updatePortfolio = function(portfolio) {
+  this.onPortfolioChange(portfolio);
+}
+
+Base.prototype.newPortfolioValue = function(portfolioValue) {
+  this.onPortfolioValueChange(portfolioValue);
+}
+
+Base.prototype.processCommand = function(command) {
+  this.onCommand(command);
+}
+
 Base.prototype.addTalibIndicator = function(name, type, parameters) {
   this.asyncIndicatorRunner.addTalibIndicator(name, type, parameters);
 }
@@ -276,9 +311,10 @@ Base.prototype.advice = function(newDirection) {
     newDirection = newDirection.direction;
   }
 
-  if(newDirection === this._currentDirection) {
-    return;
-  }
+  // I commented this out so Gekko will buy even if it bought previously 
+  // if(newDirection === this._currentDirection) {
+  //   return;
+  // }
 
   if(newDirection === 'short' && this._pendingTriggerAdvice) {
     this._pendingTriggerAdvice = null;
