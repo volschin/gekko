@@ -57,6 +57,6 @@ web/vue/dist
 #zuki_nn strat:
 nn_files/trained.js
 
-web/vue/src/tradingview/charting_library.min.js
+web/vue/src/components/tradingview/charting_library.min.js
 web/vue/dist/charting_library
 web/vue/public/charting_library
