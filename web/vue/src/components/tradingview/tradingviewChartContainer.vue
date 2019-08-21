@@ -239,7 +239,7 @@ export default {
     drawBacktestResult(result) {
       console.log(result);
       window.r1 = result;
-      let boughtPrice, diff, tradeSuccessful, curShape, curText;
+      let boughtPrice, boughtBalance, diff, tradeSuccessful, curShape, curText;
       allExecutionShapes.forEach(s=>{
         // s. // todo: executionShape.remove() (for arrows)
       })
@@ -250,10 +250,12 @@ export default {
       _.each(result.trades, (trade) => {
         if (trade.action === 'buy') {
           boughtPrice = trade.price;
+          boughtBalance = trade.balance;
         } else {
-          if (boughtPrice) {
-            diff = (trade.price - boughtPrice) / trade.price ;
-            if (diff >= (trade.feePercent * 2)) {
+          if (boughtBalance) {
+            // diff = (trade.price - boughtPrice) / trade.price ;
+            // if (diff >= (trade.feePercent * 2)) {
+            if(trade.balance - boughtBalance > 0) {
               tradeSuccessful = true;
             } else {
               tradeSuccessful = false;
