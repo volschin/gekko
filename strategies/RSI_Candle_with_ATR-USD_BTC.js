@@ -239,9 +239,9 @@ strat.check = function() {
         console.log(`Stop Loss - ${ 100 - THRESHOLDS.STOP_LOSS_RATIO * 100 }% loss !!! ${time}, ${atr}, ${ rsi }`);
       }
     }
-    rsiPrev = rsi;
-    rsiPrevPrev = rsiPrev;
     rsiPrevPrevPrev = rsiPrevPrev;
+    rsiPrevPrev = rsiPrev;
+    rsiPrev = rsi;
   }
 }
 

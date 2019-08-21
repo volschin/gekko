@@ -13,8 +13,8 @@
 // Sell when RSI > 70
 // Sell when 1% stop loss
 //
-// addon: selling gradually in time
 //https://www.youtube.com/watch?v=erlPbF0B6BY
+// v4 - add NATR
 
 var log = require('../core/log');
 var config = require ('../core/util.js').getConfig();
@@ -54,6 +54,16 @@ const TAKE_PROFIT_COEF = 1.01;
 let THRESHOLDS = {};
 // Prepare everything our method needs
 strat.init = function() {
+  this.debug = false;
+  this.writeToFile = true;
+
+  // performance
+  config.backtest.batchSize = 1000; // increase performance
+  config.silent = true;
+  config.debug = false;
+
+
+
   THRESHOLDS = this.settings.thresholds;
   //console.log(`THRESHOLDS.ATR_LOW_SELL: ${ THRESHOLDS.ATR_LOW_SELL} `);
 
@@ -61,9 +71,9 @@ strat.init = function() {
 
   // since we're relying on batching 1 minute candles into 5 minute candles
   // lets throw if the settings are wrong
-  if (config.tradingAdvisor.candleSize !== 1) {
-    throw "This strategy must run with candleSize=1";
-  }
+  // if (config.tradingAdvisor.candleSize !== 1) {
+  //   throw "This strategy must run with candleSize=1";
+  // }
 
   // create candle batchers for 5 minute candles
   this.batcher5 = new CandleBatcher(5);
@@ -77,11 +87,11 @@ strat.init = function() {
   //this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
 
 
-  let customATRSettings = {
+  let customNATRSettings = {
     optInTimePeriod: this.settings.ATR_Period || 14,
   }
   // add the indicator to the strategy
-  this.addTulipIndicator('atr', 'atr', customATRSettings);
+  this.addTulipIndicator('natr', 'natr', customNATRSettings);
   this.addTulipIndicator('rsi', 'rsi', { optInTimePeriod: 14 });
 
   this.tradeInitiated = false;
@@ -161,7 +171,7 @@ let rsiPrevPrev = 0;
 let rsiPrev = 0;
 strat.check = function() {
   // RSI Candle:
-  if(true) {
+  if(false) {
     // Buy when RSI < 12 and RSI dropped more than 18 points compared to previous 2 candles
     if (rsi5.result < 12 && (rsi5History[7] > rsi5.result + 18 || rsi5History[8] > rsi5.result + 18) && !advised && !disableTrading) {
       isCandleBuy = true;
@@ -188,7 +198,7 @@ strat.check = function() {
   }
   // RSI+ATR:
   if(true) {
-    let atr = this.tulipIndicators.atr.result.result;
+    let atr = this.tulipIndicators.natr.result.result;
     //console.log(`atr: ${ JSON.stringify(atr)}`);
     // console.log(`candle5: ${ JSON.stringify(candle5)}`);
     let time = JSON.stringify(this.candle.start);
@@ -196,7 +206,7 @@ strat.check = function() {
     let rsi = rsi5.result;
     // let rsi = this.tulipIndicators.rsi.result.result;
     // console.log(`INFO time:${ time }, Date.now:${ Date.now() }, buyTs:${ buyTs }, diff:${  buyTs && buyTs.diff(this.candle.start, 'minutes') }`);
-    // console.log(`ALL INFO: ${time}, ${atr}, ${ rsi }, ${ rsi5.result }`);
+    console.log(`ALL INFO: ${time}, ${atr}, ${ rsi }, ${ rsi5.result }`);
 
     if (atr && rsi && rsi !== 0) {
       if (atr >= THRESHOLDS.ATR_HIGH_BUY
@@ -207,7 +217,7 @@ strat.check = function() {
       }
       if (rsi < THRESHOLDS.RSI_LOW_BUY_ALWAYS  && !advised) {
         this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${ rsi }`, this.candle);
-        // console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
+        console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
       }
       if(atr >= THRESHOLDS.ATR_HIGH_BUY) {
         // console.error(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
@@ -233,12 +243,6 @@ strat.check = function() {
           if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES
               && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF) {
             this.sell('TAKE PROFIT AFTER TIMEOUT: SELL!!');
-          } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_2
-              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_2) {
-            this.sell('TAKE PROFIT AFTER TIMEOUT-2: SELL!!');
-          } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_3
-              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_3) {
-            this.sell('TAKE PROFIT AFTER TIMEOUT-3: SELL!!');
           }
         }
       }
@@ -256,13 +260,10 @@ strat.check = function() {
 }
 
 strat.sell = function(reason) {
-  this.notify({
-    type: 'sell advice',
-    reason: reason,
-  });
+
   this.advice('short');
   log.info(reason);
-  console.log(reason);
+  console.log(`SELL!!: ${reason}`);
   advised = false;
   buyPrice = 0;
   if (this.tradeInitiated) { // Add logic to use other indicators
@@ -275,14 +276,10 @@ strat.buy = function(reason, candle) {
   advised = true;
   // If there are no active trades, send signal
   if (!this.tradeInitiated) { // Add logic to use other indicators
-    this.notify({
-      type: 'buy advice',
-      reason: reason,
-    });
     this.advice('long');
     buyTs = candle.start;
     log.info(reason);
-    console.log(reason);
+    console.log(`BUY!!: ${reason}`);
     buyPrice = currentPrice;
     this.tradeInitiated = true;
   }
