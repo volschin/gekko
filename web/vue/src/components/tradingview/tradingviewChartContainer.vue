@@ -27,7 +27,7 @@
 
 
 import Vue from 'vue'
-import './charting_library.min';
+import './charting_library';
 import Datafeed from './api/index.js';
 import datasetpicker from '../global/configbuilder/datasetpicker'
 
