@@ -58,5 +58,6 @@ web/vue/dist
 nn_files/trained.js
 
 web/vue/src/components/tradingview/charting_library.min.js
+web/vue/src/components/tradingview/charting_library.js
 web/vue/dist/charting_library
 web/vue/public/charting_library
