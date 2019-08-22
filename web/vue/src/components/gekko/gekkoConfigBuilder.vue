@@ -10,6 +10,9 @@
     .hr
     strat-picker.contain.my2(v-on:stratConfig='updateStrat')
     .hr(v-if='type === "paper trader"')
+    dependency-picker.contain.my2(v-on:dependenciesConfig='updateDependencies')
+    .hr(v-if='type === "paper trader"')
+
     paper-trader(v-on:settings='updatePaperTrader', v-if='type === "paper trader"')
 </template>
 
@@ -19,6 +22,8 @@ import marketPicker from '../global/configbuilder/marketpicker.vue'
 import typePicker from '../global/configbuilder/typepicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
+import DependencyPicker from '../global/configbuilder/dependencyPicker';
+
 import { get } from '../../tools/ajax'
 import _ from 'lodash'
 
@@ -45,6 +50,7 @@ export default {
     }
   },
   components: {
+    DependencyPicker,
     marketPicker,
     typePicker,
     stratPicker,
@@ -111,9 +117,14 @@ export default {
       this.paperTrader.enabled = true;
       this.emitConfig();
     },
+    updateDependencies: function(deps) {
+      debugger;
+      this.config.dependencies = deps;
+      this.emitConfig();
+    },
 
     emitConfig: function() {
-      this.$emit('config', this.config); 
+      this.$emit('config', this.config);
     }
   }
 }
