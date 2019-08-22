@@ -137,7 +137,7 @@ export default {
     },
     updateDependencies: function(deps) {
       this.config.dependencies = deps;
-      this.emitConfig();
+      this.$emit('config', this.config);
     },
     updatePaperTrader: function(pt) {
       this.paperTrader = pt;
