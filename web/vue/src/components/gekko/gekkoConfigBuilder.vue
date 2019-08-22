@@ -12,7 +12,6 @@
     .hr(v-if='type === "paper trader"')
     dependency-picker.contain.my2(v-on:dependenciesConfig='updateDependencies')
     .hr(v-if='type === "paper trader"')
-
     paper-trader(v-on:settings='updatePaperTrader', v-if='type === "paper trader"')
 </template>
 
@@ -118,7 +117,6 @@ export default {
       this.emitConfig();
     },
     updateDependencies: function(deps) {
-      debugger;
       this.config.dependencies = deps;
       this.emitConfig();
     },
