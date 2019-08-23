@@ -4,6 +4,8 @@ const _ = require('lodash');
 const promisify = require('tiny-promisify');
 const pipelineRunner = promisify(require('../../core/workers/pipeline/parent'));
 
+let dependenciesManager = require('../state/cache').get('dependencies');
+
 // starts a backtest
 // requires a post body like:
 //
@@ -27,5 +29,12 @@ module.exports = function *() {
 
   _.merge(config, base, req);
 
+  if(!dependenciesManager){
+    dependenciesManager = require('./cache').get('dependencies'); // circular reference problem
+  }
+
+  if(config.dependencies && config.dependencies.length > 0){
+    yield dependenciesManager.getDependencyResultsAsync(config);
+  }
   this.body = yield pipelineRunner(mode, config);
 }

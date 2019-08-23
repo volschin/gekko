@@ -254,6 +254,26 @@ var plugins = [
     }]
   },
   {
+    name: 'Dependency Manager',
+    description: 'Ability to have dependant gekkos (e.g. for different timeframe indicators) - backtest version',
+    slug: 'dependencyManager',
+    async: false,
+    // async: true,
+    modes: ['realtime', 'backtest'],
+    emits: true,
+    path: config => 'dependencyManager/dependencyManager.js',
+  },
+  {
+    name: 'Dependency Manager Async',
+    description: 'Ability to have dependant gekkos (e.g. for different timeframe indicators) - UI version',
+    slug: 'dependencyManagerAsync',
+    async: true,
+    // async: true,
+    modes: ['realtime', 'backtest'],
+    emits: true,
+    path: config => 'dependencyManager/dependencyManagerAsync.js',
+  },
+  {
     name: 'IFTTT',
     description: 'Sends trades to IFTTT webhook.',
     slug: 'ifttt',

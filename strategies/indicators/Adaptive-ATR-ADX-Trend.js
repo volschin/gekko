@@ -169,14 +169,15 @@ const atrCalc = function(candle){
   trendChange = trend - trendPrev;
 
   if(trendChange !== 0 && counter > 140) {
-  // if(false) {
-    //log.info(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
-    console.log(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
-    console.log(`   hR: ${hR}, lR: ${lR}, dmPos: ${dmPos}, dmNeg: ${dmNeg}`)
-    console.log(`   tr: ${tr}, sTR: ${sTR}, sDMPos: ${sDMPos}, sDMPosPrev: ${sDMPosPrev}, sDMNeg: ${sDMNeg}, sDMNegPrev: ${sDMNegPrev}
-      , DIP: ${DIP}, DIN: ${DIN}, DX: ${DX}, adx: ${adx}`);
-    console.log(`   m: ${m}, mUp: ${mUp}, mDn: ${mDn}, src_: ${src_}, c: ${c}, t: ${t}, up: ${up}, dn: ${dn}, TUp: ${TUp}, TDown: ${TDown}
-    , trend: ${trend}, stop: ${stop}, trendChange: ${trendChange}`);
+    if(false) {
+      //log.info(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
+      console.log(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
+      console.log(`   hR: ${hR}, lR: ${lR}, dmPos: ${dmPos}, dmNeg: ${dmNeg}`)
+      console.log(`   tr: ${tr}, sTR: ${sTR}, sDMPos: ${sDMPos}, sDMPosPrev: ${sDMPosPrev}, sDMNeg: ${sDMNeg}, sDMNegPrev: ${sDMNegPrev}
+        , DIP: ${DIP}, DIN: ${DIN}, DX: ${DX}, adx: ${adx}`);
+      console.log(`   m: ${m}, mUp: ${mUp}, mDn: ${mDn}, src_: ${src_}, c: ${c}, t: ${t}, up: ${up}, dn: ${dn}, TUp: ${TUp}, TDown: ${TDown}
+      , trend: ${trend}, stop: ${stop}, trendChange: ${trendChange}`);
+    }
   }
 
   sTRPrev = sTR;

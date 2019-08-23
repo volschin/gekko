@@ -43,7 +43,11 @@ export default {
     parseParams: function() {
       let ret = false;
       try {
-        this.dependencies = JSON.parse(this.rawDependencies);
+        if(this.rawDependencies !== ''){
+          this.dependencies = JSON.parse(this.rawDependencies);
+        } else {
+          this.dependencies = [];
+        }
         this.rawDependenciesError = false;
         ret = true;
       } catch(e) {
@@ -58,7 +62,7 @@ const defTxt = `
 [{
    "tradingAdvisor": {
      "enabled": true,
-     "method": "ATR-ADX-Trend",
+     "method": "ATR-ADX-Trend-Dep",
      "candleSize": 120,
      "historySize": 140
    },
