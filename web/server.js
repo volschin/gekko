@@ -66,10 +66,12 @@ cache.set('broadcast', broadcast);
 
 const ListManager = require('./state/listManager');
 const GekkoManager = require('./state/gekkoManager');
+const DependencyManager = require('./state/dependencyManager');
 
 // initialize lists and dump into cache
 cache.set('imports', new ListManager);
 cache.set('gekkos', new GekkoManager);
+cache.set('dependencies', new DependencyManager());
 cache.set('apiKeyManager', require('./apiKeyManager'));
 
 // setup API routes

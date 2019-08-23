@@ -22,6 +22,8 @@ var config = require ('../core/util.js').getConfig();
 const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
+const DependenciesManager = require('../web/state/dependencyManager');
+
 let rsiArr = [];
 // Let's create our own strat
 var strat = {};
@@ -54,6 +56,10 @@ const TAKE_PROFIT_COEF = 1.01;
 let THRESHOLDS = {};
 // Prepare everything our method needs
 strat.init = function() {
+  if (!config.dependencyResults) {
+    throw 'This strategy must run with dependency "ATR-ADX-Trend"';
+  }
+
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
   this.debug = false;
   this.writeToFile = false;
@@ -93,9 +99,9 @@ strat.init = function() {
   this.addTulipIndicator('natr', 'natr', customNATRSettings);
   this.addTulipIndicator('rsi', 'rsi', { optInTimePeriod: 14 });
 
-  this.addIndicator('aaat2', 'Adaptive-ATR-ADX-Trend', {
+  /*this.addIndicator('aaat2', 'Adaptive-ATR-ADX-Trend', {
     debug: this.debug
-  });
+  });*/
 
   this.tradeInitiated = false;
   console.log(`SETTINGS: ${JSON.stringify(this.settings)}`);
@@ -121,6 +127,10 @@ strat.update = function(candle) {
     wait--;
     log.debug('Wait: ', wait);
   }
+
+  let res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults);
+  console.error('!! RES:' , res, candle.start.toString());
+  isBullTrendCur = res && (res.trend !== -1) || isBullTrendCur;
 }
 
 strat.update5 = function(candle) {
@@ -171,20 +181,20 @@ strat.update5 = function(candle) {
 let rsiPrevPrevPrev = 0;
 let rsiPrevPrev = 0;
 let rsiPrev = 0;
-let aaat2, isBullTrendCur;
+let aaat2, isBullTrendCur = false;
 strat.check = function() {
-  aaat2 = this.indicators.aaat2.result;
+  /*aaat2 = this.indicators.aaat2.result;
   if (aaat2 && aaat2.trend) {
     isBullTrendCur = aaat2.trend > 0;
-    /*if(aaat2.trendChange !== 0){
+    /!*if(aaat2.trendChange !== 0){
       console.error(`trend changed! New trend is ${(aaat2.trend > 0)? 'up': 'down'}, result: ${JSON.stringify(aaat2)}`);
     }
     if((aaat2.trendChange < 0 && aaat2.trend < 0)){
       isBullTrendCur = true;
     } else if((aaat2.trendChange > 0 && aaat2.trend > 0)) {
       isBullTrendCur = false;
-    }*/
-  }
+    }*!/
+  }*/
 
   // RSI Candle:
   if (false) {
@@ -231,10 +241,10 @@ strat.check = function() {
           && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY) && !advised) {
           isCandleBuy = false; // false by default
           isATRBuy = true; // false by default
-          this.buy(`RSI+ATR: BUY!!, trend: ${ aaat2.trend }`);
+          this.buy(`RSI+ATR: BUY!!, bull trend: ${ isBullTrendCur }`);
         }
         if (rsi < THRESHOLDS.RSI_LOW_BUY_ALWAYS && !advised) {
-          this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${rsi}, trend: ${ aaat2.trend }`);
+          this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${rsi}, bull trend: ${ isBullTrendCur }`);
           // console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
         }
         if (atr >= THRESHOLDS.ATR_HIGH_BUY) {
@@ -247,11 +257,11 @@ strat.check = function() {
         // if(advised && isATRBuy) {
         if (advised) {
           if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
-            this.sell(`RSI+ATR: SELL!!, trend: ${ aaat2.trend }`);
+            this.sell(`RSI+ATR: SELL!!, bull trend: ${ isBullTrendCur }`);
             //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
           }
           if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
-            this.sell(`RSI_HIGH_SELL_ALWAYS: SELL!!, trend: ${ aaat2.trend }`);
+            this.sell(`RSI_HIGH_SELL_ALWAYS: SELL!!, bull trend: ${ isBullTrendCur }`);
             //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
           }
           // sell if trade is more than 1 hr(TIMEOUT_EXIT_MINUTES), coz usually it's a loss, if followed this strat rules
@@ -274,11 +284,11 @@ strat.check = function() {
         // FREEEDOM!!!
         if (!advised) {
           if(rsi < THRESHOLDS.RSI_LOW_BUY){
-            this.buy(`RSI (bull trend): BUY!!, trend: ${ aaat2.trend }`);
+            this.buy(`RSI (bull trend): BUY!!, bull trend: ${ isBullTrendCur }`);
           }
         } else {
           if(rsi > THRESHOLDS.RSI_HIGH_SELL){
-            this.sell(`RSI (bull trend): sell!!, trend: ${ aaat2.trend }`);
+            this.sell(`RSI (bull trend): sell!!, bull trend: ${ isBullTrendCur }`);
           }
         }
       }
