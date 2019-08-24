@@ -14,28 +14,20 @@ const DependencyManager = function() {
 }
 
 DependencyManager.prototype.getDependencyResults = function (config) {
-  console.error('!! getDependencyResults')
-
   this.startDependencies(config);
-  console.error('!! dependenciesManager.startDependencies');
 }
 DependencyManager.prototype.getDependencyResultsAsync = async function (config) {
-  console.error('!! getDependencyResults')
-
   await this.startDependenciesAsync(config);
-  console.error('!! dependenciesManager.startDependencies');
 
   return new Promise((resolve, reject) =>{
-    const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
+    const configDep = DependencyManager.GetDepConfigFromConfig(config);
 
+    const fileName = `${ util.dirs().gekko }/logs/${ DependencyManager.GetNameFromConfig(configDep) }.json`;
     fs.readFile(
       fileName,
       (err, data) => {
-        console.error('!! dependenciesManager.readFile');
         results = JSON.parse(data);
         config.dependencyResults = results;
-        // util.setConfigProperty(null, 'dependencyResults', results);
-
         if(err) {
           log.error('unable to read backtest result', err);
           reject(err);
@@ -54,7 +46,7 @@ DependencyManager.prototype.startDependencies = function (state) {
       curDep = state.dependencies[i];
       _.merge(stateDep, state, curDep);
       stateDep.isDependency = true;
-      const depName = getNameFromConfig(stateDep);
+      const depName = DependencyManager.GetNameFromConfig(stateDep);
       curDep.name = depName;
       let origConfig = util.getConfig();
       util.setConfig(stateDep);
@@ -66,14 +58,12 @@ DependencyManager.prototype.startDependencies = function (state) {
   }
 }
 DependencyManager.prototype.startDependenciesAsync = async function (state) {
-  let curDep, stateDep = {};
+  let stateDep = {};
   if(state && state.dependencies && state.dependencies.length > 0 ) {
     for(let i = 0; i < state.dependencies.length; i++ ) {
-      curDep = state.dependencies[i];
-      _.merge(stateDep, state, curDep);
-      stateDep.isDependency = true;
-      const depName = getNameFromConfig(stateDep);
-      curDep.name = depName;
+      stateDep = DependencyManager.GetDepConfigFromConfig(state, i);
+      const depName = DependencyManager.GetNameFromConfig(stateDep);
+      stateDep.name = depName;
 
       await pipelineRunner('backtest', stateDep);
     }
@@ -107,12 +97,21 @@ DependencyManager.getClosestResult = function (date, results) {
   }
   return ret;
 }
-
-module.exports = DependencyManager;
-
-const getNameFromConfig = function(config){
+DependencyManager.GetDepConfigFromConfig = function(config, index) {
+  index = index || 0;
+  let curDep, configDep = {};
+  curDep = config.dependencies[index];
+  _.merge(configDep, config, curDep);
+  configDep.isDependency = true;
+  return configDep;
+}
+DependencyManager.GetNameFromConfig = function(config){
   let ret = `${ config.watch.exchange }_${ config.watch.currency }_${ config.watch.asset }_${
     config.tradingAdvisor.method }_${ JSON.stringify(config[ config.tradingAdvisor.method ]) }_${
     config.tradingAdvisor.candleSize }_${ config.tradingAdvisor.historySize }_${ config.backtest.daterange.from }_${ config.backtest.daterange.to }`;
+  ret = ret.replace(new RegExp('[ :, \", {, } ]', 'g'), '_');
   return ret;
 }
+module.exports = DependencyManager;
+
+

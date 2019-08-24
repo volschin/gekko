@@ -35,7 +35,8 @@ export default {
       dataset: {},
       strat: {},
       paperTrader: {},
-      performanceAnalyzer: {}
+      performanceAnalyzer: {},
+      dependencyPicker: []
     }
   },
   components: {
@@ -71,6 +72,7 @@ export default {
         config,
         { watch: this.market },
         { paperTrader: this.paperTrader },
+        { dependencies: this.dependencyPicker },
         this.strat,
         {
           backtest: {
@@ -136,7 +138,7 @@ export default {
       this.$emit('config', this.config);
     },
     updateDependencies: function(deps) {
-      this.config.dependencies = deps;
+      this.dependencyPicker = deps;
       this.$emit('config', this.config);
     },
     updatePaperTrader: function(pt) {

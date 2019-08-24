@@ -24,7 +24,7 @@ export default {
     };
   },
   created: function () {
-
+    this.emitConfig();
   },
   watch: {
     rawDependencies: function() { this.emitConfig() }
@@ -71,7 +71,7 @@ const defTxt = `
       "currency":"USDT",
       "asset":"BTC"
    },
-  "ATR-ADX-Trend": { "CANDLE_NUMBER": 1 },
+  "ATR-ADX-Trend-Dep": { "CANDLE_NUMBER": 1 },
   "type": "paper trader"
 }]
 `
