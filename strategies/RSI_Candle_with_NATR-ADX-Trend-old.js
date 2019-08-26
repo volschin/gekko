@@ -236,48 +236,52 @@ strat.check = function() {
 
     if (atr && rsi && rsi !== 0) {
       if (!isBullTrendCur) {
-        if(isBullTrendCur !== isBullTrendPrev && advised) {
+        if(isBullTrendCur !== isBullTrendPrev) {
           // trend just became BEARISH, SELL!!
-            this.sell(` trend just became BEARISH, SELL!!`);
-        } else {
-          if (atr >= THRESHOLDS.ATR_HIGH_BUY
-            && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY) && !advised) {
-            isCandleBuy = false; // false by default
-            isATRBuy = true; // false by default
-            this.buy(`RSI+ATR: BUY!!, bull trend: ${ isBullTrendCur }`);
-          }
-          if (rsi < THRESHOLDS.RSI_LOW_BUY_ALWAYS && !advised) {
-            this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${rsi}, bull trend: ${ isBullTrendCur }`);
-            // console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
-          }
-          if (atr >= THRESHOLDS.ATR_HIGH_BUY) {
-            // console.error(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
-            //console.log(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
-          }
-          if (atr <= THRESHOLDS.ATR_LOW_SELL) {
-
-          }
-          // if(advised && isATRBuy) {
           if (advised) {
-            if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
-              this.sell(`RSI+ATR: SELL!!, bull trend: ${ isBullTrendCur }`);
-              //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
-            }
-            if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
-              this.sell(`RSI_HIGH_SELL_ALWAYS: SELL!!, bull trend: ${ isBullTrendCur }`);
-              //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
-            }
-            // sell if trade is more than 1 hr(TIMEOUT_EXIT_MINUTES), coz usually it's a loss, if followed this strat rules
-            // , if TIMEOUT_EXIT_COEF > 1 - take profit condition, if TIMEOUT_EXIT_COEF< 1 - stop loss:
-            if (buyTs) {
-              //console.log(`asdf: ${buyTs}, diff: ${this.candle.start.diff(buyTs, 'minutes')}, currentPrice: ${currentPrice},buyPrice: ${buyPrice},buyPrice * THRESHOLDS.TAKE_PROFIT_COEF:${buyPrice * THRESHOLDS.TAKE_PROFIT_COEF}`);
-              if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES
-                && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF) {
-                this.sell('TAKE PROFIT AFTER TIMEOUT: SELL!!');
-              } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_2
-                && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_2) {
-                this.sell('TAKE PROFIT AFTER TIMEOUT-2: SELL!!');
-              }
+            this.sell(` trend just became BEARISH, SELL!!`);
+          }
+        }
+        if (atr >= THRESHOLDS.ATR_HIGH_BUY
+          && (rsi < THRESHOLDS.RSI_LOW_BUY || rsiPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrev < THRESHOLDS.RSI_LOW_BUY || rsiPrevPrevPrev < THRESHOLDS.RSI_LOW_BUY) && !advised) {
+          isCandleBuy = false; // false by default
+          isATRBuy = true; // false by default
+          this.buy(`RSI+ATR: BUY!!, bull trend: ${ isBullTrendCur }`);
+        }
+        if (rsi < THRESHOLDS.RSI_LOW_BUY_ALWAYS && !advised) {
+          this.buy(`RSI_LOW_BUY_ALWAYS: BUY!! RSI: ${rsi}, bull trend: ${ isBullTrendCur }`);
+          // console.error(`RSI_LOW_BUY_ALWAYS: BUY!!  ${time}, RSI: ${ rsi }, RSI-5: ${ rsi5.result }`);
+        }
+        if (atr >= THRESHOLDS.ATR_HIGH_BUY) {
+          // console.error(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
+          //console.log(`ATR >= THRESHOLDS.ATR_HIGH_BUY: ${time}, ${atr}, ${ rsi }`);
+        }
+        if (atr <= THRESHOLDS.ATR_LOW_SELL) {
+
+        }
+        // if(advised && isATRBuy) {
+        if (advised) {
+          if (atr <= THRESHOLDS.ATR_LOW_SELL && rsi > THRESHOLDS.RSI_HIGH_SELL) {
+            this.sell(`RSI+ATR: SELL!!, bull trend: ${ isBullTrendCur }`);
+            //console.log(`ATR_LOW_SELL && RSI_HIGH_SELL !!! ${time}, ${atr}, ${ rsi }`);
+          }
+          if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
+            this.sell(`RSI_HIGH_SELL_ALWAYS: SELL!!, bull trend: ${ isBullTrendCur }`);
+            //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
+          }
+          // sell if trade is more than 1 hr(TIMEOUT_EXIT_MINUTES), coz usually it's a loss, if followed this strat rules
+          // , if TIMEOUT_EXIT_COEF > 1 - take profit condition, if TIMEOUT_EXIT_COEF< 1 - stop loss:
+          if (buyTs) {
+            //console.log(`asdf: ${buyTs}, diff: ${this.candle.start.diff(buyTs, 'minutes')}, currentPrice: ${currentPrice},buyPrice: ${buyPrice},buyPrice * THRESHOLDS.TAKE_PROFIT_COEF:${buyPrice * THRESHOLDS.TAKE_PROFIT_COEF}`);
+            if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF) {
+              this.sell('TAKE PROFIT AFTER TIMEOUT: SELL!!');
+            } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_2
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_2) {
+              this.sell('TAKE PROFIT AFTER TIMEOUT-2: SELL!!');
+            } else if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_3
+              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_3) {
+              this.sell('TAKE PROFIT AFTER TIMEOUT-3: SELL!!');
             }
           }
         }
@@ -291,16 +295,9 @@ strat.check = function() {
             this.buy(`RSI (bull trend): BUY!!, bull trend: ${ isBullTrendCur }`);
           }
         } else {
-          if (buyTs) {
-            if (this.candle.start.diff(buyTs, 'minutes') > THRESHOLDS.TIMEOUT_EXIT_MINUTES_3
-              && currentPrice >= buyPrice * THRESHOLDS.TIMEOUT_EXIT_COEF_3) {
-              this.sell('TAKE PROFIT AFTER TIMEOUT-3: SELL!! (BULLISH)');
-            }
-          }
-          /*if (rsi > THRESHOLDS.RSI_HIGH_SELL_ALWAYS) {
-            this.sell(`RSI_HIGH_SELL_ALWAYS: SELL!! (BULLISH)`);
-            //console.log(`RSI_HIGH_SELL_ALWAYS !!! ${time}, ${atr}, ${ rsi }`);
-          }*/
+          // if(rsi > THRESHOLDS.RSI_HIGH_SELL){
+          //   this.sell(`RSI (bull trend): sell!!, bull trend: ${ isBullTrendCur }`);
+          // }
         }
       }
 

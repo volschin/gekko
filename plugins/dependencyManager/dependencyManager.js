@@ -60,12 +60,9 @@ function setupActor() {
     }*/
   };
   Actor.prototype.finalize = function(done) {
-    console.log('dependencyManager: finalize');
-    cache.set('dependencyManagerResults', { a: 1 });
-    config.aaa = 1;
-    const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
-    console.error(fileName);
-    config.res = 111;
+    const fileName = `${ util.dirs().gekko }/logs/${ DependencyManager.GetNameFromConfig(config) }.json`;
+    console.error('DependencyManagerPlugin: finalize, write to: ', fileName);
+
     fs.writeFile(
       fileName,
       JSON.stringify(results),

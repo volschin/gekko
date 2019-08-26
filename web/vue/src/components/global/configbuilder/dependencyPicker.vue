@@ -24,7 +24,7 @@ export default {
     };
   },
   created: function () {
-
+    this.emitConfig();
   },
   watch: {
     rawDependencies: function() { this.emitConfig() }

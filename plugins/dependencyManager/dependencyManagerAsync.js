@@ -3,6 +3,9 @@ const moment = require('moment');
 const _ = require('lodash');
 const util = require('../../core/util.js');
 const config = util.getConfig();
+
+const DependencyManager = require('../../web/state/dependencyManager');
+
 let cache = require('../../web/state/cache');
 const fs = require('fs');
 
@@ -38,13 +41,23 @@ function setupActor() {
     //done();
   };
   let buyReason, sellReason, result;
+  Actor.prototype.processStratWarmupCompleted  = function() {
+    console.error('stratWarmupCompleted', date.toString());
+/*    result = {
+      type: 'info',
+      date: date,
+      ts: new Date(date).getTime()
+    }
+    results.push(result);*/
+  }
   Actor.prototype.processStratNotification = function({ content }) {
     // console.log('process dependency Strategy Notification: ', content);
     // console.log(cache);
     if (content.type === 'dependency-trend-change') {
-      console.info(date.toString());
+      // console.info(date.toString());
 
       result = {
+        type: 'trendChange',
         data: content.data,
         date: date,
         ts: new Date(date).getTime()
@@ -61,10 +74,10 @@ function setupActor() {
     }*/
   };
   Actor.prototype.finalize = function(done) {
-    console.log('dependencyManager: finalize');
-    cache.set('dependencyManagerResults', { a: 1 });
-    config.aaa = 1;
-    const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
+    const fileName = `${ util.dirs().gekko }/logs/${ DependencyManager.GetNameFromConfig(config) }.json`;
+    console.error('DependencyManagerPlugin: finalize, write to: ', fileName);
+
+    // const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
     console.error(fileName);
 
     fs.writeFile(
