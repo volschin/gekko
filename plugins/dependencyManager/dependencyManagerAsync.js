@@ -40,8 +40,9 @@ function setupActor() {
   Actor.prototype.processAdvice = function(advice, done) {
     //done();
   };
-  let buyReason, sellReason, result;
+  let buyReason, sellReason, result, resultWarmupCompletedDate;
   Actor.prototype.processStratWarmupCompleted  = function() {
+    resultWarmupCompletedDate = date.toString();
     console.error('stratWarmupCompleted', date.toString());
 /*    result = {
       type: 'info',
@@ -75,6 +76,10 @@ function setupActor() {
   };
   Actor.prototype.finalize = function(done) {
     const fileName = `${ util.dirs().gekko }/logs/${ DependencyManager.GetNameFromConfig(config) }.json`;
+    const resultsObj = {
+      warmupCompletedDate: resultWarmupCompletedDate,
+      results: results
+    }
     console.error('DependencyManagerPlugin: finalize, write to: ', fileName);
 
     // const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
@@ -82,7 +87,7 @@ function setupActor() {
 
     fs.writeFile(
       fileName,
-      JSON.stringify(results),
+      JSON.stringify(resultsObj),
       err => {
         console.error('writeFile - done');
 
