@@ -56,7 +56,7 @@ const TAKE_PROFIT_COEF = 1.01;
 let THRESHOLDS = {};
 // Prepare everything our method needs
 strat.init = function() {
-  if (!config.dependencyResults) {
+  if (!config.dependencyResults.results) {
     throw 'This strategy must run with dependency "ATR-ADX-Trend"';
   }
 
@@ -128,7 +128,7 @@ strat.update = function(candle) {
     log.debug('Wait: ', wait);
   }
 
-  let res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults);
+  let res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults.results);
   isBullTrendCur = res && (res.trend !== -1);
   // console.error('!! RES:' , res, isBullTrendCur, advised, candle.start.toString());
 }

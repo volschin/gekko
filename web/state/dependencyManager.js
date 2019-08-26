@@ -21,13 +21,14 @@ DependencyManager.prototype.getDependencyResultsAsync = async function (config) 
 
   return new Promise((resolve, reject) =>{
     const configDep = DependencyManager.GetDepConfigFromConfig(config);
+    let resultsObj;
 
     const fileName = `${ util.dirs().gekko }/logs/${ DependencyManager.GetNameFromConfig(configDep) }.json`;
     fs.readFile(
       fileName,
       (err, data) => {
-        results = JSON.parse(data);
-        config.dependencyResults = results;
+        resultsObj = JSON.parse(data);
+        config.dependencyResults = resultsObj;
         if(err) {
           log.error('unable to read backtest result', err);
           reject(err);
