@@ -46,7 +46,8 @@ strat.init = function() {
   this.requiredHistory = config.tradingAdvisor.historySize;
 
   this.addIndicator('aaat2', 'Adaptive-ATR-ADX-Trend', {
-    debug: this.debug
+    debug: this.debug,
+    useHeiken: this.settings.USE_HEIKEN
   });
   this.tradeInitiated = false;
 }
