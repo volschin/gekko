@@ -71,7 +71,7 @@ const defTxt = `
       "currency":"USDT",
       "asset":"BTC"
    },
-  "ATR-ADX-Trend": { "CANDLE_NUMBER": 1 },
+  "ATR-ADX-Trend-Dep": { "CANDLE_NUMBER": 1, "USE_HEIKEN": true },
   "type": "paper trader"
 }]
 `
