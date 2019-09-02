@@ -44,7 +44,7 @@ strat.init = function() {
   config.debug = false;
 
   this.requiredHistory = config.tradingAdvisor.historySize;
-
+console.error('USE_HEIKEN: ' + this.settings.USE_HEIKEN);
   this.addIndicator('aaat2', 'Adaptive-ATR-ADX-Trend', {
     debug: this.debug,
     useHeiken: this.settings.USE_HEIKEN

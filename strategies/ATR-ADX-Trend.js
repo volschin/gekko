@@ -100,17 +100,19 @@ strat.check = function() {
   // simple change trend strat:
 
   if(curIndicator) {
+    console.log(`INFO: DATE: ${ this.candle.start }, curIndicator.stop: ${ curIndicator.stop }, currentPrice: ${ currentPrice }, 
+          curIndicator.trendChange: ${curIndicator.trendChange }, curIndicator.trend: ${curIndicator.trend },  `);
     if (advised && curIndicator.trendChange === -2) {
       this.sell(`TREND CHANGE to down: SELL!! ${curIndicator.stop}`);
-    } /*else if (!advised && curIndicator.trendChange === 2) {
+    } else if (!advised && curIndicator.trendChange === 2) {
       this.buy(`TREND CHANGE to up: BUY!! ${curIndicator.stop}`);
-    } */else if (!advised && isBullTrendCur) {
+    } /*else if (!advised && isBullTrendCur) {
       if (rsi && rsi !== 0) {
         if(rsi < this.settings.RSI_BUY_MIN) {
           this.buy(`TREND is up && RSI < 30: BUY!! ${curIndicator.stop}, rsi: ${ rsi }`);
         }
       }
-    }
+    }*/
   }
 
   aaat2PrevPrev = aaat2Prev;
