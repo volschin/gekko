@@ -26,7 +26,7 @@ const _ = require('lodash');
 const SMA = require('./SMA');
 const ATR = require('./ATR');
 const log = require('../../core/log');
-
+const TradingView = require('../tools/tradingView');
 // --- settings
 const atrLen = 14;
 const m1 = 3.5; //"ATR Multiplier - ADX Rising"
@@ -107,9 +107,9 @@ const atrCalc = function(candle){
   tr = Math.max(high - low, Math.abs(high - closePrev), Math.abs(low - closePrev));
   sTR = tr;
 
-  sTR = nz(sTRPrev, sTR) - nz(sTRPrev, sTR) / adxLen + tr;
-  sDMPos = nz(sDMPosPrev) - nz(sDMPosPrev) / adxLen + dmPos;
-  sDMNeg = nz(sDMNegPrev) - nz(sDMNegPrev) / adxLen + dmNeg;
+  sTR = TradingView.nz(sTRPrev, sTR) - TradingView.nz(sTRPrev, sTR) / adxLen + tr;
+  sDMPos = TradingView.nz(sDMPosPrev) - TradingView.nz(sDMPosPrev) / adxLen + dmPos;
+  sDMNeg = TradingView.nz(sDMNegPrev) - TradingView.nz(sDMNegPrev) / adxLen + dmNeg;
 
   DIP = sDMPos / sTR * 100;
   DIN = sDMNeg / sTR * 100;
@@ -117,11 +117,11 @@ const atrCalc = function(candle){
   // 21:38 - adx 20.7265
   DXArr.push(DX);
   DXArr.shift();
-  adx = sma(DXArr, adxLen);
+  adx = TradingView.sma(DXArr, adxLen);
 
 
   // Heikin-Ashi
-  xClose = ohlc4(candle);
+  xClose = TradingView.ohlc4(candle);
 
   if(_.isUndefined(xOpenPrev)) xOpenPrev = open;
   if(_.isUndefined(xClosePrev)) xClosePrev = close;
@@ -138,22 +138,22 @@ const atrCalc = function(candle){
   trueRange = Math.max(v1, Math.max(v2, v3));
 
   // atr = this.atr.result;
-  atr = useHeiken ? rma(trueRange, atrLen) : this.atr.result;
+  atr = useHeiken ? TradingView.rma(trueRange, atrLen) : this.atr.result;
   // console.error(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
 
   if(_.isUndefined(adxPrev)) adxPrev = adx;
   if(_.isUndefined(mPrev)) mPrev = m;
   // m := rising(adx, 1) and (adx < adxThresh or not aboveThresh) ? m1 : falling(adx, 1) or (adx > adxThresh and aboveThresh) ? m2 : nz(m[1])
-  m = (adx > adxPrev) && ((adx < adxThresh) || !aboveThresh) ? m1 : ((adx < adxPrev) || (adx > adxThresh) && aboveThresh) ? m2 : nz(mPrev);
+  m = (adx > adxPrev) && ((adx < adxThresh) || !aboveThresh) ? m1 : ((adx < adxPrev) || (adx > adxThresh) && aboveThresh) ? m2 : TradingView.nz(mPrev);
   mUp = (DIP >= DIN) ? m : m2;
   mDn = (DIN >= DIP) ? m : m2;
 
-  src = ohlc4(candle);
+  src = TradingView.ohlc4(candle);
 
   // src_ = src;
   src_ = useHeiken ? (xOpen + xHigh + xLow + xClose) / 4 : src;
   c = useHeiken ? xClose : close;
-  t = useHeiken ? (xHigh + xLow) / 2 : hl2(candle);
+  t = useHeiken ? (xHigh + xLow) / 2 : TradingView.hl2(candle);
 
   up = t - mUp * atr;
   dn = t + mDn * atr;
@@ -207,56 +207,6 @@ const atrCalc = function(candle){
   return {
     trend, stop, trendChange,
     //adx,atr, m, src_, TUp, TDown // debug
-  }
-}
-
-
-// Simple moving average of x for y bars back. https://www.tradingview.com/pine-script-reference/#fun_sma
-const sma = function(x, length){
-  let sum = 0.0;
-  if(x.length < length){
-    throw `length should be ${ length }`;
-  }
-  for (let i = 0; i < length; i++) {
-    sum = sum + x[i] / length;
-  }
-  return sum;
-}
-const nz = function(value, defaultValue){
-  return _.isUndefined(value) ? (_.isUndefined(defaultValue) ? 0 : defaultValue) : value;
-}
-const ohlc4 = function(candle) {
-  return (candle.open + candle.high + candle.low + candle.close) / 4;
-}
-const hl2 = function(candle) {
-  return (candle.high + candle.low) / 2;
-}
-
-// https://www.tradingview.com/pine-script-reference/#fun_rma
-let sumRma, sumRmaPrev, alphaRma;
-const rma = function(x, y) {
-  alphaRma = y;
-  sumRma = 0.0;
-  if(_.isUndefined(sumRmaPrev)) sumRmaPrev = x;
-
-  sumRma = (x + (alphaRma - 1) * sumRmaPrev) / alphaRma;
-  sumRmaPrev = sumRma;
-  return sumRma;
-}
-// https://www.tradingview.com/pine-script-reference/#fun_rising
-// https://www.tradingview.com/script/UscR50Jd-Built-in-rising-function-and-a-custom-one/
-// true if current x is greater than any previous x for y bars back, false otherwise.
-/*  rising2(x, len) =>
-res = true
-for i = 1 to len
-  res := res and x[i] < x
-res*/
-const rising = function(X, length){
-  let ret = true, x = X[length - 1];
-  for(let i = 0; i < length; i++){
-    if(X[i] >= x){
-      ret = false;
-    }
   }
 }
 
