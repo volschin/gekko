@@ -80,25 +80,27 @@ function setupActor() {
       warmupCompletedDate: resultWarmupCompletedDate,
       results: results
     }
-    console.error('DependencyManagerPlugin: finalize, write to: ', fileName);
+    if(!fs.existsSync(fileName)) {
+      console.error('DependencyManagerPlugin: finalize, write to: ', fileName);
+      // const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
+      fs.writeFile(
+        fileName,
+        JSON.stringify(resultsObj),
+        err => {
+          console.error('writeFile - done');
 
-    // const fileName = `${ util.dirs().gekko }/logs/dependencyManagerResults.json`;
-    console.error(fileName);
-
-    fs.writeFile(
-      fileName,
-      JSON.stringify(resultsObj),
-      err => {
-        console.error('writeFile - done');
-
-        if(err) {
-          log.error('unable to write backtest result', err);
-        } else {
-          log.info('written backtest to: ', util.dirs().gekko + fileName);
+          if(err) {
+            log.error('unable to write backtest result', err);
+          } else {
+            log.info('written backtest to: ', util.dirs().gekko + fileName);
+          }
+          done();
         }
-        done();
-      }
-    );
+      );
+    } else {
+      console.error(`DependencyManagerPlugin: file exists, using it.. -> ${ fileName } `);
+      done();
+    }
   };
 }
 

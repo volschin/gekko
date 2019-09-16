@@ -14,6 +14,7 @@
 	(c) Gabriel Araujo
 	Howto: Download + add to gekko/strategies/indicators
 */
+// CHECK!! https://forum.gekko.wizb.it/thread-57778.html, https://www.tradingview.com/script/xZ22V7Dd-Tommies-RSI-strat-backtest/
 
 // req's
 var log = require('../core/log.js');

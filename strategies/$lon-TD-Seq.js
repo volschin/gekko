@@ -28,6 +28,9 @@ strat.init = function() {
   config.silent = true;
   config.debug = false;
 
+  this.addIndicator('tdm_seq', 'TD-Sequential', {
+    debug: false
+  });
 
   this.tradeInitiated = false;
 }
@@ -40,22 +43,37 @@ strat.update = function(candle) {
   // this.notify({
   //   type: 'dependency-...',
   //   reason: 'TREND CHANGE',
-  //   data: this.curIndicator
+  //   data: curIndicator
   // });
-}
+  this.indicators.tdm_seq.update(candle);
 
+}
+const TAKE_PRIFIT_EXIT_COEF = 1.005;
+const STOPLOSS_EXIT_COEF = 0.99;
+const TIMEOUT_EXIT_MINUTES = 120;
 strat.check = function() {
   // time after last BUY:
-  // if ((this.candle.start.diff(this.buyTs, 'minutes') > this.settings.TIMEOUT)) {
+  // if ((this.candle.start.diff(buyTs, 'minutes') > this.settings.TIMEOUT)) {
   //
   // }
-  // if(!this.advised) {
-  //   // can BUY
-  //   this.buy(' ... reason ');
-  // } else {
-  //   // can SELL
-  //   this.sell(' ... reason ');
-  // }
+  let seqBuy = this.indicators.tdm_seq.result;
+
+  // console.error(`seqBuy: ${JSON.stringify(this.indicators.tdm_seq)}`);
+  if(!this.advised && this.indicators.tdm_seq.isSetupBuy) {
+  // if(!this.advised && this.indicators.tdm_seq.isPerfectSetupBuy) {
+    // can BUY
+    this.buy('td seq buy');
+
+  } else if(this.advised && (
+      this.indicators.tdm_seq.isSetupSell
+      || this.indicators.tdm_seq.isPerfectSetupSell
+      // this.currentPrice >= this.buyPrice * TAKE_PRIFIT_EXIT_COEF
+      // || this.candle.start.diff(this.buyTs, 'minutes') > TIMEOUT_EXIT_MINUTES
+      // || this.currentPrice <= this.buyPrice * STOPLOSS_EXIT_COEF
+  )) {
+    // can SELL
+    this.sell('td seq sell');
+  }
 }
 
 strat.sell = function(reason) {
