@@ -28,7 +28,9 @@ const ohlc4 = function(candle) {
 const hl2 = function(candle) {
   return (candle.high + candle.low) / 2;
 }
-
+const valuewhen = function(predicate, source, index){
+  // TODO https://www.tradingview.com/pine-script-reference/#fun_valuewhen
+}
 // https://www.tradingview.com/pine-script-reference/#fun_rma
 let sumRma, sumRmaPrev, alphaRma;
 const rma = function(x, y) {
@@ -85,5 +87,7 @@ TradingView.rma = rma;
 TradingView.rising = rising;
 TradingView.crossover = crossover;
 TradingView.crossunder = crossunder;
+TradingView.valuewhen = valuewhen;
+
 
 module.exports = TradingView;

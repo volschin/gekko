@@ -1,57 +1,42 @@
-/*
-  Heiken-Ashi - manuel.wassermann97@gmail.com 21/01/2018
- */
-
+// https://www.investopedia.com/terms/h/heikinashi.asp
 
 var Indicator = function(){
   this.input = 'candle';
-  this.high = null;
-  this.low = null;
-  this.open = null;
-  this.close = null;
+  this.candleCur = {
+    high: null,
+    low: null,
+    open: null,
+    close: null,
+  }
+  this.first = true;
 }
-
-
 
 Indicator.prototype.update = function(candle) {
 
-  // Only calculate if we have an previous candle
-  if(this.lastCandle){
-
-    // heiken.close
-    this.xClose = function(previous, current){
-      return (previous.close+current.open+current.low+current.high)/4;
-    }
-
-    // first heiken.open
-    // This is probably wrong
-    first = true;
-    if(first){
-      this.xOpen = function(previous){
-        return (previous.open+previous.close)/2;
-        first = false;
-      }
-
-      // heiken.open
-    } else{
-      this.xOpen = function(previous){
-        return (this.xOpen(this.previousCandle)+this.xClose(this.previousCandle))/2;
-      }
-    }
-
-
-    this.close = this.xClose(this.lastCandle, candle);
-    this.open = this.xOpen(this.lastCandle, candle);
-
-    // heiken.high
-    this.high = Math.max(this.lastCandle.high,this.open,this.close);
-    // heiken.low
-    this.low = Math.min(this.lastCandle.low,this.open,this.close);
+  if(this.first) {
+    this.first = false;
+    this.curClose = (candle.close + candle.open + candle.low + candle.high) / 4;
+    this.curOpen = (candle.open + candle.close) / 2;
+    this.curHigh = candle.high;
+    this.curLow = candle.low;
+  } else {
+    this.curClose = (candle.close + candle.open + candle.low + candle.high) / 4;
+    this.curOpen = (this.candlePrev.open + this.candlePrev.close) / 2;
+    this.curHigh = Math.max(candle.high, this.curOpen, this.curClose);
+    this.curLow = Math.min(candle.low, this.curOpen, this.curClose);
   }
 
-// Remember last candle
-  this.lastCandle = candle;
+  this.candleCur = {
+    close: this.curClose,
+    open: this.curOpen,
+    high: this.curHigh,
+    low: this.curLow,
+  }
 
+  this.candlePrev = this.candleCur;
+
+  this.result = Object.assign({}, candle, this.candleCur);
+  return this.result;
 }
 
 module.exports = Indicator;

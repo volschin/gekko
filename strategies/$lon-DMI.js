@@ -1,10 +1,21 @@
-// MACD Cross
+// ADX+DMI Trading
 // Created by Ash
 // Version 1
 //
-// https://ru.tradingview.com/script/tDM3U5y7-Renko-MACD-Cross-Strategy/
-//
+// ADX is used for:
+// 1. Excellent at quantifying TREND STRENGTH
+// 2. Good at FILTERING OUT TRADES during accumulation periods
+// 3. Good at identifying TRENDING CONDITIONS
+// 4. Allows traders to see the STRENGTH OF BULLS AND BEARS
 
+// https://www.youtube.com/watch?v=4rn1vw3kGuU&t=22s
+//
+// ADX > 25 - trending, < 25 - no trend zone
+// DI+ > DI bulls, DI+ < DI- - bears
+// DI+ > DI- && ADX > 25 - uptrend
+// DI+ < DI- && ADX > 25 - downtrend
+
+// ADX > 50 - very strong trend!!
 
 const log = require('../core/log');
 const config = require ('../core/util').getConfig();
