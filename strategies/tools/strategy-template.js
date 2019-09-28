@@ -14,11 +14,10 @@ const CandleBatcher = require('../core/candleBatcher');
 
 let strat = {};
 
-// Prepare everything our method needs
+// seal everything into init to have the ability to use local variables unique for each strat instance
+// , instead of using 'this.someVar', to optimize performance:
 strat.init = function() {
-  this.currentPrice = 0.0;
-  this.buyPrice = 0.0;
-  this.advised = false;
+  let currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs;
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
   this.debug = false;
@@ -29,76 +28,78 @@ strat.init = function() {
   config.debug = false;
 
 
-  this.tradeInitiated = false;
-}
-
 // What happens on every new candle?
-strat.update = function(candle) {
-  this.currentPrice = candle.close;
+  this.update = function(candle) {
+    currentPrice = candle.close;
 
-  // if strat has DEPENDENCIES, notify them:
-  // this.notify({
-  //   type: 'dependency-...',
-  //   reason: 'TREND CHANGE',
-  //   data: this.curIndicator
-  // });
-}
-
-strat.check = function() {
-  // time after last BUY:
-  // if ((this.candle.start.diff(this.buyTs, 'minutes') > this.settings.TIMEOUT)) {
-  //
-  // }
-  // if(!this.advised) {
-  //   // can BUY
-  //   this.buy(' ... reason ');
-  // } else {
-  //   // can SELL
-  //   this.sell(' ... reason ');
-  // }
-}
-
-strat.sell = function(reason) {
-  this.notify({
-    type: 'sell advice',
-    reason: reason,
-  });
-  this.advice('short');
-  this.advised = false;
-  this.buyPrice = 0;
-  if (this.tradeInitiated) { // Add logic to use other indicators
-    this.tradeInitiated = false;
+    // if strat has DEPENDENCIES, notify them:
+    // this.notify({
+    //   type: 'dependency-...',
+    //   reason: 'TREND CHANGE',
+    //   data: this.curIndicator
+    // });
   }
-}
 
-strat.buy = function(reason) {
-  this.advised = true;
-  // If there are no active trades, send signal
-  if (!this.tradeInitiated) { // Add logic to use other indicators
+  this.check = function() {
+    // time after last BUY:
+    // if ((this.candle.start.diff(this.buyTs, 'minutes') > this.settings.TIMEOUT)) {
+    //
+    // }
+    // if(!this.advised) {
+    //   // can BUY
+    //   this.buy(' ... reason ');
+    // } else {
+    //   // can SELL
+    //   this.sell(' ... reason ');
+    // }
+  }
+
+  this.sell = function(reason) {
     this.notify({
-      type: 'buy advice',
+      type: 'sell advice',
       reason: reason,
     });
-    this.advice('long');
-    this.buyTs = this.candle.start;
-    this.buyPrice = this.currentPrice;
-    this.tradeInitiated = true;
+    this.advice('short');
+    advised = false;
+    buyPrice = 0;
+    if (tradeInitiated) { // Add logic to use other indicators
+      tradeInitiated = false;
+    }
+  }
+
+  this.buy = function(reason) {
+    advised = true;
+    // If there are no active trades, send signal
+    if (!tradeInitiated) { // Add logic to use other indicators
+      this.notify({
+        type: 'buy advice',
+        reason: reason,
+      });
+      this.advice('long');
+      buyTs = this.candle.start;
+      buyPrice = currentPrice;
+      tradeInitiated = true;
+    }
+  }
+  this.onPendingTrade = function(pendingTrade) {
+    tradeInitiated = true;
+  }
+
+  this.onTrade = function(trade) {
+    tradeInitiated = false;
+  }
+// Trades that didn't complete with a buy/sell
+  this.onTerminatedTrades = function(terminatedTrades) {
+    log.info('Trade failed. Reason:', terminatedTrades.reason);
+    tradeInitiated = false;
+  }
+
+  this.end = function(a, b, c) {
   }
 }
-strat.onPendingTrade = function(pendingTrade) {
-  this.tradeInitiated = true;
-}
 
-strat.onTrade = function(trade) {
-  this.tradeInitiated = false;
-}
-// Trades that didn't complete with a buy/sell
-strat.onTerminatedTrades = function(terminatedTrades) {
-  log.info('Trade failed. Reason:', terminatedTrades.reason);
-  this.tradeInitiated = false;
-}
-
-strat.end = function(a, b, c) {
+strat.check = function(){
+  // gekko stub
 }
 
 module.exports = strat;
