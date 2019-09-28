@@ -21,6 +21,7 @@ var config = require ('../core/util.js').getConfig();
 const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
+const ATR = require('../strategies/indicators/ATR.js');
 let rsiArr = [];
 // Let's create our own strat
 var strat = {};
@@ -31,6 +32,8 @@ var isATRBuy = false;
 var currentPrice = 0.0;
 var rsi5 = new RSI({ interval: 14 });
 var sma5 = new SMA(200);
+let atrInd, rsiInd;
+
 var advised = false;
 var rsi5History = [];
 var wait = 0;
@@ -80,8 +83,10 @@ strat.init = function() {
     optInTimePeriod: this.settings.ATR_Period || 14,
   }
   // add the indicator to the strategy
-  this.addTulipIndicator('atr', 'atr', customATRSettings);
-  this.addTulipIndicator('rsi', 'rsi', { optInTimePeriod: 14 });
+  // this.addTulipIndicator('atr', 'atr', customATRSettings);
+  atrInd  = new ATR(this.settings.ATR_Period || 14);
+  // this.addTulipIndicator('rsi', 'rsi', { optInTimePeriod: 14 });
+  rsiInd = new RSI({ interval: 14 });
 
   this.tradeInitiated = false;
   console.log(`SETTINGS: ${JSON.stringify(this.settings)}, server: ${ config.name }`);
@@ -91,6 +96,8 @@ strat.init = function() {
 // What happens on every new candle?
 strat.update = function(candle) {
   currentPrice = candle.close;
+  rsiInd.update(candle);
+  atrInd.update(candle);
 
   // write 1 minute candle to 5 minute batchers
   this.batcher5.write([candle]);
@@ -160,12 +167,14 @@ let rsiPrevPrevPrev = 0;
 let rsiPrevPrev = 0;
 let rsiPrev = 0;
 strat.check = function() {
-  let atr = this.tulipIndicators.atr.result.result;
+  let atr = atrInd.result;
+  // let atr = this.tulipIndicators.atr.result.result;
   //console.log(`atr: ${ JSON.stringify(atr)}`);
   // console.log(`candle5: ${ JSON.stringify(candle5)}`);
   let time = JSON.stringify(this.candle.start);
   // console.log(`time: ${ time }`);
-  let rsi = this.tulipIndicators.rsi.result.result;
+  // let rsi = this.tulipIndicators.rsi.result.result;
+  let rsi = rsiInd.result;
   log.info(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
   , cl.price: ${ this.candle.close}, watch: ${ config && config.watch && (config.watch.asset +config.watch.currency+config.watch.exchange) }`);
   console.log(`INFO time:${ time }, Date.now:${ Date.now() }, rsi5Result: ${ rsi5.result }, rsi: ${ rsi }, atr: ${ atr }
