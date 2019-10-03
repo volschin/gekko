@@ -62,7 +62,7 @@ const defTxt = `
 [{
    "tradingAdvisor": {
      "enabled": true,
-     "method": "ATR-ADX-Trend-Dep",
+     "method": "$lon-ATR-ADX-Trend-Dep",
      "candleSize": 120,
      "historySize": 140
    },
@@ -71,7 +71,7 @@ const defTxt = `
       "currency":"USDT",
       "asset":"BTC"
    },
-  "ATR-ADX-Trend-Dep": { "CANDLE_NUMBER": 1, "USE_HEIKEN": true },
+  "$lon-ATR-ADX-Trend-Dep": { "CANDLE_NUMBER": 1, "USE_HEIKEN": true },
   "type": "paper trader"
 }]
 `
