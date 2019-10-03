@@ -97,6 +97,7 @@ let aaat2, isBullTrendCur = false, aaat2Prev, aaat2PrevPrev, curIndicator,
   rsi;
 var rsiIndicator = new RSI({ interval: 14 });
 let buy1Counter= 0, sell1Counter = 0, sell2Counter = 0, priceLowCur;
+let crossCounter1 = 0, crossCounter2 = 0, crossCounter3 = 0, crossCounter4 = 0;
 strat.check = function() {
   if(this.settings.CANDLE_NUMBER === 1) {
     curIndicator = aaat2;
@@ -116,9 +117,26 @@ strat.check = function() {
 */
     priceLowCur = this.candle.low;
     // buy when bull trend and crosses green, sell :
-    if(true){
+    let crossThreshold = 1;
+    // if(Math.abs(aaat2.stop - this.candle.low) < crossThreshold || Math.abs(aaat2.stop - this.candle.high) < crossThreshold || Math.abs(aaat2.stop - currentPrice) < crossThreshold) {
+    if(aaat2.stop > this.candle.low && aaat2.stop < this.candle.high) {
+      // console.error('CROSS!!!')
+      console.log(`CROSS: DATE: ${ this.candle.start }, aaat2.stop: ${ aaat2.stop }, currentPrice: ${ currentPrice }, this.candle.low: ${ this.candle.low },  curIndicator.trendChange: ${curIndicator.trendChange }, crossCounter: ${ crossCounter1 } `);
+      if(aaat2.trend === 1) {
+        crossCounter2 ++;
+      } else if(aaat2.trend === -1) {
+        crossCounter3 ++;
+      }
+      crossCounter1++;
+    }
+    if(aaat2.trendChange === 2 || aaat2.trendChange === -2) {
+      crossCounter4++;
+    }
+    console.log(`INFO: DATE: ${ this.candle.start }, aaat2.stop: ${ aaat2.stop }, currentPrice: ${ currentPrice }, this.candle.low: ${ this.candle.low },  curIndicator.trendChange: ${ curIndicator.trendChange }, curIndicator.trendChange: ${ curIndicator.trend }, crossCounter: ${ crossCounter4 } `);
+
+    if(false){
       if(!advised) {
-        console.log(`INFO: DATE: ${ this.candle.start }, aaat2.stop: ${ aaat2.stop }, currentPrice: ${ currentPrice }, this.candle.low: ${ this.candle.low },  curIndicator.trendChange: ${curIndicator.trendChange },  `);
+        // console.log(`INFO: DATE: ${ this.candle.start }, aaat2.stop: ${ aaat2.stop }, currentPrice: ${ currentPrice }, this.candle.low: ${ this.candle.low },  curIndicator.trendChange: ${curIndicator.trendChange },  `);
 
         if(isBullTrendCur && (Math.abs(curIndicator.stop - priceLowCur)< 1 )) {
           buy1Counter++;
@@ -238,6 +256,8 @@ strat.end = function(a, b, c) {
   // your code!
   //console.log(`END: ${ a }, ${b}, ${c}`);
   console.error(`FINISHED: sold EXIT COEF - ${ sell1Counter }, sold TREND BEAR - ${ sell2Counter }, total BUYS - ${ buy1Counter }`)
+  console.error(`---||---: crosses total - ${ crossCounter1 }, crosses green - ${ crossCounter2 }, crosses red - ${ crossCounter3 
+    }, trends changes - ${ crossCounter4 },`)
 }
 
 module.exports = strat;
