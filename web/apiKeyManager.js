@@ -21,7 +21,8 @@ module.exports = {
 
   // note: overwrites if exists
   add: (exchange, props) => {
-    apiKeys[exchange] = props;
+    props['exchange'] = exchange;
+    apiKeys[ props.uniqueName ] = props;
     fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
 
     broadcast({

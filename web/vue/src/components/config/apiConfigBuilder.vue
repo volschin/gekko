@@ -8,6 +8,8 @@
       exchange-picker(v-on:exchange='updateExchange', only-tradable='true')
     .grd-row-col-3-6.mx1
       h3 Credentials
+      label Unique Name
+      input(v-model='uniqueName')
       template(v-for='cred in requires')
         label {{ cred }}
         input(v-model='credentials[cred]')
@@ -25,7 +27,8 @@ export default {
   data: () => {
     return {
       exchange: false,
-      credentials: {}
+      credentials: {},
+      uniqueName: ''
     }
   },
   components: {
@@ -50,6 +53,7 @@ export default {
     config: function() {
       let config = {
         exchange: this.exchange,
+        uniqueName: this.uniqueName,
         values: this.credentials
       };
 
@@ -64,6 +68,7 @@ export default {
   methods: {
     updateExchange: function(exchange) {
       this.credentials = {};
+      this.uniqueName = '';
       this.exchange = exchange;
       this.emitConfig();
     },
@@ -76,8 +81,8 @@ export default {
 
       if(
         this.exchanges &&
-        this.apiKeySets.includes(exchange) &&
-        !confirm(`You already have API keys for ${exchange} defined, do you want to overwrite them?`)
+        this.apiKeySets.includes(this.config.uniqueName) &&
+        !confirm(`You already have API keys with the name "${this.config.uniqueName}" defined, do you want to overwrite them?`)
       )
           return;
 

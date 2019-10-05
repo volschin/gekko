@@ -8,7 +8,9 @@ module.exports = {
   add: function *() {
     const content = this.request.body;
 
-    manager.add(content.exchange, content.values);
+    manager.add(content.exchange, Object.assign({
+      uniqueName: this.request.body.uniqueName
+    }, content.values));
 
     this.body = {
       status: 'ok'
