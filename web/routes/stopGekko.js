@@ -3,21 +3,21 @@ const gekkoManager = cache.get('gekkos');
 
 // stops a Gekko
 // requires a post body with an id
-module.exports = function *() {
+module.exports = async function (ctx) {
 
-  let id = this.request.body.id;
+  let id = ctx.request.body.id;
 
   if(!id) {
-    this.body = { status: 'not ok' }
+    ctx.body = { status: 'not ok' }
     return;
   }
 
   let stopped = gekkoManager.stop(id);
 
   if(!stopped) {
-    this.body = { status: 'not ok' }
+    ctx.body = { status: 'not ok' }
     return; 
   }
 
-  this.body = { status: 'ok' };
+  ctx.body = { status: 'ok' };
 }
