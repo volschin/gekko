@@ -56,6 +56,9 @@ export default {
   },
   created: function () {
     get('strategies', (err, data) => {
+      if(err) {
+        console.error('get strategies error: ' + err);
+      } else {
         this.strategies = data;
 
         _.each(this.strategies, function(s) {
@@ -65,6 +68,7 @@ export default {
         this.rawStratParams = _.find(this.strategies, { name: this.strategy }).params;
         this.emptyStrat = _.find(this.strategies, { name: this.strategy }).empty;
         this.emitConfig();
+      }
     });
   },
   watch: {

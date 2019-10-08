@@ -19,6 +19,9 @@ import newGekko from './components/gekko/new.vue'
 import singleGekko from './components/gekko/singleGekko.vue'
 import { connect as connectWS } from './components/global/ws'
 
+import login from './components/auth/login.vue'
+import register from './components/auth/register.vue'
+
 const router = new VueRouter({
   mode: 'hash',
   base: __dirname,
@@ -33,6 +36,8 @@ const router = new VueRouter({
     { path: '/live-gekkos', component: gekkoList },
     { path: '/live-gekkos/new', component: newGekko },
     { path: '/live-gekkos/:id', component: singleGekko },
+    { path: '/login', component: login, name: 'login' },
+    { path: '/register', component: register, name: 'register' },
   ]
 });
 
@@ -43,5 +48,26 @@ new Vue({
   router,
   store,
   el: '#app',
-  render: h => h(App)
+  render: h => h(App),
+  /*computed: {
+    isAuthenticated: function () {
+      return this.$store.getters.isAuthenticated()
+    }
+  },
+  methods: {
+    login: function () {
+      console.log('!!! methods >> login !!!');
+      this.$store.dispatch('login', { user, requestOptions })
+
+      /!*this.$auth.login({ email, password }).then(function () {
+        // Execute application logic after successful login
+      })*!/
+    },
+
+    register: function () {
+      this.$auth.register({ name, email, password }).then(function () {
+        // Execute application logic after successful registration
+      })
+    }
+  }*/
 })
