@@ -17,7 +17,7 @@ const GekkoManager = function() {
   this.archivedGekkos = {};
 }
 
-GekkoManager.prototype.add = function({mode, config}) {
+GekkoManager.prototype.add = function({mode, config, gekko}) {
   // set type
   let type;
   if(mode === 'realtime') {
@@ -39,26 +39,56 @@ GekkoManager.prototype.add = function({mode, config}) {
 
   const date = now().replace(' ', '-').replace(':', '-');
   const n = (Math.random() + '').slice(3);
-  const id = `${date}-${logType}-${n}`;
+  let id = `${date}-${logType}-${n}`;
+  let state;
+  id = gekko && gekko.id || id;
 
-  // make sure we catch events happening inside te gekko instance
-  config.childToParent.enabled = true;
+  if(gekko && gekko.type !== 'watcher') {
+    // restoring existing gekko from db:
+    config.childToParent.enabled = true;
+    state = {
+      mode: gekko.mode || mode,
+      config,
+      id,
+      type: gekko.type || type,
+      logType: gekko.logType || logType,
+      active: !_.isUndefined(gekko.active) ? gekko.active : true,
+      stopped: !_.isUndefined(gekko.stopped) ? gekko.stopped : false,
+      errored: !_.isUndefined(gekko.errored) ? gekko.errored : false,
+      errorMessage: !_.isUndefined(gekko.errorMessage) ? gekko.errorMessage : false,
+      events: gekko.events || {
+        initial: {},
+        latest: {}
+      },
+      start: moment(),
+      // start: gekko.start || moment(),
+    }
+  } else {
 
-  const state = {
-    mode,
-    config,
-    id,
-    type,
-    logType,
-    active: true,
-    stopped: false,
-    errored: false,
-    errorMessage: false,
-    events: {
-      initial: {},
-      latest: {}
-    },
-    start: moment()
+    // make sure we catch events happening inside te gekko instance
+    config.childToParent.enabled = true;
+    state = {
+      mode,
+      config,
+      id,
+      type,
+      logType,
+      active: true,
+      stopped: false,
+      errored: false,
+      errorMessage: false,
+      events: {
+        initial: {},
+        latest: {}
+      },
+      start: moment()
+    }
+
+  }
+  state.isProgrammaticCreation = !!gekko;
+  if(gekko.type === 'watcher') {
+    state.events.initial = {};
+    state.events.latest = {};
   }
 
   this.gekkos[id] = state;
