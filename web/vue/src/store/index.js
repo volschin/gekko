@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import _ from 'lodash'
+import auth from './auth.js'
 
 import * as importMutations from './modules/imports/mutations'
 import * as gekkoMutations from './modules/gekkos/mutations'
@@ -20,6 +21,7 @@ _.merge(mutations, configMutations);
 
 export default new Vuex.Store({
   state: {
+    isAuthenticated: false,
     warnings: {
       connected: true, // assume we will connect
     },
@@ -34,5 +36,8 @@ export default new Vuex.Store({
     exchanges: {}
   },
   mutations,
-  strict: debug
+  strict: debug,
+  modules: {
+    auth
+  }
 })

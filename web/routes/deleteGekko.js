@@ -3,20 +3,20 @@ const gekkoManager = cache.get('gekkos');
 
 // Deletes a gekko
 // requires a post body with an id
-module.exports = function *() {
+module.exports = async function (ctx, next) {
 
-  let id = this.request.body.id;
+  let id = ctx.request.body.id;
 
   if(!id) {
-    this.body = { status: 'not ok' }
+    ctx.body = { status: 'not ok' }
     return;
   }
 
   try {
     gekkoManager.delete(id);
   } catch(e) {
-    this.body = { status: e.message }
+    ctx.body = { status: e.message }
   }
 
-  this.body = { status: 'ok' };
+  ctx.body = { status: 'ok' };
 }

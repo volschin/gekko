@@ -18,14 +18,14 @@ let dependenciesManager = require('../state/cache').get('dependencies');
 //     roundtrips: true
 //   }
 // }
-module.exports = function *() {
+module.exports = async function (ctx, next) {
   var mode = 'backtest';
 
   var config = {};
 
   var base = require('./baseConfig');
 
-  var req = this.request.body;
+  var req = ctx.request.body;
 
   _.merge(config, base, req);
 
@@ -34,7 +34,7 @@ module.exports = function *() {
   }
 
   if(config.dependencies && config.dependencies.length > 0){
-    yield dependenciesManager.getDependencyResultsAsync(config);
+    await dependenciesManager.getDependencyResultsAsync(config);
   }
-  this.body = yield pipelineRunner(mode, config);
+  ctx.body = await pipelineRunner(mode, config);
 }

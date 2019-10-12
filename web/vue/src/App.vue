@@ -10,6 +10,18 @@ export default {
     top,
     bottom,
     modal
+  },
+  computed: {
+    isAuthenticated () {
+      return this.$store.state.auth.isAuthenticated
+    }
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout').then(() => {
+        this.$router.push('login')
+      })
+    }
   }
 }
 </script>

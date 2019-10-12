@@ -13,6 +13,15 @@ var mixin = {
       this.datasetScanstate = 'scanning';
 
       post('scansets', {}, (error, response) => {
+        if(error) {
+          if (error.status === 403) {
+            return alert('Недостаточно прав!')
+          } else {
+            return alert(error);
+          }
+        }
+
+
         this.datasetScanstate = 'scanned';
 
         this.unscannableMakets = response.errors;

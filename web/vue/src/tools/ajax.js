@@ -19,6 +19,7 @@ export const post = (to, data, next) => {
     .post(restPath + to)
     .use(noCache)
     .send(data)
+    .withCredentials()
     .end(processResponse(next));
 }
 
@@ -26,5 +27,6 @@ export const get = (to, next) => {
   superagent
     .get(restPath + to)
     .use(noCache)
+    .withCredentials()
     .end(processResponse(next));
 }
