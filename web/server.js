@@ -58,19 +58,21 @@ const broadcast = data => {
         console.log(new Date, '[WS] unable to send data to client:', err);
       }
     });
-  }
-  );
+  });
+  wss.emit(data.type, data);
 }
 cache.set('broadcast', broadcast);
-
+cache.set('wss', wss);
 
 const ListManager = require('./state/listManager');
 const GekkoManager = require('./state/gekkoManager');
+const GekkosPersistent = require('./plugins/gekkosPersistent');
 
 // initialize lists and dump into cache
 cache.set('imports', new ListManager);
 cache.set('gekkos', new GekkoManager);
 cache.set('apiKeyManager', require('./apiKeyManager'));
+cache.set('gekkosPersistent', new GekkosPersistent());
 
 // setup API routes
 
@@ -137,3 +139,7 @@ server.listen(config.api.port, config.api.host, '::', () => {
     });
   }
 });
+
+broadcast({
+  type: 'server_started'
+})
