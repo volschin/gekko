@@ -22,7 +22,9 @@ var strat = {
 	/* INIT */
 	init: function()
 	{
-		// core
+    console.error(`this.settings: ${ JSON.stringify(config) }`);
+
+    // core
 		this.name = 'RSI Bull and Bear + ADX';
 		this.requiredHistory = config.tradingAdvisor.historySize;
 		this.resetTrend();
@@ -34,7 +36,8 @@ var strat = {
 		config.backtest.batchSize = 1000; // increase performance
 		config.silent = true; // NOTE: You may want to set this to 'false' @ live
 		config.debug = false;
-		
+		this.settings = config['RSI_BULL_BEAR_ADX'];
+		console.error(`this.settings: ${ JSON.stringify(this.settings) }`);
 		// SMA
 		this.addIndicator('maSlow', 'SMA', this.settings.SMA.long );
 		this.addIndicator('maFast', 'SMA', this.settings.SMA.short );

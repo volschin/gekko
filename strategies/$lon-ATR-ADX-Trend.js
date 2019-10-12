@@ -18,6 +18,7 @@
 
 var log = require('../core/log');
 var config = require ('../core/util.js').getConfig();
+const RSI = require('../strategies/indicators/RSI.js');
 
 const CandleBatcher = require('../core/candleBatcher');
 // Let's create our own strat
@@ -46,13 +47,19 @@ strat.init = function() {
   this.requiredHistory = config.tradingAdvisor.historySize;
 
   this.addIndicator('aaat2', 'Adaptive-ATR-ADX-Trend', {
-    debug: this.debug
+    debug: this.debug,
+    useHeiken: this.settings.USE_HEIKEN
   });
+  this.addIndicator('rsi', 'RSI', { interval: 14 });
+
   this.tradeInitiated = false;
 }
 
 // What happens on every new candle?
 strat.update = function(candle) {
+  aaat2 = this.indicators.aaat2.result;
+  rsi = this.indicators.rsi.result;
+
   currentPrice = candle.close;
 
   // Send message
@@ -67,11 +74,20 @@ strat.update = function(candle) {
     wait--;
     log.debug('Wait: ', wait);
   }
+  if(aaat2) {
+    if (aaat2.trend > 0) {
+      isBullTrendCur = true;
+    } else {
+      isBullTrendCur = false;
+    }
+  }
 }
 
-let aaat2, isBullTrendCur, aaat2Prev, aaat2PrevPrev, curIndicator;
+let aaat2, isBullTrendCur = false, aaat2Prev, aaat2PrevPrev, curIndicator,
+  rsi;
+var rsiIndicator = new RSI({ interval: 14 });
+
 strat.check = function() {
-  aaat2 = this.indicators.aaat2.result;
   if(this.settings.CANDLE_NUMBER === 1) {
     curIndicator = aaat2;
   } else if(this.settings.CANDLE_NUMBER === 2) {
@@ -84,11 +100,19 @@ strat.check = function() {
   // simple change trend strat:
 
   if(curIndicator) {
+    console.log(`INFO: DATE: ${ this.candle.start }, curIndicator.stop: ${ curIndicator.stop }, currentPrice: ${ currentPrice }, 
+          curIndicator.trendChange: ${curIndicator.trendChange }, curIndicator.trend: ${curIndicator.trend },  `);
     if (advised && curIndicator.trendChange === -2) {
       this.sell(`TREND CHANGE to down: SELL!! ${curIndicator.stop}`);
     } else if (!advised && curIndicator.trendChange === 2) {
       this.buy(`TREND CHANGE to up: BUY!! ${curIndicator.stop}`);
-    }
+    } /*else if (!advised && isBullTrendCur) {
+      if (rsi && rsi !== 0) {
+        if(rsi < this.settings.RSI_BUY_MIN) {
+          this.buy(`TREND is up && RSI < 30: BUY!! ${curIndicator.stop}, rsi: ${ rsi }`);
+        }
+      }
+    }*/
   }
 
   aaat2PrevPrev = aaat2Prev;

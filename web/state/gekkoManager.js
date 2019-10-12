@@ -2,6 +2,8 @@ const _ = require('lodash');
 const moment = require('moment');
 
 const broadcast = require('./cache').get('broadcast');
+let dependenciesManager = require('./cache').get('dependencies');
+
 const Logger = require('./logger');
 const pipelineRunner = require('../../core/workers/pipeline/parent');
 const reduceState = require('./reduceState.js');
@@ -109,7 +111,10 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
     id,
     state
   });
-
+  if(!dependenciesManager){
+    dependenciesManager = require('./cache').get('dependencies'); // circular reference problem
+  }
+  //dependenciesManager.startDependenciesAsync(state);
   return state;
 }
 

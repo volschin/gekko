@@ -6,6 +6,8 @@
     .hr
     strat-picker.my2(v-on:stratConfig='updateStrat').contain
     .hr
+    dependency-picker.contain.my2(v-on:dependenciesConfig='updateDependencies')
+    .hr
     paper-trader(v-on:settings='updatePaperTrader').contain
     .hr
 </template>
@@ -15,6 +17,8 @@
 import datasetPicker from '../global/configbuilder/datasetpicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
+import DependencyPicker from '../global/configbuilder/dependencyPicker';
+
 import _ from 'lodash'
 import { get } from '../../tools/ajax'
 // import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
@@ -31,13 +35,15 @@ export default {
       dataset: {},
       strat: {},
       paperTrader: {},
-      performanceAnalyzer: {}
+      performanceAnalyzer: {},
+      dependencyPicker: []
     }
   },
   components: {
     stratPicker,
     datasetPicker,
     paperTrader,
+    DependencyPicker
     // tradingviewChart,
   },
   computed: {
@@ -66,6 +72,7 @@ export default {
         config,
         { watch: this.market },
         { paperTrader: this.paperTrader },
+        { dependencies: this.dependencyPicker },
         this.strat,
         {
           backtest: {
@@ -128,6 +135,10 @@ export default {
     },
     updateStrat: function(sc) {
       this.strat = sc;
+      this.$emit('config', this.config);
+    },
+    updateDependencies: function(deps) {
+      this.dependencyPicker = deps;
       this.$emit('config', this.config);
     },
     updatePaperTrader: function(pt) {

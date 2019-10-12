@@ -14,7 +14,9 @@
     "start-ui": "node ./gekko --ui  --config config.js",
     "start-server": "node ./gekko --config config.js",
     "debug-ui": "node %NODE_DEBUG_OPTION% ./gekko --ui",
-    "debug-server-backtest": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-backtest.js --backtest > logs/backtest.txt --backtest",
+    "debug-server-backtest2": "node ./gekko  --config='config-backtest-$lon-TD-Seq.js' --backtest",
+    "debug-server-backtest1": "node ./gekko  --config='config-backtest-$lon-patterns-detection.js' --backtest",
+    "debug-server-backtest": "node ./gekko  --config=config-backtest-ATR_ADX-LTC-BTC.js --backtest > logs/backtest.txt --backtest",
     "debug-server-paper": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-papertrading.js",
     "debug-server-live": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-livetrading.js"
   },
@@ -52,6 +54,7 @@
     "sequelize": "^5.15.0",
     "sqlite3": "^4.0.6",
     "stats-lite": "^2.0.4",
+    "technicalindicators": "^2.0.9",
     "tgfancy": "^0.13.0",
     "tiny-promisify": "^0.1.1",
     "toml": "^2.3.0",
