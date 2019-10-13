@@ -238,7 +238,7 @@ Base.prototype.processTerminatedTrades = function(terminatedTrades) {
   if (!terminatedTrades.reason) {
     terminatedTrades.reason = 'Cancelled';
   }
-  this.onTerminatedTrades(terminatedTrades);
+  this.onTerminatedTrades && this.onTerminatedTrades(terminatedTrades);
 }
 
 Base.prototype.updatePortfolio = function(portfolio) {
