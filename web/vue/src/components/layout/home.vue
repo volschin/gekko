@@ -1,10 +1,15 @@
 <template lang='pug'>
-  section.contain.grd-row
-    .grd-row-col-3-6(v-html='left')
-    .grd-row-col-3-6.txt--center
-      img(src='static/gekko.jpg')
-      p
-        em The most valuable commodity I know of is information.
+  div
+    section.contain.grd-row
+      .grd-row-col-3-6(v-html='left')
+      .grd-row-col-3-6.txt--center
+        img(src='static/gekko.jpg')
+        p
+          em The most valuable commodity I know of is information.
+    section.contain.grd-row
+      .grd-row-col-6.txt--center(v-if='!isAuthenticated')
+        router-link.button--backtest.w100--s.my1.btn--primary(v-if='!isAuthenticated' to='/login').py1 Login
+
 </template>
 
 <script>
@@ -29,6 +34,11 @@ export default {
     return {
       left
     }
+  },
+  computed: {
+    isAuthenticated (){
+      return this.$store.state.auth.isAuthenticated
+    },
   }
 }
 </script>
