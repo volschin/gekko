@@ -58,7 +58,8 @@ export default {
     }
   }
 }
-const defTxt = `
+const defTxt = ``;
+/*const defTxt = `
 [{
    "tradingAdvisor": {
      "enabled": true,
@@ -74,7 +75,7 @@ const defTxt = `
   "$lon-ATR-ADX-Trend-Dep": { "CANDLE_NUMBER": 1, "USE_HEIKEN": true },
   "type": "paper trader"
 }]
-`
+`*/
 </script>
 <style>
 .align .custom-select select {

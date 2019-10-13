@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 
+const cache = require('./cache');
 const broadcast = require('./cache').get('broadcast');
 let dependenciesManager = require('./cache').get('dependencies');
 
@@ -61,7 +62,6 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
         latest: {}
       },
       start: moment(),
-      // start: gekko.start || moment(),
     }
   } else {
 
@@ -90,7 +90,8 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
     state.events.initial = {};
     state.events.latest = {};
   }
-
+  let usr = cache.get('user');
+  state.ownerId = gekko && gekko.ownerId || cache.get('user') && cache.get('user').get('id');
   this.gekkos[id] = state;
 
   this.loggers[id] = new Logger(id);
@@ -114,7 +115,6 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
   if(!dependenciesManager){
     dependenciesManager = require('./cache').get('dependencies'); // circular reference problem
   }
-  //dependenciesManager.startDependenciesAsync(state);
   return state;
 }
 
@@ -280,6 +280,36 @@ GekkoManager.prototype.archive = function(id) {
     type: 'gekko_archived',
     id
   });
+}
+
+GekkoManager.prototype.restart = function({ id }) {
+  let gekko = this.gekkos[id] || this.archivedGekkos[id];
+  const user = cache.get('user');
+  if(!gekko || !user)
+    return false;
+
+  console.log(`${now()} restarting Gekko ${id}`);
+
+
+  delete this.gekkos[id];
+  delete this.archivedGekkos[id];
+  // this.instances[id] && this.instances[id].kill();
+
+  gekko.active = true;
+  gekko.stopped = false;
+  gekko.errored = false;
+  gekko.errorMessage = false;
+
+  this.add({ mode: gekko.mode, config: gekko.config, gekko: gekko });
+
+  broadcast({
+    type: 'gekko_restarted',
+    id
+  });
+
+  // this.archive(id);
+
+  return true;
 }
 
 GekkoManager.prototype.list = function() {

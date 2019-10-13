@@ -38,6 +38,7 @@
           th duration
           th strategy
           th PnL
+          th % / M
           th type
           th trades
       tbody
@@ -51,7 +52,10 @@
           td {{ gekko.config.tradingAdvisor.method }}
           td
             template(v-if='!report(gekko)') 0
-            template(v-if='report(gekko)') {{ round(report(gekko).profit) }} {{ report(gekko).currency }}
+            template(v-if='report(gekko)') {{ round(report(gekko).relativeProfit) }}%
+          td
+            template(v-if='!report(gekko)') 0
+            template(v-if='report(gekko)') {{ round(report(gekko).relativeYearlyProfit / 12) }}%
           td {{ gekko.logType }}
           td
             template(v-if='!gekko.events.tradeCompleted') 0

@@ -50,7 +50,6 @@ export default {
 
   methods: {
     login () {
-      window.store = this.$store;
       this.$store.dispatch('login', {
         user: {
           email: this.email,
