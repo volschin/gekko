@@ -57,7 +57,7 @@ const GekkosPersistent = function(){
     try {
       if(id) {
         const gekko = getGekkoObjectFromManager(id);
-        db.updateJsonGekko(id, gekko);
+        gekko && db.updateJsonGekko(id, gekko);
       }
     } catch (handleErr){
       consoleError(handleErr);
@@ -73,8 +73,16 @@ const GekkosPersistent = function(){
         consoleLog(`gekko_event: ${event.type}`);
 
         const gekko = gekkoManager.gekkos[id];
-        db.updateJsonGekko(id, gekko);
+        gekko && db.updateJsonGekko(id, gekko);
       }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });
+  wss.on('gekko_restarted', ({ id, event }) => {
+    try {
+      const gekko = gekkoManager.gekkos[id];
+      gekko && db.updateJsonGekko(id, gekko);
     } catch (handleErr){
       consoleError(handleErr);
     }
@@ -98,7 +106,7 @@ GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
     if(gekko && gekko.jsonGekko) {
       gekko.jsonGekko.isProgrammaticCreation = true;
       gekko.jsonGekko.gekkoId = gekko.gekkoId;
-      // let gConfig = { request: { body: gekko.jsonGekko.config } };
+      gekko.jsonGekko.ownerId = gekko.ownerId;
       let gConfig = gekko.jsonGekko.config;
       await startGekko(gConfig, gekko);
       if(gekko.status === GEKKO_STATUS.ARCHIVED){

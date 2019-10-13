@@ -63,7 +63,7 @@ Db.prototype.addGekko = async function(gekko){
       try {
         GekkosTable.create({
           name: gekko.name,
-          ownerId: 0, // todo
+          ownerId: gekko.ownerId,
           status: gekko.active ? GEKKO_STATUS.ACTIVE : gekko.stopped ? GEKKO_STATUS.STOPPED : null,
 
           gekkoId: gekko.id,

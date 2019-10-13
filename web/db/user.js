@@ -61,7 +61,7 @@ module.exports = function(sequelize, DataTypes) {
         }
       });
     });
-  },
+  };
   // This hook is called when an entry is being added to the back end.
   // This method is used to hash the password before storing it
   // in our database.

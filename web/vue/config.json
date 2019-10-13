@@ -1,6 +1,7 @@
 {
   "site-name": "$LON",
-  "url": "http://127.0.0.1:4000",
+  "url": "http://localhost:4000",
+  "authTokenName": "vue-authenticate.vueauth_token",
   "auth": {
     "google": {
       "clientId": "400156086606-a4l1lskv7skla8970qqad06muvpgnitp.apps.googleusercontent.com",

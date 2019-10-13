@@ -90,6 +90,8 @@
           a(v-on:click='stopGekko', class='w100--s my1 btn--red') Stop Gekko
         p(v-if='isArchived')
           a(v-on:click='deleteGekko', class='w100--s my1 btn--red') Delete Gekko
+        p(v-if='isAuthorized')
+          a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
         p(v-if='isStratrunner && watcher && !isArchived')
           em This gekko gets market data from 
             router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
@@ -177,6 +179,11 @@ export default {
     },
     isArchived: function() {
       return this.data.stopped;
+    },
+    isAuthorized: function() {
+      const dbId = this.$store.state.auth.user('id');
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return this.data.ownerId && dbId && this.data.ownerId === dbId || isAdmin;
     },
     warmupRemaining: function() {
       if(!this.isStratrunner) {
@@ -343,11 +350,23 @@ export default {
         return alert('This Gekko is still running, stop it first!');
       }
 
-      if(!confirm('Are you sure you want to delete this Gekko?')) {
+      if(!confirm('Are you sure you want to DELETE this Gekko?')) {
         return;
       }
 
       post('deleteGekko', { id: this.data.id }, (err, res) => {
+        this.$router.push({
+          path: `/live-gekkos/`
+        });
+      });
+    },
+    restartGekko: function() {
+
+      if(!confirm('Are you sure you want to RESTART this Gekko?')) {
+        return;
+      }
+
+      post('restartGekko', { id: this.data.id }, (err, res) => {
         this.$router.push({
           path: `/live-gekkos/`
         });

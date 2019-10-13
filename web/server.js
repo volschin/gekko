@@ -109,6 +109,7 @@ router.post('/api/import', ensureAuthenticated('admin'), require(ROUTE('import')
 router.post('/api/startGekko', ensureAuthenticated(), require(ROUTE('startGekko')));
 router.post('/api/stopGekko', ensureAuthenticated(), require(ROUTE('stopGekko')));
 router.post('/api/deleteGekko', ensureAuthenticated(), require(ROUTE('deleteGekko')));
+router.post('/api/restartGekko', ensureAuthenticated(), require(ROUTE('restartGekko')));
 router.post('/api/getCandles', ensureAuthenticated(), require(ROUTE('getCandles')));
 
 router.post('/auth/login', require(ROUTE('login')));
