@@ -2,6 +2,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const cache = require('./state/cache');
 const broadcast = cache.get('broadcast');
+const pickBy = require('lodash.pickby');
 
 const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
 
@@ -16,34 +17,50 @@ if(noApiKeysFile)
 
 const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
 
-module.exports = {
-  get: () => _.keys(apiKeys),
-
-  // note: overwrites if exists
-  add: (exchange, props) => {
-    props['exchange'] = exchange;
-    apiKeys[ props.uniqueName ] = props;
-    fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
-
-    broadcast({
-      type: 'apiKeys',
-      exchanges: _.keys(apiKeys)
-    });
-  },
-  remove: exchange => {
-    if(!apiKeys[exchange])
+const apiKeyManagerModule = {
+  get: (userEmail) => {
+    if(!userEmail)
       return;
+    const keysFiltered = pickBy(apiKeys, k => k.userEmail && k.userEmail === userEmail);
+    return _.keys(keysFiltered);
+  },
 
-    delete apiKeys[exchange];
-    fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
+  // note: overwrites if exists, only if his own
+  add: (exchange, props) => {
+    props = props || {}
+    if(props.userEmail) {
+      if(apiKeys[props.uniqueName] && apiKeys[props.uniqueName].userEmail !== props.userEmail) {
+        throw 'already exists'
+      } else {
+        props['exchange'] = exchange;
+        apiKeys[props.uniqueName] = props;
+        fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
 
-    broadcast({
-      type: 'apiKeys',
-      exchanges: _.keys(apiKeys)
-    });
+        broadcast({
+          type: 'apiKeys',
+          exchanges: apiKeyManagerModule.get(props.userEmail)
+        });
+      }
+    } else {
+      throw 'not authenticated'
+    }
+  },
+  remove: (uniqueName, userEmail) => {
+    if(!apiKeys[uniqueName] || !userEmail)
+      return;
+    if(apiKeys[uniqueName] && apiKeys[uniqueName].userEmail === userEmail) {
+      delete apiKeys[uniqueName];
+      fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
+
+      broadcast({
+        type: 'apiKeys',
+        exchanges: apiKeyManagerModule.get(userEmail)
+      });
+    }
   },
 
   // retrieve api keys
   // this cannot touch the frontend for security reaons.
   _getApiKeyPair: key => apiKeys[key]
 }
+module.exports = apiKeyManagerModule;
