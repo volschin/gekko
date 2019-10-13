@@ -19,7 +19,7 @@ module.exports = async function (ctx, next) {
   // Attach API keys
   if(config.trader && config.trader.enabled && !config.trader.key) {
 
-    const keys = apiKeyManager._getApiKeyPair(config.watch.exchange);
+    const keys = apiKeyManager._getApiKeyPair(config.apiKeyName);
 
     if(!keys) {
       ctx.body = 'No API keys found for this exchange.';

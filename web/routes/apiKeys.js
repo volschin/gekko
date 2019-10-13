@@ -8,7 +8,9 @@ module.exports = {
   add: async function (ctx, next) {
     const content = ctx.request.body;
 
-    manager.add(content.exchange, content.values);
+    manager.add(content.exchange, Object.assign({
+      uniqueName: this.request.body.uniqueName
+    }, content.values));
 
     ctx.body = {
       status: 'ok'
