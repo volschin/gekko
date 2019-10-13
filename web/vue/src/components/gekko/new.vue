@@ -87,7 +87,7 @@ export default {
       return _.find(
         this.gekkos,
         g => {
-          if(g.logType === 'tradebot' && g.config.watch.exchange === this.exchange) {
+          if(g.logType === 'tradebot' && g.config.apiKeyName === this.config.apiKeyName) {
             return true;
           }
 
@@ -128,13 +128,14 @@ export default {
       // checks first.
       if(this.config.type === 'tradebot') {
         if(this.existingTradebot) {
-          let str = 'You already have a tradebot running on this exchange';
-          str += ', you can only run one tradebot per exchange.';
+          let str = 'You already have a tradebot running on this Api Key';
+          str += ', you can only run one tradebot per Api Key.';
           return alert(str);
         }
 
-        if(!this.availableApiKeys.includes(this.exchange))
-          return alert('Please first configure API keys for this exchange in the config page.')
+        if(_.isEmpty(this.config.apiKeyName)) {
+          return alert('Please first select API key');
+        }
       }
 
       // internally a live gekko consists of two parts:

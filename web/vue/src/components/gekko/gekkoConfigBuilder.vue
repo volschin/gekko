@@ -4,6 +4,7 @@
     .grd-row-col-3-6.mx1
       h3 Market
       market-picker(v-on:market='updateMarketConfig', :only-tradable='isTradebot')
+      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig', v-if='type === "tradebot"')
     .grd-row-col-3-6.mx1
       type-picker(v-on:type='updateType')
   template(v-if='type !== "market watcher"')
@@ -22,6 +23,7 @@ import typePicker from '../global/configbuilder/typepicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
 import DependencyPicker from '../global/configbuilder/dependencyPicker';
+import apiKeyPicker from '../global/configbuilder/apiKeyPicker';
 
 import { get } from '../../tools/ajax'
 import _ from 'lodash'
@@ -40,6 +42,7 @@ export default {
   data: () => {
     return {
       market: {},
+      apiKeyName: '',
       range: {},
       type: '',
       strat: {},
@@ -53,7 +56,8 @@ export default {
     marketPicker,
     typePicker,
     stratPicker,
-    paperTrader
+    paperTrader,
+    apiKeyPicker
   },
   computed: {
     isTradebot: function() {
@@ -64,6 +68,7 @@ export default {
       Object.assign(
         config,
         this.market,
+        { apiKeyName: this.apiKeyName },
         this.strat,
         { paperTrader: this.paperTrader },
         { candleWriter: this.candleWriter },
@@ -85,7 +90,9 @@ export default {
     validConfig: config => {
       if(config.type === 'market watcher')
         return true;
-
+      if(config.type === 'tradebot' && _.isEmpty(config.apiKeyName)) {
+        return false;
+      }
       if(!config.tradingAdvisor)
         return false;
       if(_.isNaN(config.tradingAdvisor.candleSize))
@@ -103,8 +110,15 @@ export default {
       this.market = mc;
       this.emitConfig();
     },
+    updateApiKeyConfig: function(apiKey) {
+      this.apiKeyName = apiKey;
+      this.emitConfig();
+    },
     updateType: function(type) {
       this.type = type;
+      if(!this.isTradebot) {
+        delete this.config.apiKeyName;
+      }
       this.emitConfig();
     },
     updateStrat: function(strat) {
