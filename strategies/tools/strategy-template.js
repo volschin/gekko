@@ -28,7 +28,7 @@ strat.init = function() {
   config.debug = false;
 
 
-// What happens on every new candle?
+  // What happens on every new candle?
   this.update = function(candle) {
     currentPrice = candle.close;
 
@@ -42,10 +42,10 @@ strat.init = function() {
 
   this.check = function() {
     // time after last BUY:
-    // if ((this.candle.start.diff(this.buyTs, 'minutes') > this.settings.TIMEOUT)) {
+    // if ((this.candle.start.diff(buyTs, 'minutes') > this.settings.TIMEOUT)) {
     //
     // }
-    // if(!this.advised) {
+    // if(!advised) {
     //   // can BUY
     //   this.buy(' ... reason ');
     // } else {
@@ -88,7 +88,7 @@ strat.init = function() {
   this.onTrade = function(trade) {
     tradeInitiated = false;
   }
-// Trades that didn't complete with a buy/sell
+  // Trades that didn't complete with a buy/sell
   this.onTerminatedTrades = function(terminatedTrades) {
     log.info('Trade failed. Reason:', terminatedTrades.reason);
     tradeInitiated = false;
@@ -99,7 +99,7 @@ strat.init = function() {
 }
 
 strat.check = function(){
-  // gekko stub
+  // gekko stub (DO NOT REMOVE!!)
 }
 
 module.exports = strat;
