@@ -314,15 +314,13 @@ SlackAsync.prototype.processTradeCompleted = function(trade) {
   } else if (trade.action === 'sell') {
     color = 'warning';
     text = `Trade Completed: SELL`;
-    buyTrade = lastBuyTrade;
-    if(buyTrade){
-      if(buyTrade.balance >= trade.balance){
-        isTradeSuccess = false;
-        color = 'danger';
-      } else {
-        isTradeSuccess = true;
-        color = 'good';
-      }
+    buyTrade = lastBuyTrade || {};
+    if(buyTrade.balance >= trade.balance){
+      isTradeSuccess = false;
+      color = 'danger';
+    } else {
+      isTradeSuccess = true;
+      color = 'good';
     }
   } else {
     color = 'warning';

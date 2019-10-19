@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
-
+const log = require('../../../core/log.js');
 const util = require('../../../core/util.js');
 
 let modelsSequelize, config, GekkosTable;
@@ -18,7 +18,13 @@ const GEKKO_STATUS = {
 const Db = function(settings){
   config = util.getConfig();
   let connectionString = config.postgresql.connectionString + '/' + config.postgresql.database;
-  modelsSequelize = new Sequelize(connectionString);
+  modelsSequelize = new Sequelize(connectionString, {
+    pool: {
+      max: 30,
+      min: 0,
+      idle: 10000
+    }
+  });
   GekkosTable = modelsSequelize.define('Gekkos',
     {
       id: {
@@ -82,26 +88,27 @@ Db.prototype.addGekko = async function(gekko){
           exchange: config.watch.exchange,
           currency: config.watch.currency,
           asset: config.watch.asset,
-
         });
-
       } catch (err1) {
-        console.error(err1);
+        consoleError(err1);
       }
     }
   }
 }
 Db.prototype.updateJsonGekko = async function(id, gekko){
   let result;
-
-  if(id) {
-    result = await GekkosTable.update({
-      jsonGekko: gekko,
-    }, {
-      where: {
-        gekkoId: id
-      }
-    });
+  try {
+    if(id) {
+      result = await GekkosTable.update({
+        jsonGekko: gekko,
+      }, {
+        where: {
+          gekkoId: id
+        }
+      });
+    }
+  } catch (err1) {
+    consoleError(err1);
   }
   return result;
 }
@@ -112,77 +119,93 @@ Db.prototype.archive = async function(id){
       gekkoId: id
     }
   });
-  if(gekkoDb) {
-    let jsonGekko = gekkoDb.getDataValue('jsonGekko');
-    if(jsonGekko) {
-      jsonGekko.active = false;
-      jsonGekko.stopped = true;
-      result = await GekkosTable.update({
-        jsonGekko: jsonGekko,
-        status: GEKKO_STATUS.ARCHIVED
-      }, {
-        where: {
-          gekkoId: id
-        }
-      });
+  try {
+    if(gekkoDb) {
+      let jsonGekko = gekkoDb.getDataValue('jsonGekko');
+      if(jsonGekko) {
+        jsonGekko.active = false;
+        jsonGekko.stopped = true;
+        result = await GekkosTable.update({
+          jsonGekko: jsonGekko,
+          status: GEKKO_STATUS.ARCHIVED
+        }, {
+          where: {
+            gekkoId: id
+          }
+        });
+      }
     }
+  } catch (err1) {
+    consoleError(err1);
   }
   return result;
 }
 Db.prototype.errored = async function(id){
   let result;
-  const gekkoDb = await GekkosTable.findOne({
-    where: {
-      gekkoId: id
+  try {
+    const gekkoDb = await GekkosTable.findOne({
+      where: {
+        gekkoId: id
+      }
+    });
+    if(gekkoDb) {
+      let jsonConfig = gekkoDb.getDataValue('jsonConfig');
+      if(jsonConfig) {
+        jsonConfig.active = false;
+        jsonConfig.stopped = true;
+        result = await GekkosTable.update({
+          jsonConfig: jsonConfig,
+          status: GEKKO_STATUS.ARCHIVED
+        }, {
+          where: {
+            gekkoId: id
+          }
+        });
+      }
     }
-  });
-  if(gekkoDb) {
-    let jsonConfig = gekkoDb.getDataValue('jsonConfig');
-    if(jsonConfig) {
-      jsonConfig.active = false;
-      jsonConfig.stopped = true;
-      result = await GekkosTable.update({
-        jsonConfig: jsonConfig,
-        status: GEKKO_STATUS.ARCHIVED
-      }, {
-        where: {
-          gekkoId: id
-        }
-      });
-    }
+  } catch (err1) {
+    consoleError(err1);
   }
   return result;
 }
 // advises, trades and roundtrips:
 Db.prototype.updateStats = async function(id, gekko){
   let result;
-  const gekkoDb = await GekkosTable.findOne({
-    where: {
-      gekkoId: id
+  try {
+    const gekkoDb = await GekkosTable.findOne({
+      where: {
+        gekkoId: id
+      }
+    });
+    if(gekkoDb) {
+      let jsonConfig = gekko.config;
+      if(jsonConfig) {
+        result = await GekkosTable.update({
+          jsonConfig: jsonConfig,
+          status: GEKKO_STATUS.ARCHIVED
+        }, {
+          where: {
+            gekkoId: id
+          }
+        });
+      }
     }
-  });
-  if(gekkoDb) {
-    let jsonConfig = gekko.config;
-    if(jsonConfig) {
-      result = await GekkosTable.update({
-        jsonConfig: jsonConfig,
-        status: GEKKO_STATUS.ARCHIVED
-      }, {
-        where: {
-          gekkoId: id
-        }
-      });
-    }
+  } catch (err1) {
+    consoleError(err1);
   }
   return result;
 }
 Db.prototype.delete = async function(id){
   let result;
-  result = await GekkosTable.destroy({
-    where: {
-      gekkoId: id
-    }
-  });
+  try {
+    result = await GekkosTable.destroy({
+      where: {
+        gekkoId: id
+      }
+    });
+  } catch (err1) {
+    consoleError(err1);
+  }
   return result;
 }
 
@@ -229,13 +252,19 @@ const createGekkosTable = async function(model) {
         resolve(true);
       }).catch(err => {
         reject(err);
+        consoleError(err);
       });
-    }).catch(err => {
-      reject(err);
+    }).catch(err1 => {
+      consoleError(err1);
+      reject(err1);
     });
   });
 }
 
 const getMarketTableName = function(config){
   return `Market_${config.exchange}_${config.currency}_${config.asset}`;
+}
+const consoleError = function(msg) {
+  console.error(msg);
+  log.info('GekkosPersistent DB error:', msg);
 }

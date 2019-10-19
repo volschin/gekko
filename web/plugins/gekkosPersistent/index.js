@@ -4,6 +4,7 @@ let db;
 
 // temp:
 const _ = require('lodash');
+const log = require('../../../core/log.js');
 const cache = require('../../state/cache');
 const base = require('../../routes/baseConfig');
 
@@ -70,7 +71,7 @@ const GekkosPersistent = function(){
         , 'performanceReport', 'roundtrip'
       ];
       if (WHITE_LISTED_EVENTS.indexOf(event.type) !== -1) {
-        consoleLog(`gekko_event: ${event.type}`);
+        consoleLog(`gekko_event: ${event.type}, id: ${ id }`);
 
         const gekko = gekkoManager.gekkos[id];
         gekko && db.updateJsonGekko(id, gekko);
@@ -88,12 +89,13 @@ const GekkosPersistent = function(){
     }
   });
 
-  const broadcast = require('../../state/cache').get('broadcast');
+  // send to client expml
+  /*const broadcast = require('../../state/cache').get('broadcast');
   broadcast({
     type: 'gekko_event1',
     id: 1,
     event: {a:2}
-  });
+  });*/
 };
 
 GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
@@ -108,9 +110,13 @@ GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
       gekko.jsonGekko.gekkoId = gekko.gekkoId;
       gekko.jsonGekko.ownerId = gekko.ownerId;
       let gConfig = gekko.jsonGekko.config;
-      await startGekko(gConfig, gekko);
-      if(gekko.status === GEKKO_STATUS.ARCHIVED){
-        gekkoManager.stop(gekko.gekkoId);
+      if(!gConfig) {
+        consoleError(`gekkosPersistent plugin error: no config on ${ gekko.gekkoId }`);
+      } else {
+        await startGekko(gConfig, gekko);
+        if(gekko.status === GEKKO_STATUS.ARCHIVED){
+          gekkoManager.stop(gekko.gekkoId);
+        }
       }
     }
   });
@@ -158,7 +164,9 @@ function getGekkoObjectFromManager(id) {
 }
 function consoleError(msg){
   console.error(msg);
+  log.info(msg);
 }
 function consoleLog(msg){
   console.log(msg);
+  log.info(msg);
 }

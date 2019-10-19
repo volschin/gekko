@@ -5,15 +5,19 @@ var log = require('../core/log.js');
 
 var bb = require('./indicators/BB.js');
 var rsi = require('./indicators/RSI.js');
-
-const config = require ('../core/util').getConfig();
+const uuidv1 = require('uuid/v1');
 
 let strat = {};
 
 // seal everything into init to have the ability to use local variables unique for each strat instance
 // , instead of using 'this.someVar', to optimize performance:
 strat.init = function() {
-  let currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs;
+  const config = require ('../core/util').getConfig();
+
+  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs
+    , gekkoUuid = uuidv1();
+
+  consoleLog(`new gekko started, ${ gekkoUuid }, type: ${ config.type }, ${ JSON.stringify(config) }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
   this.debug = true;
@@ -23,7 +27,7 @@ strat.init = function() {
   config.silent = true;
   config.debug = false;
 
-  this.name = 'IWannaBeRich-BBRSI';
+  this.name = '$lon-IWannaBeRich-BBRSI';
   this.nsamples = 0;
   this.trend = {
     //zone: 'none',  // none, top, high, low, bottom
@@ -44,7 +48,7 @@ strat.init = function() {
 // What happens on every new candle?
   this.update = function(candle) {
     currentPrice = candle.close;
-
+    currentCandle = candle;
     // if strat has DEPENDENCIES, notify them:
     // this.notify({
     //   type: 'dependency-...',
@@ -60,6 +64,9 @@ strat.init = function() {
 
     var rsi = this.indicators.rsi;
     var rsiVal = rsi.result;
+
+    consoleLog(`${ price }, ${ rsiVal }, ${ this.trend.direction }, ${ this.trend.persisted }, ${
+      advised }, ${ tradeInitiated }`);
 
     //uptrend
     if (price <= bb.lower && rsiVal <= this.settings.rsi.low) {
@@ -128,10 +135,12 @@ strat.init = function() {
   }
 
   this.sell = function(reason) {
+    consoleLog('this.sell');
     this.notify({
       type: 'sell advice',
       reason: reason,
     });
+    consoleLog(reason);
     this.advice('short');
     advised = false;
     buyPrice = 0;
@@ -141,6 +150,7 @@ strat.init = function() {
   }
 
   this.buy = function(reason) {
+    consoleLog('this.buy');
     advised = true;
     // If there are no active trades, send signal
     if (!tradeInitiated) { // Add logic to use other indicators
@@ -148,6 +158,7 @@ strat.init = function() {
         type: 'buy advice',
         reason: reason,
       });
+      consoleLog(reason);
       this.advice('long');
       buyTs = this.candle.start;
       buyPrice = currentPrice;
@@ -156,15 +167,18 @@ strat.init = function() {
   }
   this.onPendingTrade = function(pendingTrade) {
     tradeInitiated = true;
+    consoleLog('onPendingTrade (tradeInitiated = true)');
   }
 
   this.onTrade = function(trade) {
     tradeInitiated = false;
+    consoleLog('onTrade (tradeInitiated = false)');
   }
 // Trades that didn't complete with a buy/sell
   this.onTerminatedTrades = function(terminatedTrades) {
     log.info('Trade failed. Reason:', terminatedTrades.reason);
     tradeInitiated = false;
+    consoleLog('onTerminatedTrades (tradeInitiated = false)');
   }
 
 
@@ -198,6 +212,18 @@ strat.init = function() {
 
 
   this.end = function(a, b, c) {
+    consoleLog('gekko end')
+  }
+  function consoleLog(msg){
+    if(config && config.type === 'tradebot') {
+
+      msg = msg || '';
+      gekkoUuid = gekkoUuid || '2c5ea4c0-4067-11e9-8bad-9b1deb4d3b7d';
+      currentCandle = currentCandle || {}
+      const prefix = `${ gekkoUuid.substring(24) }, ${ JSON.stringify(currentCandle.start) } -- `;
+      console.log(prefix, msg);
+      log.debug(prefix, msg);
+    }
   }
 }
 
@@ -206,3 +232,4 @@ strat.check = function(){
 }
 
 module.exports = strat;
+

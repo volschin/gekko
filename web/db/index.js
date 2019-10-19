@@ -8,7 +8,13 @@ const config = require('../../core/util.js').getConfig();
 const uiConfig = require('../vue/public/UIconfig');
 
 const connectionString = config[uiConfig.adapter] && (config[uiConfig.adapter].connectionString + '/' + config[uiConfig.adapter].database);
-const sequelize = new Sequelize(connectionString);
+const sequelize = new Sequelize(connectionString, {
+  pool: {
+    max: 15,
+    min: 0,
+    idle: 10000
+  }
+});
 
 const db = {};
 
