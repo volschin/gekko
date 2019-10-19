@@ -25,6 +25,9 @@
             .grd-row
               .grd-row-col-3-6 Type
               .grd-row-col-3-6 {{ type }}
+            dib(v-if='isTradebot').grd-row
+              .grd-row-col-3-6 Api Key
+              .grd-row-col-3-6 {{ apiKey }}
           .grd-row-col-3-6
             h3 Runtime
             spinner(v-if='isLoading')
@@ -49,7 +52,7 @@
                   .grd-row-col-2-6 History size
                   .grd-row-col-4-6 {{ config.tradingAdvisor.historySize }}
         div(v-if='warmupRemaining', class='contain brdr--mid-gray p1 bg--orange')
-          | This stratrunner is still warming up for the next 
+          | This stratrunner is still warming up for the next
           i {{ warmupRemaining.replace(',', ' and ') }}
           | , it will not trade until it is warmed up.
         .grd-row(v-if='isStratrunner')
@@ -83,7 +86,7 @@
               .grd-row
                 .grd-row-col-3-6 Alpha
                 .grd-row-col-3-6 {{ round(report.alpha) }} {{ config.watch.currency }}
-        p(v-if='isStratrunner && !watcher && !isArchived') WARNING: stale gekko, not attached to a watcher, please report 
+        p(v-if='isStratrunner && !watcher && !isArchived') WARNING: stale gekko, not attached to a watcher, please report
           a(href='https://github.com/askmike/gekko/issues') here
           | .
         p(v-if='!isArchived')
@@ -93,7 +96,7 @@
         p(v-if='isAuthorized')
           a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
         p(v-if='isStratrunner && watcher && !isArchived')
-          em This gekko gets market data from 
+          em This gekko gets market data from
             router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
           | .
       template(v-if='!isLoading')
@@ -174,6 +177,10 @@ export default {
     type: function() {
       return this.data.logType;
     },
+    apiKey: function() {
+      const name = `${ _.get(this, 'data.config.trader.uniqueName')}`
+      return name;
+    },
     isStratrunner: function() {
       return this.type !== 'watcher';
     },
@@ -184,6 +191,9 @@ export default {
       const dbId = this.$store.state.auth.user('id');
       const isAdmin = this.$store.state.auth.isAdmin();
       return this.data.ownerId && dbId && this.data.ownerId === dbId || isAdmin;
+    },
+    isTradebot: function() {
+      return  _.get(this, 'data.config.type') === 'tradebot';
     },
     warmupRemaining: function() {
       if(!this.isStratrunner) {
