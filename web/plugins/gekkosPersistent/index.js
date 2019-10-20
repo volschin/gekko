@@ -37,9 +37,7 @@ const GekkosPersistent = function(){
     try {
       if (id) {
         const gekko = getGekkoObjectFromManager(id);
-        if (!gekko.isProgrammaticCreation) {
-          db.archive(id);
-        }
+        db.archive(id);
       }
     } catch (handleErr){
       consoleError(handleErr);
@@ -83,7 +81,7 @@ const GekkosPersistent = function(){
   wss.on('gekko_restarted', ({ id, event }) => {
     try {
       const gekko = gekkoManager.gekkos[id];
-      gekko && db.updateJsonGekko(id, gekko);
+      gekko && db.restartGekko(id, gekko);
     } catch (handleErr){
       consoleError(handleErr);
     }

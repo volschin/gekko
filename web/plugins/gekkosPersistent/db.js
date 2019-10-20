@@ -95,6 +95,24 @@ Db.prototype.addGekko = async function(gekko){
     }
   }
 }
+Db.prototype.restartGekko = async function(id, gekko){
+  let result;
+  try {
+    if(id) {
+      result = await GekkosTable.update({
+        jsonGekko: gekko,
+        status: GEKKO_STATUS.ACTIVE
+      }, {
+        where: {
+          gekkoId: id
+        }
+      });
+    }
+  } catch (err1) {
+    consoleError(err1);
+  }
+  return result;
+}
 Db.prototype.updateJsonGekko = async function(id, gekko){
   let result;
   try {
