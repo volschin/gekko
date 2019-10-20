@@ -5,19 +5,18 @@ var log = require('../core/log.js');
 
 var bb = require('./indicators/BB.js');
 var rsi = require('./indicators/RSI.js');
-const uuidv1 = require('uuid/v1');
 
 let strat = {};
 
 // seal everything into init to have the ability to use local variables unique for each strat instance
 // , instead of using 'this.someVar', to optimize performance:
 strat.init = function() {
-  const config = require ('../core/util').getConfig();
 
-  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs
-    , gekkoUuid = uuidv1();
+  const config = require ('../core/util').getConfig() || {};
 
-  consoleLog(`new gekko started, ${ gekkoUuid }, type: ${ config.type }, ${ JSON.stringify(config) }`)
+  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs;
+
+  consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
   this.debug = true;
@@ -47,6 +46,9 @@ strat.init = function() {
 
 // What happens on every new candle?
   this.update = function(candle) {
+    consoleLog(`strat update:: price: ${ price }, rsiVal: ${ rsiVal }, this.trend.direction: ${ this.trend.direction }, this.trend.persisted: ${
+      this.trend.persisted }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+
     currentPrice = candle.close;
     currentCandle = candle;
     // if strat has DEPENDENCIES, notify them:
@@ -58,15 +60,16 @@ strat.init = function() {
   }
 
   this.check = function(candle) {
-    var bb = this.indicators.bb;
-    var price = candle.close;
+
+    let bb = this.indicators.bb;
+    let price = candle.close;
     this.nsamples++;
 
-    var rsi = this.indicators.rsi;
-    var rsiVal = rsi.result;
+    let rsi = this.indicators.rsi;
+    let rsiVal = rsi.result;
 
-    consoleLog(`${ price }, ${ rsiVal }, ${ this.trend.direction }, ${ this.trend.persisted }, ${
-      advised }, ${ tradeInitiated }`);
+    consoleLog(`strat check:: price: ${ price }, rsiVal: ${ rsiVal }, this.trend.direction: ${ this.trend.direction }, this.trend.persisted: ${ 
+      this.trend.persisted }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
 
     //uptrend
     if (price <= bb.lower && rsiVal <= this.settings.rsi.low) {
@@ -176,9 +179,8 @@ strat.init = function() {
   }
 // Trades that didn't complete with a buy/sell
   this.onTerminatedTrades = function(terminatedTrades) {
-    log.info('Trade failed. Reason:', terminatedTrades.reason);
     tradeInitiated = false;
-    consoleLog('onTerminatedTrades (tradeInitiated = false)');
+    consoleLog('Trade failed. Reason: (tradeInitiated = false)' + terminatedTrades && terminatedTrades.reason);
   }
 
 
@@ -215,12 +217,10 @@ strat.init = function() {
     consoleLog('gekko end')
   }
   function consoleLog(msg){
-    if(config && config.type === 'tradebot') {
-
+    if(config){
       msg = msg || '';
-      gekkoUuid = gekkoUuid || '2c5ea4c0-4067-11e9-8bad-9b1deb4d3b7d';
       currentCandle = currentCandle || {}
-      const prefix = `${ gekkoUuid.substring(24) }, ${ JSON.stringify(currentCandle.start) } -- `;
+      const prefix = `${ config.gekkoId }, ${ JSON.stringify(currentCandle.start) || JSON.stringify(moment()) } -- `;
       console.log(prefix, msg);
       log.debug(prefix, msg);
     }
