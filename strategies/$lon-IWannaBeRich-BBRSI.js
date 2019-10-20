@@ -1,5 +1,6 @@
 // IWannaBeRich strategy
 //
+const moment = require('moment');
 var _ = require('lodash');
 var log = require('../core/log.js');
 
@@ -46,8 +47,7 @@ strat.init = function() {
 
 // What happens on every new candle?
   this.update = function(candle) {
-    consoleLog(`strat update:: price: ${ price }, rsiVal: ${ rsiVal }, this.trend.direction: ${ this.trend.direction }, this.trend.persisted: ${
-      this.trend.persisted }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
 
     currentPrice = candle.close;
     currentCandle = candle;
