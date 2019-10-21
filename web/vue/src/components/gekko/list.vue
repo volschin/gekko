@@ -31,6 +31,7 @@
     table.full(v-if='stratrunners.length')
       thead
         tr
+          th api key
           th exchange
           th currency
           th asset
@@ -43,6 +44,7 @@
           th trades
       tbody
         tr.clickable(v-for='gekko in stratrunners', v-on:click='$router.push({path: `/live-gekkos/${gekko.id}`})')
+          td {{ apiKey(gekko)  }}
           td {{ gekko.config.watch.exchange }}
           td {{ gekko.config.watch.currency }}
           td {{ gekko.config.watch.asset }}
@@ -102,9 +104,15 @@ export default {
       return _.values(this.$store.state.gekkos)
         .concat(_.values(this.$store.state.archivedGekkos))
         .filter(g => g.logType === 'watcher')
-    }
+    },
+
   },
   methods: {
+    isAuthorized: function(gekko) {
+      const dbId = this.$store.state.auth.user('id');
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return gekko.ownerId && dbId && gekko.ownerId === dbId || isAdmin;
+    },
     humanizeDuration: (n) => window.humanizeDuration(n),
     moment: mom => moment.utc(mom),
     fmt: mom => moment.utc(mom).format('YYYY-MM-DD HH:mm'),
@@ -124,6 +132,10 @@ export default {
     },
     report: state => {
       return _.get(state, 'events.latest.performanceReport');
+    },
+    apiKey: function(gekko) {
+      const name = this.isAuthorized(gekko) && _.get(gekko, 'config.trader.uniqueName') || ' - ';
+      return name;
     }
   }
 }
