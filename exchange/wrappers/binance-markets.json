@@ -762,8 +762,8 @@
         "AE"
       ],
       "minimalOrder": {
-        "amount": 0.01,
-        "price": 1e-7,
+        "amount": 1,
+        "price": 0.00000001,
         "order": 0.001
       }
     },
