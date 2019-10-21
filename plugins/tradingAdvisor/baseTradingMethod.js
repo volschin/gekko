@@ -68,7 +68,7 @@ var Base = function(settings) {
     if(!this.onCommand)
     this.onCommand = function() {};
 
-  if(!this.onPortfolioChange) 
+  if(!this.onPortfolioChange)
     this.onPortfolioChange = function() {};
 
   if(!this.onPortfolioValueChange)
@@ -76,6 +76,9 @@ var Base = function(settings) {
 
   if(!this.onPendingTrade)
     this.onPendingTrade = function() {};
+
+  if(!this.onTerminatedTrades)
+    this.onTerminatedTrades = function() {};
 
   // let's run the implemented starting point
   this.init();
@@ -191,7 +194,7 @@ Base.prototype.propogateTick = function(candle) {
   _.each(this.indicators, (indicator, name) => {
     indicators[name] = indicator.result;
   });
-  
+
   _.each(this.tulipIndicators, (indicator, name) => {
     indicators[name] = indicator.result.result
       ? indicator.result.result
@@ -238,7 +241,7 @@ Base.prototype.processTerminatedTrades = function(terminatedTrades) {
   if (!terminatedTrades.reason) {
     terminatedTrades.reason = 'Cancelled';
   }
-  this.onTerminatedTrades && this.onTerminatedTrades(terminatedTrades);
+  this.onTerminatedTrades(terminatedTrades);
 }
 
 Base.prototype.updatePortfolio = function(portfolio) {
@@ -311,7 +314,7 @@ Base.prototype.advice = function(newDirection) {
     newDirection = newDirection.direction;
   }
 
-  // I commented this out so Gekko will buy even if it bought previously 
+  // I commented this out so Gekko will buy even if it bought previously
   // if(newDirection === this._currentDirection) {
   //   return;
   // }
