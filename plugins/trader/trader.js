@@ -295,7 +295,7 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
         });
       }
 
-      log.info('[ORDER] summary:', summary);
+      log.info('[ORDER] summary:', JSON.stringify(summary));
       this.order = null;
       this.sync(() => {
 
