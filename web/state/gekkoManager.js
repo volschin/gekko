@@ -87,8 +87,9 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
   }
   if(!!gekko){
     state.isProgrammaticCreation = true;
-    config.gekkoId = id;
   }
+  config.gekkoId = id;
+
   if(type === 'watcher') {
     state.events.initial = {};
     state.events.latest = {};
