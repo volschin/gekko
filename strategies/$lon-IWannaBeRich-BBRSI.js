@@ -46,7 +46,7 @@ strat.init = function() {
   this.addIndicator('rsi', 'RSI', this.settings.rsi);
 
 // What happens on every new candle?
-  this.update = function(candle) {
+  this.update = function(candle = {}) {
     consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
 
     currentPrice = candle.close;
@@ -69,7 +69,7 @@ strat.init = function() {
     let rsiVal = rsi.result;
 
     consoleLog(`strat check:: price: ${ price }, rsiVal: ${ rsiVal }, this.trend.direction: ${ this.trend.direction }, this.trend.persisted: ${ 
-      this.trend.persisted }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+      this.trend.persisted }, , this.trend.adviced: ${ this.trend.adviced }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
 
     //uptrend
     if (price <= bb.lower && rsiVal <= this.settings.rsi.low) {
@@ -90,7 +90,8 @@ strat.init = function() {
         this.trend.persisted = true;
       }
 
-      if(this.trend.persisted && !this.trend.adviced && !advised) {
+      if(this.trend.persisted && !this.trend.adviced) {
+      // if(this.trend.persisted && !this.trend.adviced && !advised) {
         this.trend.adviced = true;
         this.buy('up trend: long');
       } else {
@@ -121,7 +122,10 @@ strat.init = function() {
         this.trend.persisted = true;
       }
 
-      if(this.trend.persisted && !this.trend.adviced && advised) {
+      if(this.trend.persisted && !this.trend.adviced) {
+        consoleLog(`strat check:: sell advice, trend: ${ JSON.stringify(this.trend) }`)
+
+        // if(this.trend.persisted && !this.trend.adviced && advised) {
         this.trend.adviced = true;
         this.sell('down trend: short');
       } else {
@@ -148,7 +152,7 @@ strat.init = function() {
     advised = false;
     buyPrice = 0;
     if (tradeInitiated) { // Add logic to use other indicators
-      tradeInitiated = false;
+      //tradeInitiated = false;
     }
   }
 
@@ -168,21 +172,29 @@ strat.init = function() {
       tradeInitiated = true;
     }
   }
-  this.onPendingTrade = function(pendingTrade) {
+  this.onPendingTrade = function(pendingTrade = {}) {
     tradeInitiated = true;
     consoleLog('onPendingTrade (tradeInitiated = true)');
   }
 
-  this.onTrade = function(trade) {
+  this.onTrade = function(trade = {}) {
     tradeInitiated = false;
-    consoleLog('onTrade (tradeInitiated = false)');
-  }
-// Trades that didn't complete with a buy/sell
-  this.onTerminatedTrades = function(terminatedTrades) {
-    tradeInitiated = false;
-    consoleLog('Trade failed. Reason: (tradeInitiated = false)' + terminatedTrades && terminatedTrades.reason);
+    buyPrice = trade.price;
+    consoleLog(`onTrade:: trade: ${ JSON.stringify(trade) }`);
   }
 
+  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
+  this.onTerminatedTrades = function(terminatedTrades = {}) {
+    tradeInitiated = false;
+    consoleLog('onTerminatedTrades:: Trade failed. Reason: ' + terminatedTrades.reason);
+  }
+
+  this.onPortfolioChange = function(portfolio) {
+    consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
+  }
+  this.onPortfolioValueChange = function(portfolio) {
+    consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
+  }
 
 // for debugging purposes log the last
 // calculated parameters.
