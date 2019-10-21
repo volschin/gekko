@@ -49,7 +49,7 @@ strat.init = function() {
 
   this.requiredHistory = config.tradingAdvisor.historySize;
 
-  if (!config.dependencyResults.results) {
+  if (!config.dependencyResults || !config.dependencyResults.results) {
     throw 'This strategy must run with dependency "ATR-ADX-Trend-Dep"';
   } else {
     aaat2DepRes = config.dependencyResults.results;
