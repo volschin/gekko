@@ -89,9 +89,9 @@
         p(v-if='isStratrunner && !watcher && !isArchived') WARNING: stale gekko, not attached to a watcher, please report
           a(href='https://github.com/askmike/gekko/issues') here
           | .
-        p(v-if='!isArchived')
+        p(v-if='!isArchived && isAuthorized')
           a(v-on:click='stopGekko', class='w100--s my1 btn--red') Stop Gekko
-        p(v-if='isArchived')
+        p(v-if='isArchived && isAuthorized')
           a(v-on:click='deleteGekko', class='w100--s my1 btn--red') Delete Gekko
         p(v-if='isAuthorized')
           a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
