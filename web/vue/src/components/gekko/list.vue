@@ -1,9 +1,9 @@
 <template lang='pug'>
   .contain.py2
-    h3 Market watchers
+    h3(v-if='isAdmin') Market watchers
     .text(v-if='!watchers.length')
       p You don't have any market watchers.
-    table.full.clickable(v-if='watchers.length')
+    table.full.clickable(v-if='watchers.length && isAdmin')
       thead
         tr
           th exchange
@@ -91,8 +91,8 @@ export default {
   },
   computed: {
     stratrunners: function() {
-      return _.values(this.$store.state.gekkos)
-        .concat(_.values(this.$store.state.archivedGekkos))
+      return _.orderBy(this.$store.state.gekkos, g=>g.config.type !== 'tradebot')
+        .concat(_.orderBy(this.$store.state.archivedGekkos, g=>g.config.type !== 'tradebot'))
           .filter(g => {
             if(g.logType === 'papertrader')
               return true;
