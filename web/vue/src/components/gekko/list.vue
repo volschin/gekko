@@ -42,8 +42,9 @@
           th % / M
           th type
           th trades
+          th(v-if='isAdmin') log
       tbody
-        tr.clickable(v-for='gekko in stratrunners', v-on:click='$router.push({path: `/live-gekkos/${gekko.id}`})')
+        tr.clickable(v-for='gekko in stratrunners', v-on:click='$router.push({path: `/live-gekkos/${gekko.id}`})' :class='getClass(gekko)')
           td {{ apiKey(gekko)  }}
           td {{ gekko.config.watch.exchange }}
           td {{ gekko.config.watch.currency }}
@@ -62,6 +63,8 @@
           td
             template(v-if='!gekko.events.tradeCompleted') 0
             template(v-if='gekko.events.tradeCompleted') {{ gekko.events.tradeCompleted.length }}
+          td(v-if='isAdmin')
+            a(:href='logLink(gekko)') {{ logLink(gekko) }}
     .hr
     h2 Start a new live Gekko
     router-link.btn--primary(to='/live-gekkos/new') Start a new live Gekko!
@@ -105,7 +108,10 @@ export default {
         .concat(_.values(this.$store.state.archivedGekkos))
         .filter(g => g.logType === 'watcher')
     },
-
+    isAdmin: function() {
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return !!isAdmin;
+    },
   },
   methods: {
     isAuthorized: function(gekko) {
@@ -136,6 +142,19 @@ export default {
     apiKey: function(gekko) {
       const name = this.isAuthorized(gekko) && _.get(gekko, 'config.trader.uniqueName') || ' - ';
       return name;
+    },
+    logLink(gekko) {
+      return 'http://google.com'
+    },
+    getClass(gekko = {}) {
+      let ret = '';
+      if(gekko.ownerId === this.$store.state.auth.user('id') && gekko.config.type === 'tradebot' && gekko.active === true) {
+        ret += 'bold'
+      }
+      if(gekko.active !== true) {
+        ret += ' non-active'
+      }
+      return ret;
     }
   }
 }
@@ -155,5 +174,9 @@ tr.clickable {
 }
 tr.clickable:hover {
   background: rgba(216,216,216,.99);
+}
+
+tr.non-active {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 </style>
