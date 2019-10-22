@@ -64,7 +64,7 @@
             template(v-if='!gekko.events.tradeCompleted') 0
             template(v-if='gekko.events.tradeCompleted') {{ gekko.events.tradeCompleted.length }}
           td(v-if='isAdmin')
-            a(:href='logLink(gekko)') {{ logLink(gekko) }}
+            a(:href='logLink(gekko)' target='_blank') >>
     .hr
     h2 Start a new live Gekko
     router-link.btn--primary(to='/live-gekkos/new') Start a new live Gekko!
@@ -143,8 +143,9 @@ export default {
       const name = this.isAuthorized(gekko) && _.get(gekko, 'config.trader.uniqueName') || ' - ';
       return name;
     },
-    logLink(gekko) {
-      return 'http://google.com'
+    logLink(gekko = {}) {
+      const link = `${ gekko.id }.log`
+      return link;
     },
     getClass(gekko = {}) {
       let ret = '';

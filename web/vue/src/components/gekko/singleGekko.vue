@@ -95,6 +95,8 @@
           a(v-on:click='deleteGekko', class='w100--s my1 btn--red') Delete Gekko
         p(v-if='isAuthorized')
           a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
+        p(v-if='isAdmin')
+          a(:href='logLink()' target='_blank' class='w100--s my1') Log
         p(v-if='isStratrunner && watcher && !isArchived')
           em This gekko gets market data from
             router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
@@ -191,6 +193,10 @@ export default {
       const dbId = this.$store.state.auth.user('id');
       const isAdmin = this.$store.state.auth.isAdmin();
       return this.data.ownerId && dbId && this.data.ownerId === dbId || isAdmin;
+    },
+    isAdmin: function() {
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return !!isAdmin;
     },
     isTradebot: function() {
       return  _.get(this, 'data.config.type') === 'tradebot';
@@ -381,6 +387,10 @@ export default {
           path: `/live-gekkos/`
         });
       });
+    },
+    logLink() {
+      const link = `${ this.id }.log`
+      return link;
     }
   }
 }
