@@ -133,13 +133,6 @@ app
     // allowHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
     credentials: 'true'
   }))
-  /*.use(async function(ctx, next) {
-    ctx.set('Access-Control-Allow-Origin', '*');
-    ctx.set("Access-Control-Allow-Credentials", 'true');
-    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    await next();
-  })*/
-
   .use(serve(WEBROOT + 'vue/dist'))
   .use(session({}, app))
   .use(bodyParser())
@@ -147,7 +140,16 @@ app
   .use(passport.initialize()) // for user accounts
   .use(passport.session()) // for user accounts
   .use(router.routes())
-  .use(router.allowedMethods());
+  .use(router.allowedMethods())
+  .use(async function(ctx, next) { // authenticate custom static files (logs):
+    if (/\.log$/.test(ctx.originalUrl)) {
+      return ensureAuthenticated('admin')(ctx, next);
+    } else {
+      return next();
+    }
+  })
+  .use(serve(WEBROOT + '../logs')); // serve static logs (to admins-only)
+
 
 server.timeout = config.api.timeout || 120000;
 server.on('request', app.callback());
