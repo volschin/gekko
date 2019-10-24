@@ -142,25 +142,26 @@ strat.init = function() {
   }
 
   this.sell = function(reason) {
-    consoleLog('this.sell');
-    this.notify({
-      type: 'sell advice',
-      reason: reason,
-    });
-    consoleLog(reason);
-    this.advice('short');
-    advised = false;
-    buyPrice = 0;
-    if (tradeInitiated) { // Add logic to use other indicators
-      //tradeInitiated = false;
+    consoleLog(`strat.sell:: attempting, tradeInitiated=${ tradeInitiated }`);
+    if (!tradeInitiated) { // Add logic to use other indicators
+      consoleLog('strat.sell:: run');
+      this.notify({
+        type: 'sell advice',
+        reason: reason,
+      });
+      consoleLog(reason);
+      this.advice('short');
+      advised = false;
+      buyPrice = 0;
     }
   }
 
   this.buy = function(reason) {
-    consoleLog('this.buy');
+    consoleLog(`strat.buy:: attempting, tradeInitiated=${ tradeInitiated }`);
     advised = true;
     // If there are no active trades, send signal
     if (!tradeInitiated) { // Add logic to use other indicators
+      consoleLog('strat.sell:: run');
       this.notify({
         type: 'buy advice',
         reason: reason,
