@@ -4,7 +4,7 @@ const _ = require('lodash');
 const util = require('../../core/util.js');
 const config = util.getConfig();
 
-const DependencyManager = require('../../web/state/dependencyManager');
+const DependencyManager = require('./web');
 
 let cache = require('../../web/state/cache');
 const fs = require('fs');
