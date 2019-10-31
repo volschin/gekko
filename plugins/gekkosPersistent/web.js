@@ -1,32 +1,49 @@
 const Db = require('./db');
 const GEKKO_STATUS = require('./db').GEKKO_STATUS;
+const GEKKO_TYPE = require('./db').GEKKO_TYPE;
+const BUNDLE_STATUS = require('./db').BUNDLE_STATUS;
+
 let db;
 
 // temp:
 const _ = require('lodash');
-const log = require('../../../core/log.js');
-const cache = require('../../state/cache');
-const base = require('../../routes/baseConfig');
+const log = require('../../core/log.js');
+const cache = require('../../web/state/cache');
+const base = require('../../web/routes/baseConfig');
 
 const GekkosPersistent = function(){
   db = new Db();
+  // db.create(); //use only to (re)create DB!!
+
   const gekkoManager = cache.get('gekkos');
+  const wss = cache.get('wss');
 
-  const wss = require('../../state/cache').get('wss');
-
-  wss.on('server_started', data => {
+  wss.on('server_started', async data => {
     try {
-      this.restoreGekkosOnStartup();
+      await this.restoreBundlesOnStartup();
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+    try {
+      await this.restoreGekkosOnStartup();
     } catch (handleErr){
       consoleError(handleErr);
     }
   });
-  wss.on('gekko_new', ({ id, state }) => {
+  wss.on('gekko_new', async ({ id, state }) => {
+    let newConfig;
     try {
       if (state) {
         let config = state.config;
         if (!state.isProgrammaticCreation) {
-          db.addGekko(state, config)
+          if(!state.gekkoConfig && state.type === GEKKO_TYPE.TRADEBOT && !state.config.bundleUuid) {
+            newConfig = await db.addConfig(state);
+            if(newConfig && newConfig.id) {
+              config.configId = newConfig.id;
+            }
+          }
+
+          let newGekko = await db.addGekko(state, config);
         }
       }
     } catch (handleErr){
@@ -37,7 +54,7 @@ const GekkosPersistent = function(){
     try {
       if (id) {
         const gekko = getGekkoObjectFromManager(id);
-        db.archive(id);
+        db.archiveGekko(id);
       }
     } catch (handleErr){
       consoleError(handleErr);
@@ -46,7 +63,7 @@ const GekkosPersistent = function(){
   wss.on('gekko_deleted', ({ id }) => {
     try {
       if(id) {
-        db.delete(id);
+        db.deleteGekko(id);
       }
     } catch (handleErr){
       consoleError(handleErr);
@@ -78,16 +95,32 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
-  wss.on('gekko_restarted', ({ id, event }) => {
-    try {
-      const gekko = gekkoManager.gekkos[id];
-      gekko && db.restartGekko(id, gekko);
-    } catch (handleErr){
-      consoleError(handleErr);
-    }
-  });
 
-  // send to client expml
+  // BUNDLES:
+  wss.on('bundle_new', async ({ uuid, state }) => {
+    let newConfig, existingConfig;
+      try {
+        if(!state.isProgrammaticCreation) {
+
+          newConfig = await db.addConfig(state, true);
+
+          if (newConfig && newConfig.id) {
+            state.configId = newConfig.id;
+          }
+          try {
+            db.addBundle(state);
+          } catch (handleErr){
+            consoleError(handleErr);
+          }
+        } else {
+
+        }
+      } catch (err1) {
+        consoleError(err1);
+      }
+
+  });
+  // send to client exapmle
   /*const broadcast = require('../../state/cache').get('broadcast');
   broadcast({
     type: 'gekko_event1',
@@ -96,10 +129,26 @@ const GekkosPersistent = function(){
   });*/
 };
 
+GekkosPersistent.prototype.restoreBundlesOnStartup = async function(){
+  const gekkoManager = cache.get('bundles');
+
+  let bundle, config, bundleStarted, res = await db.getAllBundles();
+  res.forEach(async r => {
+    console.log(r);
+    bundle = r && r.dataValues;
+    if(bundle) {
+      config = await db.getConfigById(bundle.configId);
+      if(config) {
+        bundleStarted = await startBundleAsync(bundle, config.dataValues, gekkoManager);
+      }
+    }
+  });
+}
+
 GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
   const gekkoManager = cache.get('gekkos');
 
-  const startGekko = startGekkoSync;
+  const startGekko = startGekkoAsync;
   let res = await db.getAllGekkos();
   res.forEach(async r => {
     let gekko = r && r.dataValues;
@@ -123,8 +172,8 @@ GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
 module.exports = GekkosPersistent;
 
 // this is temp, todo: get remove and use main func when it's async
-let startGekkoSync;
-startGekkoSync = async function(gConfig, gekko) {
+let startGekkoAsync;
+startGekkoAsync = async function(gConfig, gekko) {
   const apiKeyManager = cache.get('apiKeyManager');
   const gekkoManager = cache.get('gekkos');
 
@@ -154,6 +203,30 @@ startGekkoSync = async function(gConfig, gekko) {
 
   return state;
 };
+const startBundleAsync = async function(bundle, config, bundleManager) {
+
+  if(!bundle) return;
+
+  const adoptedBundle = {
+    isProgrammaticCreation: true,
+
+    active: bundle.status === BUNDLE_STATUS.ACTIVE,
+    stopped: bundle.status === BUNDLE_STATUS.STOPPED,
+
+    uuid: bundle.uuid,
+    ownerId: bundle.ownerId,
+
+    configId: bundle.configId,
+    config: {
+      options: config.optionsJson,
+      watch: config.watchJson,
+      tradingAdvisor: config.tradingAdvisorJson,
+    }
+  }
+  let state = bundleManager.add({ bundle: adoptedBundle });
+
+  return state;
+}
 function getGekkoObjectFromManager(id) {
   let ret;
   const gekkoManager = cache.get('gekkos');

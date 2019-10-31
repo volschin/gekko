@@ -8,12 +8,13 @@
       .menu.contain
         router-link(to='/home').py1 Home
         router-link(v-if='isAuthenticated' to='/live-gekkos').py1 Live Gekkos
-        router-link(v-if='isAuthenticated' to='/backtest').py1 Backtest
-        router-link(v-if='isAuthenticated' to='/data').py1 Local data
+        router-link(v-if='isAuthenticated' to='/bundles').py1 Bundles
+        router-link(v-if='isAuthorized' to='/backtest').py1 Backtest
+        router-link(v-if='isAuthorized' to='/data').py1 Local data
         router-link(v-if='isAuthenticated' to='/config').py1 Config
         router-link(v-if='!isAuthenticated' to='/login').py1 Login
         a(v-if='isAuthenticated' v-on:click='logout').py1 Logout
-        a(href='https://gekko.wizb.it/docs/introduction/about_gekko.html', target='_blank').py1 Documentation
+        a(v-if='isAuthorized' href='https://gekko.wizb.it/docs/introduction/about_gekko.html', target='_blank').py1 Documentation
 
 </template>
 
@@ -23,6 +24,11 @@ export default {
   computed: {
     isAuthenticated () {
       return this.$store.state.auth.isAuthenticated
+    },
+    isAuthorized: function() {
+      const dbId = this.$store.state.auth.user('id');
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return dbId && isAdmin;
     },
     siteName () {
       return globalConfig['site-name']
