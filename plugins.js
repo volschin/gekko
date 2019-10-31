@@ -264,6 +264,15 @@ var plugins = [
     path: config => 'dependencyManager/dependencyManager.js',
   },
   {
+    name: 'Gekkos Persistent',
+    description: 'Ability to have save gekkos and their events to DB',
+    slug: 'gekkosPersistent',
+    async: true,
+    modes: ['realtime'],
+    emits: true,
+    path: config => 'gekkosPersistent/index.js',
+  },
+  {
     name: 'Dependency Manager Async',
     description: 'Ability to have dependant gekkos (e.g. for different timeframe indicators) - UI version',
     slug: 'dependencyManagerAsync',

@@ -1,6 +1,16 @@
 <template lang='pug'>
   div.contain.my2
     h3 Start a new gekko
+    .grd-row
+      .grd-row-col-3-6.px1
+        label(for='gekkoName').wrapper Name:
+        input(v-model='gekkoName')
+      .grd-row-col-3-6.px1
+        label(for='gekkoDescription').wrapper Description:
+        textarea(v-model='gekkoDescription' rows="3").control--toml-input
+    .grd-row(v-if='isAdmin')
+      label(for='sendNotifications').wrapper Send Notifications:
+      input(v-model='sendNotifications' type="checkbox")
     gekko-config-builder(v-on:config='updateConfig')
     .hr
     .txt--center(v-if='config.valid')
@@ -24,10 +34,17 @@ export default {
   data: () => {
     return {
       pendingStratrunner: false,
-      config: {}
+      config: {},
+      gekkoName: '',
+      gekkoDescription: '',
+      sendNotifications: false,
     }
   },
   computed: {
+    isAdmin: function() {
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return !!isAdmin;
+    },
     gekkos: function() {
       return this.$store.state.gekkos;
     },
@@ -60,10 +77,12 @@ export default {
           .subtract(this.requiredHistoricalData, 'minutes')
           .unix();
 
-        const available = moment
-          .utc(this.existingMarketWatcher.events.initial.candle.start)
-          .unix();
-
+        let available = 0;
+        if(this.existingMarketWatcher.events.initial && this.existingMarketWatcher.events.initial.candle) { // buggy due to persistent gekkos :)
+          available = moment
+            .utc(this.existingMarketWatcher.events.initial.candle.start)
+            .unix();
+        }
         startAt = moment.unix(Math.max(optimal, available)).utc().format();
       }
 
@@ -74,9 +93,23 @@ export default {
         },
         mode: 'realtime'
       }, this.config);
+
+      // set additional custom gekko options, that we want to get from user:
+      let options = {}
+      if(!_.isEmpty(this.gekkoName)) {
+        options.name = this.gekkoName;
+      }
+      if(!_.isEmpty(this.gekkoDescription)) {
+        options.description = this.gekkoDescription;
+      }
+      options.sendNotifications = this.sendNotifications;
+      gekkoConfig.options = options;
+
       return gekkoConfig;
     },
     existingMarketWatcher: function() {
+      let test1 = this.pendingStratrunner; // fixing bug - without this it does not call existingMarketWatcher watcher on pendingStratrunner change!
+      let test2 = test1 + 1234;
       const market = Vue.util.extend({}, this.watchConfig.watch);
       return _.find(this.gekkos, {config: {watch: market}});
     },
@@ -102,6 +135,8 @@ export default {
   watch: {
     // start the stratrunner
     existingMarketWatcher: function(val, prev) {
+      let a = this.isPendingStratrunner;
+      console.log(a);
       if(!this.pendingStratrunner)
         return;
 
@@ -123,7 +158,7 @@ export default {
       this.config = config;
     },
     start: function() {
-
+      const that = this;
       // if the user starts a tradebot we do some
       // checks first.
       if(this.config.type === 'tradebot') {
@@ -137,7 +172,6 @@ export default {
           return alert('Please first select API key');
         }
       }
-
       // internally a live gekko consists of two parts:
       //
       // - a market watcher
@@ -172,7 +206,7 @@ export default {
           // the specified market is not yet being watched,
           // we need to create a watcher
           this.startWatcher((err, resp) => {
-            this.pendingStratrunner = resp.id;
+            that.pendingStratrunner = resp.id;
             // now we just wait for the watcher to be properly initialized
             // (see the `watch.existingMarketWatcher` method)
           });

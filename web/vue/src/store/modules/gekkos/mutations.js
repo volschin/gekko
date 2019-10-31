@@ -22,7 +22,7 @@ export const addGekko = (state, gekko) => {
 
 export const updateGekko = (state, update) => {
   if(!update.id || !_.has(state.gekkos, update.id)) {
-    return console.error('cannot update unknown gekko..');;
+    return console.error('cannot update unknown gekko..', state, update.id);
   }
 
   state.gekkos = {

@@ -285,6 +285,13 @@ config.redisBeacon = {
     'candle'
   ]
 }
+config.dependencyManager = {
+  enabled: true
+}
+
+config.gekkosPersistent = {
+  enabled: true
+}
 
 config.slack = {
   enabled: false,

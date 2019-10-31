@@ -180,6 +180,7 @@ GekkoManager.prototype.handleFatalError = function(id, err) {
 // figure out it we can safely start a new watcher without
 // the leechers noticing.
 GekkoManager.prototype.handleWatcherError = function(state, id) {
+  let watch1, watch2;
   console.log(`${now()} A gekko watcher crashed.`);
   if(!state.events.latest.candle) {
     console.log(`${now()} was unable to start.`);
@@ -189,15 +190,15 @@ GekkoManager.prototype.handleWatcherError = function(state, id) {
   if(state.events.latest && state.events.latest.candle) {
     latestCandleTime = state.events.latest.candle.start;
   }
+  watch1 = state.config.watch;
   const leechers = _.values(this.gekkos)
     .filter(gekko => {
       if(gekko.type !== 'leech') {
         return false;
       }
-
-      if(_.isEqual(gekko.config.watch, state.config.watch)) {
-        return true;
-      }
+      watch2 = gekko.config.watch;
+      return !!(watch1 && watch2
+        && watch1.asset === watch2.asset && watch1.currency === watch2.currency && watch1.exchange === watch2.exchange);
     });
 
   if(leechers.length) {

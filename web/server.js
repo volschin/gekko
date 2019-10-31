@@ -74,10 +74,12 @@ cache.set('wss', wss);
 
 const ListManager = require('./state/listManager');
 const GekkoManager = require('./state/gekkoManager');
+const BundleManager = require('./state/bundleManager');
 
 // initialize lists and dump into cache
 cache.set('imports', new ListManager);
 cache.set('gekkos', new GekkoManager);
+cache.set('bundles', new BundleManager);
 try {
   if(baseConfig.dependencyManager && baseConfig.dependencyManager.enabled === true){
     DependencyManager = require('../plugins/dependencyManager/web');
@@ -89,7 +91,16 @@ try {
 }
 
 cache.set('apiKeyManager', require('./apiKeyManager'));
-cache.set('gekkosPersistent', new GekkosPersistent());
+
+try {
+  if(baseConfig.gekkosPersistent && baseConfig.gekkosPersistent.enabled === true){
+    GekkosPersistent = require('../plugins/gekkosPersistent/web');
+    cache.set('gekkosPersistent', new GekkosPersistent());
+  }
+} catch (e) {
+  console.error(e);
+  console.error('Note: if you enable "gekkosPersistent" plugin in baseConfig.js, you need to have it installed to plugins folder!');
+}
 
 // setup API routes
 
@@ -114,12 +125,22 @@ router.post('/api/scan', ensureAuthenticated(), require(ROUTE('scanDateRange')))
 router.post('/api/scansets', ensureAuthenticated('admin'), require(ROUTE('scanDatasets')));
 router.post('/api/backtest', ensureAuthenticated('admin'), require(ROUTE('backtest')));
 router.post('/api/import', ensureAuthenticated('admin'), require(ROUTE('import')));
+router.post('/api/getCandles', ensureAuthenticated(), require(ROUTE('getCandles')));
+
+// GEKKOS:
 router.post('/api/startGekko', ensureAuthenticated(), require(ROUTE('startGekko')));
 router.post('/api/stopGekko', ensureAuthenticated(), require(ROUTE('stopGekko')));
 router.post('/api/deleteGekko', ensureAuthenticated(), require(ROUTE('deleteGekko')));
 router.post('/api/restartGekko', ensureAuthenticated(), require(ROUTE('restartGekko')));
-router.post('/api/getCandles', ensureAuthenticated(), require(ROUTE('getCandles')));
 
+// BUNDLES:
+router.post('/api/bundleStop', ensureAuthenticated(), require(ROUTE('bundleStop')));
+router.post('/api/bundleStart', ensureAuthenticated(), require(ROUTE('bundleStart')));
+router.post('/api/bundleDelete', ensureAuthenticated(), require(ROUTE('bundleDelete')));
+router.post('/api/bundleRestart', ensureAuthenticated(), require(ROUTE('bundleRestart')));
+router.get('/api/bundles', ensureAuthenticated(), listWraper('bundles'));
+
+// AUTH:
 router.post('/auth/login', require(ROUTE('login')));
 // router.post('/auth/google', require(ROUTE('login')));
 router.post('/auth/register', require(ROUTE('register')));

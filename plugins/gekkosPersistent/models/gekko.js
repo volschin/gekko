@@ -3,60 +3,48 @@ const { Op } = require('sequelize');
 const log = require('../../../core/log.js');
 const util = require('../../../core/util.js');
 
-let modelsSequelize, config, GekkosTable;
-const GEKKO_TYPE = {
-  WATCHER: 'watcher',
-  TRADEBOT: 'leech'
-}
+let config, GekkosTable;
 
-const GEKKO_STATUS = {
-  ACTIVE: 'active',
-  STOPPED: 'stopped',
-  ARCHIVED: 'archived',
-  DELETED: 'deleted'
-}
-const Db = function(settings){
-  config = util.getConfig();
-  let connectionString = config.postgresql.connectionString + '/' + config.postgresql.database;
-  modelsSequelize = new Sequelize(connectionString, {
-    pool: {
-      max: 30,
-      min: 0,
-      idle: 10000
-    }
+module.exports = function(sequelize, DataTypes) {
+
+  GekkosTable = sequelize.define('Gekkos', {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    gekkoId: {
+      type: Sequelize.STRING(100),
+      allowNull: false
+    },
+    bundleId: Sequelize.INTEGER,
+    bundleUuid: Sequelize.UUID,
+    name: {
+      type: Sequelize.STRING(100),
+      defaultValue: Sequelize.UUIDV4,
+    },
+    description: {
+      type: Sequelize.STRING(1000),
+    },
+    sendNotifications: Sequelize.BOOLEAN,
+    ownerId: Sequelize.INTEGER,
+    configId: Sequelize.INTEGER,
+    status: Sequelize.STRING(10),
+    type: Sequelize.STRING(20),
+    mode: Sequelize.STRING(20),
+    jsonGekko: Sequelize.JSON,
+
+    exchange: Sequelize.STRING(30),
+    currency: Sequelize.STRING(10),
+    asset: Sequelize.STRING(10)
+  }, {
+    tableName: '_slon.gekkos'
   });
-  GekkosTable = modelsSequelize.define('Gekkos',
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-      },
-      name: {
-        type: Sequelize.STRING(100),
-        defaultValue: Sequelize.UUIDV4,
-      },
-      ownerId: Sequelize.INTEGER,
-      status: Sequelize.STRING(10),
-
-      gekkoId: {
-        type: Sequelize.STRING(100),
-        allowNull: false
-      },
-      type: Sequelize.STRING(20),
-      mode: Sequelize.STRING(20),
-      jsonGekko: Sequelize.JSON,
-
-      exchange: Sequelize.STRING(30),
-      currency: Sequelize.STRING(10),
-      asset: Sequelize.STRING(10)
-    }, {
-      tableName: 'gekkos'
-    });
-  if(false){
-    let res = createGekkosTable(GekkosTable);
-  }
+  return GekkosTable;
 }
+
+/*
+
 Db.prototype.addGekko = async function(gekko){
   let exists = false;
   const config = gekko.config;
@@ -256,10 +244,7 @@ Db.prototype.isExistingMarketWatcher = async function(watch) {
     });
   return !!res.length;
 }
-
-module.exports = Db;
-module.exports.GEKKO_TYPE = GEKKO_TYPE;
-module.exports.GEKKO_STATUS = GEKKO_STATUS;
+*/
 
 const createGekkosTable = async function(model) {
   return new Promise(async (resolve, reject) => {
@@ -279,9 +264,8 @@ const createGekkosTable = async function(model) {
   });
 }
 
-const getMarketTableName = function(config){
-  return `Market_${config.exchange}_${config.currency}_${config.asset}`;
-}
+module.exports.create = createGekkosTable;
+
 const consoleError = function(msg) {
   console.error(msg);
   log.info('GekkosPersistent DB error:', msg);

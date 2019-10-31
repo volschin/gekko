@@ -12,6 +12,18 @@
       .grd.contain
         .grd-row
           .grd-row-col-3-6
+            h4 {{ gekkoName }}
+            h6(v-if='!!gekkoDescription')
+              textarea(rows='3' disabled="disabled") {{ gekkoDescription }}
+          .grd-row-col-3-6(v-if='isAdmin')
+            h4 User: &nbsp
+              a(:href='"/users/" + data.ownerId') {{ ownerName  }}
+        .grd.grd-row(v-if='isAdmin')
+          label(for='sendNotifications').wrapper Send Notifications:
+          input(type="checkbox" disabled="disabled" :checked="!!sendNotifications" )
+      .grd.contain
+        .grd-row
+          .grd-row-col-3-6
             h3 Market
             .grd-row
               .grd-row-col-3-6 Exchange
@@ -276,7 +288,8 @@ export default {
         if(g.id === this.id)
           return false;
 
-        return _.isEqual(watch, g.config.watch);
+        return (watch && g.config && g.config.watch
+          && watch.asset === g.config.watch.asset && watch.currency === g.config.watch.currency && watch.exchange === g.config.watch.exchange);
       });
     },
     hasLeechers: function() {
@@ -290,8 +303,26 @@ export default {
         if(g.id === this.id)
           return false;
 
-        return _.isEqual(watch, g.config.watch);
+        // return _.isEqual(watch, g.config.watch);
+        return (watch && g.config && g.config.watch
+          && watch.asset === g.config.watch.asset && watch.currency === g.config.watch.currency && watch.exchange === g.config.watch.exchange);
       });
+    },
+    gekkoName: function() {
+      if(this.data)
+        return _.get(this.data, 'config.options.name');
+    },
+    gekkoDescription: function() {
+      if(this.data)
+        return _.get(this.data, 'config.options.description');
+    },
+    ownerName: function() {
+      if(this.data)
+        return _.get(this.data, 'ownerId');
+    },
+    sendNotifications: function() {
+      if(this.data)
+        return _.get(this.data, 'config.options.sendNotifications');
     }
   },
   watch: {
