@@ -91,8 +91,8 @@ export default {
   },
   computed: {
     stratrunners: function() {
-      return _.orderBy(this.$store.state.gekkos, g=>g.config.type !== 'tradebot')
-        .concat(_.orderBy(this.$store.state.archivedGekkos, g=>g.config.type !== 'tradebot'))
+      return _.orderBy(this.$store.state.gekkos, g=>g.logType !== 'tradebot')
+        .concat(_.orderBy(this.$store.state.archivedGekkos, g=>g.logType !== 'tradebot'))
           .filter(g => {
             if(g.logType === 'papertrader')
               return true;
