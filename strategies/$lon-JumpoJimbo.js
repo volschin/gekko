@@ -18,6 +18,7 @@
 
 var log = require('../core/log');
 var config = require ('../core/util.js').getConfig();
+const moment = require('moment');
 
 const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
@@ -49,6 +50,7 @@ var sma5History = [];
 let highestRSI = 0; // highestRSI in last 5 candles
 let lowestRSI = 100; // lowestRSI in last 5 candles
 var candle5 = {};
+let trailingStop, currentCandle;
 
 const STOP_LOSS_COEF = 0.9;
 // const STOP_LOSS_COEF = 0.99;
@@ -96,6 +98,7 @@ strat.init = function() {
   // Gekko won't use historical data unless we define the indicator here
   //this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
 
+  trailingStop = this.settings.trailingStop;
 
   let customNATRSettings = {
     optInTimePeriod: this.settings.ATR_Period || 14,
@@ -109,12 +112,13 @@ strat.init = function() {
   });*/
 
   this.tradeInitiated = false;
-  console.log(`SETTINGS: ${JSON.stringify(this.settings)}`);
+  consoleLog(`SETTINGS: ${JSON.stringify(this.settings)}`);
 }
 
 // What happens on every new candle?
 strat.update = function(candle) {
   currentPrice = candle.close;
+  currentCandle = candle;
   // atrIndicator.update(candle);
   rsiIndicator.update(candle);
   // write 1 minute candle to 5 minute batchers
@@ -301,7 +305,7 @@ strat.check = function() {
 
 
 strat.sell = function(reason) {
-  console.log(reason, JSON.stringify(this.candle.start));
+  consoleLog(reason);
 
   this.notify({
     type: 'sell advice',
@@ -316,7 +320,7 @@ strat.sell = function(reason) {
 }
 
 strat.buy = function(reason) {
-  console.log(reason, JSON.stringify(this.candle.start));
+  consoleLog(reason);
 
   advised = true;
   // If there are no active trades, send signal
@@ -325,7 +329,21 @@ strat.buy = function(reason) {
       type: 'buy advice',
       reason: reason,
     });
-    this.advice('long');
+    //this.advice('long');
+    if(trailingStop) {
+      this.advice({
+        direction: 'long', // or short
+        trigger: { // ignored when direction is not "long"
+          type: 'trailingStop',
+          trailPercentage: trailingStop
+          // or:
+          // trailValue: 100
+        }
+      });
+    } else {
+      this.advice('long');
+    }
+
     buyTs = this.candle.start;
     buyPrice = currentPrice;
     this.tradeInitiated = true;
@@ -338,6 +356,7 @@ strat.buy = function(reason) {
 // ash: NOT WORKING!! SEE .buy
 strat.onPendingTrade = function(pendingTrade) {
   this.tradeInitiated = true;
+  consoleLog('onPendingTrade (tradeInitiated = true)');
 }
 // This runs whenever a trade is completed
 // as per information from the exchange.
@@ -355,18 +374,33 @@ strat.onPendingTrade = function(pendingTrade) {
 //   feePercent: [the cost in fees],
 //   effectivePrice: [executed price - fee percent, if effective price of buy is below that of sell you are ALWAYS in profit.]
 // }
-strat.onTrade = function(trade) {
+strat.onTrade = function(trade = {}) {
   this.tradeInitiated = false;
+  if(trade.action === 'sell'){
+    advised = false;
+  }
+  consoleLog(`onTrade:: trade: ${ JSON.stringify(trade) }`);
 }
 // Trades that didn't complete with a buy/sell
 strat.onTerminatedTrades = function(terminatedTrades) {
   log.info('Trade failed. Reason:', terminatedTrades.reason);
   this.tradeInitiated = false;
+  consoleLog('onTerminatedTrades:: Trade failed. Reason: ' + terminatedTrades.reason);
 }
 strat.end = function() {
   // your code!
-  console.error(`END: statsTotalTrades: ${ statsTotalTrades }, success: ${statsTotalTradesSuccess}, fail: ${statsTotalTradesForceClose}`);
+  const msg = `END: statsTotalTrades: ${ statsTotalTrades }, success: ${statsTotalTradesSuccess}, fail: ${statsTotalTradesForceClose}`;
+  consoleLog(msg);
+  console.error(msg);
 }
-
+function consoleLog(msg){
+  if(config){
+    msg = msg || '';
+    currentCandle = currentCandle || {}
+    const prefix = `${ config.gekkoId }, ${ JSON.stringify(currentCandle.start) || JSON.stringify(moment()) } -- `;
+    console.error(prefix, msg);
+    log.debug(prefix, msg);
+  }
+}
 
 module.exports = strat;

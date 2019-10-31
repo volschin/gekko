@@ -1,3 +1,4 @@
+trailingStop = 1
 RSI_HIGH = 51
 RSI_LOW = 29
 DIP_TIMEOUT = 2880
