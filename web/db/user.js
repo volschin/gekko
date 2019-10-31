@@ -5,27 +5,28 @@ const _ = require('lodash');
 
 module.exports = function(sequelize, DataTypes) {
   let userSchema = sequelize.define('User', {
-      username: {
-        type: DataTypes.STRING,
-        unique: true,
-      },
-      email: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      fullName: {
-        type: DataTypes.STRING,
-      },
-      role: {
-        type: DataTypes.STRING,
-        defaultValue: 'user'
-      }
-    }, {
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fullName: {
+      type: DataTypes.STRING,
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'user'
+    }
+  }, {
+    tableName: '_slon.users',
     timestamps: false,
     getterMethods: {
       comparePassword: function(password, hash, callback) {
@@ -89,3 +90,4 @@ module.exports = function(sequelize, DataTypes) {
 
   return userSchema;
 }
+
