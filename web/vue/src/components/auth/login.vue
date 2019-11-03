@@ -39,7 +39,9 @@
 </template>
 
 <script>
-export default {
+  import initializeState from '../../store/init'
+
+  export default {
   name: 'loginPage',
   data: () => {
     return {
@@ -56,6 +58,7 @@ export default {
           password: this.password
         }
       }).then(response => {
+        initializeState(true);
         this.$router.push('live-gekkos')
       }, error => {
         console.error('$store.dispatch(login' + error);

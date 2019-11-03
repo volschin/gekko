@@ -18,7 +18,9 @@ const sync = () => {
   bus.$on('bundle_deleted', data => store.commit('deleteBundle', data.id));
 }
 
-export default function() {
+export default function(isResync) {
   init();
-  sync();
+  if(!isResync) {
+    sync();
+  }
 }

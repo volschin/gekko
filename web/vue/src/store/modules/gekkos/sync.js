@@ -22,7 +22,9 @@ const sync = () => {
   // bus.$on('gekko_deleted', data => store.commit('x', data.id));
 }
 
-export default function() {
+export default function(isResync) {
   init();
-  sync();
+  if(!isResync) {
+    sync();
+  }
 }

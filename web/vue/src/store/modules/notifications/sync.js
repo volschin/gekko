@@ -9,7 +9,9 @@ const sync = () => {
   });
 }
 
-export default function() {
+export default function(isResync) {
   init();
-  sync();
+  if(!isResync) {
+    sync();
+  }
 }

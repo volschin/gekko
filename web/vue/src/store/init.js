@@ -7,10 +7,10 @@ import syncBundles from './modules/bundles/sync'
 import syncNotifications from './modules/notifications/sync'
 import syncConfig from './modules/config/sync'
 
-export default function() {
-  syncImports();
-  syncGekkos();
-  syncBundles();
-  syncNotifications();
-  syncConfig();
+export default function(isResync) {
+  syncImports(isResync);
+  syncGekkos(isResync);
+  syncBundles(isResync);
+  syncNotifications(isResync);
+  syncConfig(isResync);
 }
