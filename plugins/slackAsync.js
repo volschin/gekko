@@ -6,6 +6,8 @@ const log = require('../core/log.js');
 const util = require('../core/util.js');
 const config = util.getConfig();
 const slackConfig = config.slackAsync;
+const WATCHER_TYPE = ' market watcher';
+
 let buyReason;
 let sellReason;
 let optionsFromConfig;
@@ -20,15 +22,17 @@ const SlackAsync = function(done) {
   this.setupWebApi();
   //this.setupRTM(); // todo
 };
-const gekkoNameShort = `${ GetCodeLetterForGekkoName(config) }-${ getRandomFromRange(100, 999) }`;
 
 SlackAsync.prototype.setupWebApi = function(done) {
+
   let options = CreateOptionsFromConfig(config), text = '';
-  const gekkoNameHash = CreateNameHash(options);
+  const gekkoNameHash = CreateNameHash({ options });
+  const gekkoNameShort = CreateNameShort();
   this.slack = new WebClient(slackConfig.token);
 
   const setupSlack = function(error, result) {
     let attachments = [];
+
     if(options.strategy) {
       text = `Gekko started! (${ gekkoNameShort })`;
     } else {
@@ -48,7 +52,13 @@ SlackAsync.prototype.setupWebApi = function(done) {
     }
     this.done();
   };
-  setupSlack.call(this);
+
+
+  if(config.type !== WATCHER_TYPE && config.options && config.options.sendNotifications === true) {
+    console.log(`slackAsync plugin:: run setupSlack, gekkoNameHash: ${ gekkoNameHash }, gekkoNameShort: ${ gekkoNameShort }, gekkoId: ${ config.gekkoId }`);
+    // console.log(`slackAsync plugin:: run setupSlack, gekkoId: ${ JSON.stringify(config.gekkoId) }, type: ${ config.type }, sendNotifications: ${ config.options && config.options.sendNotifications }`);
+    setupSlack.call(this);
+  }
 };
 
 // https://github.com/SlackAPI/node-slack-sdk#using-the-real-time-messaging-api
@@ -527,10 +537,13 @@ function CreateOptionsFromConfig(config) {
   }
   return optionsFromConfig;
 }
-
-const CreateNameHash = (options) => {
-  options = options || {};
-  let ret = `gekko_${ options.server }_${options.exchange}_${options.strategy}_${ options.pair }_${ gekkoNameShort }`;
+const CreateNameShort = () => {
+  let str = config.gekkoId;
+  return `${ GetCodeLetterForGekkoName(config) }-${ str.substr(str.length - 4, str.length) }`;
+}
+const CreateNameHash = ({ options }) => {
+  options = options || CreateOptionsFromConfig(config) || {};
+  let ret = `gekko_${ options.server }_${options.exchange}_${options.strategy}_${ options.pair }_${ CreateNameShort() }`;
   return ret;
 }
 
@@ -539,8 +552,8 @@ function GetCodeLetterForGekkoName(config1){
   options && options.type && (ret = options.type.charAt(0).toUpperCase());
   return ret;
 }
-const GetParentGekkoMessage = ()=>{
-  return messagesHash[CreateNameHash(CreateOptionsFromConfig(config))];
+const GetParentGekkoMessage = () => {
+  return messagesHash[CreateNameHash()];
 }
 const GEKKO_STRATEGY_SETTINGS = () => {
   return tomlJs && tomlJs.dump && config && config.tradingAdvisor && {
