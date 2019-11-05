@@ -4,8 +4,14 @@
       .grd-row-col-3-6(v-html='left')
       .grd-row-col-3-6.txt--center
         img(src='static/gekko.jpg')
-        p
-          em There are bears, bulls... and Mr $LON.
+        p(v-if='Date.now() % 3 === 0')
+          em Mr. $LON is certainly the &nbsp
+            strike biggest
+            span &nbsp smartest guy in a room!
+        p(v-if='Date.now() % 3 === 1')
+          em There are bulls, bears .. and Mr. $LON!
+        p(v-if='Date.now() % 3 === 2')
+          em Who is The King of the Jungle? .. Mr. $LON!
     section.contain.grd-row
       .grd-row-col-6.txt--center(v-if='!isAuthenticated')
         router-link.button--backtest.w100--s.my1.btn--primary(v-if='!isAuthenticated' to='/login').py1 Login
