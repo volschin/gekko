@@ -29,11 +29,11 @@ module.exports = async function (ctx, next) {
 
   _.merge(config, base, req);
 
-  if(!dependenciesManager){
+  /*if(!dependenciesManager){
     dependenciesManager = require('./cache').get('dependencies'); // circular reference problem
-  }
+  }*/
 
-  if(config.dependencies && config.dependencies.length > 0){
+  if(dependenciesManager && config.dependencies && config.dependencies.length > 0){
     await dependenciesManager.getDependencyResultsAsync(config);
   }
   ctx.body = await pipelineRunner(mode, config);

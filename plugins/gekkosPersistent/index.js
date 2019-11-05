@@ -37,20 +37,20 @@ function setupActor() {
 
   Actor.prototype.processAdvice = function(advice, done) {
     consoleLog('gekkosPersistent: processAdvice');
-    consoleLog(advice);
+    consoleLog(JSON.stringify(advice));
     done && done();
 
   };
   Actor.prototype.processTradeCompleted = function(trade, done) {
     consoleLog('gekkosPersistent: processTradeCompleted');
-    consoleLog(trade);
+    consoleLog(JSON.stringify(trade));
     done && done();
   };
   Actor.prototype.processStratWarmupCompleted  = function() {
   }
   Actor.prototype.processStratNotification = function({ content }) {
     consoleLog('gekkosPersistent: processStratNotification');
-    consoleLog(content);
+    consoleLog(JSON.stringify(content));
   };
   Actor.prototype.finalize = function(done) {
     consoleLog('gekkosPersistent: finalize');

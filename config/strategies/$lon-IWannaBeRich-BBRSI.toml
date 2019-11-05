@@ -1,3 +1,5 @@
+indicators = ["Bollinger Bands"]
+
 [rsi]
 interval = 1 #indicator
 low = 29

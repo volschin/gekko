@@ -115,6 +115,8 @@
           | .
       template(v-if='!isLoading')
         h3.contain Market graph
+        template(v-if='candleFetch === "fetched"')
+          tradingviewChart(:height='500', v-bind:config="config", v-bind:data='chartData', v-bind:backtestResult="chartData")
         spinner(v-if='candleFetch === "fetching"')
         template(v-if='candleFetch === "fetched"')
           chart(:data='chartData', :height='300')
@@ -131,6 +133,8 @@ import spinner from '../global/blockSpinner.vue'
 import chart from '../backtester/result/chartWrapper.vue'
 import roundtrips from '../backtester/result/roundtripTable.vue'
 import paperTradeSummary from '../global/paperTradeSummary.vue'
+import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
+
 // global moment
 
 export default {
@@ -142,12 +146,14 @@ export default {
     spinner,
     chart,
     paperTradeSummary,
-    roundtrips
+    roundtrips,
+    tradingviewChart,
   },
   data: () => {
     return {
       candleFetch: 'idle',
-      candles: false
+      candles: false,
+      config: false,
     }
   },
   computed: {
@@ -328,6 +334,9 @@ export default {
   watch: {
     'data.events.latest.candle.start': function() {
       setTimeout(this.getCandles, _.random(100, 2000));
+    },
+    'data.config': function() {
+      this.config = _.get(this, 'data.config')
     }
   },
   methods: {

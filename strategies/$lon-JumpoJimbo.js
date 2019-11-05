@@ -24,7 +24,7 @@ const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
 const NATR = require('../strategies/indicators/NATR.js');
-const DependenciesManager = require('../web/state/dependencyManager');
+const DependenciesManager = require('../plugins/dependencyManager/web');
 
 let rsiArr = [];
 // Let's create our own strat

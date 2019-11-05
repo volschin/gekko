@@ -7,7 +7,7 @@
 
 const log = require('../core/log');
 const config = require ('../core/util').getConfig();
-const DependenciesManager = require('../web/state/dependencyManager');
+const DependenciesManager = require('../plugins/dependencyManager/web');
 const TradingView = require('./tools/tradingView');
 const CandleBatcher = require('../core/candleBatcher');
 const HeikenAshi = require('./indicators/Heiken-Ashi');

@@ -237,8 +237,6 @@ export default {
       return "1234D"
     },
     drawBacktestResult(result) {
-      console.log(result);
-      window.r1 = result;
       let boughtPrice, boughtBalance, diff, tradeSuccessful, curShape, curText;
       allExecutionShapes.forEach(s=>{
         // s. // todo: executionShape.remove() (for arrows)
@@ -263,8 +261,9 @@ export default {
             boughtPrice = null;
           }
         }
+        let tradeDate = Number.isInteger(trade.date) ? trade.date: (new Date(trade.date)).getTime() / 1000;
         if (trade.action === 'buy') {
-          curShape = widget.chart().createShape({ time: trade.date, price: trade.price },
+          curShape = widget.chart().createShape({ time: tradeDate, price: trade.price },
             {
               shape: 'note',
               // lock: true,
@@ -276,10 +275,10 @@ export default {
               },
             });
           widget.chart().getShapeById(curShape).setProperties({
-            text: `Bought @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) }`
+            text: `Bought @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, id ${ trade.id }, Time ${ new Date(tradeDate * 1000) }`
           })
         } else {
-          curShape = widget.chart().createShape({ time: trade.date, price: trade.price },
+          curShape = widget.chart().createShape({ time: tradeDate, price: trade.price },
             {
               shape: 'note',
               // lock: true,
@@ -291,7 +290,7 @@ export default {
               },
             });
           widget.chart().getShapeById(curShape).setProperties({
-            text: `Sold @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, Profit ${ diff }, id ${ trade.id }, Time ${ new Date(trade.date * 1000) } `
+            text: `Sold @${ trade.price } Buy ${ trade.amount }, Balance ${ trade.balance }, Profit ${ diff }, id ${ trade.id }, Time ${ new Date(tradeDate * 1000) } `
           })
 
         }
@@ -315,7 +314,27 @@ export default {
     }
   },
   mounted() {
-    const that = this;
+    const config = this.config || {}
+    let exchange = '';
+
+    /*
+          if(config && config.watch && config.watch.exchange && config.watch.asset && config.watch.currency){
+        if(config.watch.exchange.toUpperCase() === 'GDAX') {
+          exchange = 'COINBASE';
+        } else {
+          exchange = config.watch.exchange.toUpperCase();
+        }
+        const symba = `${ exchange }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`; //'Poloniex:LTC/BTC'
+        let candleSize = config && config.tradingAdvisor && config.tradingAdvisor.candleSize;
+        let from = config && config.backtest && config.backtest.daterange && config.backtest.daterange.from && new Date(config.backtest.daterange.from).getTime();
+        let to = config && config.backtest && config.backtest.daterange && config.backtest.daterange.to && new Date(config.backtest.daterange.to).getTime();
+        const tomlObj = config[config && config.tradingAdvisor && config.tradingAdvisor.method];
+        const indicators = tomlObj && tomlObj.indicators || [];
+        this.reloadChart(config, symba, this.calculateInterval(candleSize, from, to), from, to, indicators);
+      }
+    },
+     */
+
     const widgetOptions = {
       symbol: this.symbol,
       // interval: '5',
@@ -343,6 +362,18 @@ export default {
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
     };
+    if(config && config.watch && config.watch.exchange && config.watch.asset && config.watch.currency) {
+      if(config.watch.exchange.toUpperCase() === 'GDAX') {
+        exchange = 'COINBASE';
+      } else {
+        exchange = config.watch.exchange.toUpperCase();
+      }
+      widgetOptions.symbol = `${ exchange }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`;
+      widgetOptions.interval = config && config.tradingAdvisor && config.tradingAdvisor.candleSize;
+    }
+    const tomlObj = config[config && config.tradingAdvisor && config.tradingAdvisor.method];
+    const indicators = tomlObj && tomlObj.indicators || [];
+
     const widget = window.TradingView.widget;
     const tvWidget = new widget(widgetOptions);
     window.widget = tvWidget;
@@ -350,6 +381,10 @@ export default {
 
     tvWidget.onChartReady(() => {
       this.addDefaultIndicators();
+
+      if(indicators) {
+        this.addIndicators(indicators);
+      }
     });
 
   },

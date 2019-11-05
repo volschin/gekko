@@ -1,3 +1,4 @@
+indicators = ["Bollinger Bands"]
 trailingStop = 1
 
 [rsi]
