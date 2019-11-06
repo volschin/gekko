@@ -3,6 +3,7 @@
 
 # Please select 1 min interval and require a history of at least 34 candles
 
+trailingStop = 1
 
 # Tell the bot if the first trade should be a buy or sell
 firstTrade = "buy"

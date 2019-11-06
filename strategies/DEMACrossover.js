@@ -9,7 +9,17 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
+  const config = require ('../core/util').getConfig() || {};
+  this.trailingStop = this.settings.trailingStop;
+
   this.name = 'DEMACrossover';
+  this.debug = true;
+
+
+  // performance
+  config.backtest.batchSize = 1000; // increase performance
+  config.silent = true;
+  config.debug = false;
 
   this.currentTrend;
   this.requiredHistory = 0;
@@ -25,13 +35,15 @@ method.init = function() {
     this.currentTrend = 'up';
   }
 
-  log.debug("Short DEMA size: "+this.settings.shortSize);
-  log.debug("Long DEMA size: "+this.settings.longSize);
+  consoleLog("Short DEMA size: "+this.settings.shortSize);
+  consoleLog("Long DEMA size: "+this.settings.longSize);
 
-  this.addTalibIndicator('shortDEMA', 'dema', {optInTimePeriod : this.settings.shortSize});
-  this.addTalibIndicator('longDEMA', 'dema', {optInTimePeriod : this.settings.longSize});
+  this.addIndicator('shortDEMA', 'DEMA', { weight: this.settings.shortSize });
+  this.addIndicator('longDEMA', 'DEMA', { weight: this.settings.longSize });
+  // this.addTalibIndicator('shortDEMA', 'dema', {optInTimePeriod : this.settings.shortSize});
+  // this.addTalibIndicator('longDEMA', 'dema', {optInTimePeriod : this.settings.longSize});
 
-  log.debug(this.name+' Strategy initialized');
+  consoleLog(this.name+' Strategy initialized');
 
 }
 
@@ -43,56 +55,79 @@ method.update = function(candle) {
 // for debugging purposes: log the last calculated
 // EMAs and diff.
 method.log = function() {
-  var shortDEMA = this.talibIndicators.shortDEMA;
-  var longDEMA = this.talibIndicators.longDEMA;
+  var shortDEMA = this.indicators.shortDEMA;
+  var longDEMA = this.indicators.longDEMA;
 
 
-  log.debug('Required history is: '+this.requiredHistory);
+  consoleLog('Required history is: '+this.requiredHistory);
 
-  log.debug('calculated DEMA properties for candle:');
+  consoleLog('calculated DEMA properties for candle:');
 
-  log.debug('\t shortDEMA :', shortDEMA.result);
+  consoleLog('\t shortDEMA :', shortDEMA.result);
 
-  log.debug('\t', 'longDEMA:', longDEMA.result);
+  consoleLog('\t', 'longDEMA:', longDEMA.result);
 }
 
 method.check = function(candle) {
 
-  var shortResult = this.talibIndicators.shortDEMA.result.outReal;
-  var longResult = this.talibIndicators.longDEMA.result.outReal;
+  var shortResult = this.indicators.shortDEMA.result;
+  var longResult = this.indicators.longDEMA.result;
   var price = candle.close;
 
   var message = '@ ' + price.toFixed(8);
 
+  let time = JSON.stringify(candle.start);
+  consoleLog(`ALL INFO: ${ time }, ${ shortResult }, ${ longResult }, ${ price }`);
+
 
   //DEMA Golden Cross
   if(shortResult >  longResult) {
-    log.debug('we are currently in uptrend', message);
+    consoleLog('we are currently in uptrend', message);
 
     if(this.currentTrend !== 'up') {
       this.currentTrend = 'up';
-      this.advice('long');
-      log.debug("Going to buy");
+
+      if(this.trailingStop) {
+        this.advice({
+          direction: 'long', // or short
+          trigger: { // ignored when direction is not "long"
+            type: 'trailingStop',
+            trailPercentage: this.trailingStop
+          }
+        });
+        consoleLog("Going to buy with trailing stop " + this.trailingStop);
+      } else {
+        this.advice('long');
+        consoleLog("Going to buy");
+      }
     } else {
-      log.debug("Nothing to buy");
-      this.advice();
+      consoleLog("Nothing to buy");
+      //this.advice();
     }
 
   } else if(longResult > shortResult) {
-    log.debug('we are currently in a downtrend', message);
+    consoleLog('we are currently in a downtrend', message);
 
     if(this.currentTrend !== 'down') {
       this.currentTrend = 'down';
       this.advice('short');
-      log.debug("Going to sell");
+      consoleLog("Going to sell");
     } else
-      log.debug("Nothing to sell");
-      this.advice();
+      consoleLog("Nothing to sell");
+      // this.advice();
 
   } else {
-    log.debug('we are currently not in an up or down trend', message);
-    this.advice();
+    consoleLog('we are currently not in an up or down trend', message);
+    // this.advice();
   }
+}
+
+const consoleLog = function(msg = '', obj) {
+  /*if(obj) {
+    console.log(msg, obj);
+  } else {
+    console.log(msg);
+  }*/
 }
 
 module.exports = method;
