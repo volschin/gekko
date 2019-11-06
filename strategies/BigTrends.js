@@ -23,6 +23,7 @@
 // 1% stop loss
 // After stop loss, wait til DPO goes above 0 to enable buy
 
+// Ash updt: not a good strategy now, at least for 1m, best results - btc/usdt-60m-30-70
 
 var log = require('../core/log');
 var config = require ('../core/util.js').getConfig();
@@ -57,7 +58,7 @@ strat.init = function() {
   // since we're relying on batching 1 minute candles into 5 minute candles
   // lets throw if the settings are wrong
   if (config.tradingAdvisor.candleSize !== 1) {
-    throw "This strategy must run with candleSize=1";
+    // throw "This strategy must run with candleSize=1";
   }
 
   // create candle batchers for 5 minute candles
@@ -69,7 +70,9 @@ strat.init = function() {
 
   // Define the indicator even thought we won't be using it because
   // Gekko will only provide historical data if we define an indicator here
-  this.addIndicator('rsi', 'RSI', { interval: this.settings.interval});
+  this.addIndicator('rsi', 'RSI', { interval: this.settings.interval });
+
+  console.error(`starting ${ this.name }, interval: ${ this.settings.interval }, overbought: ${ this.settings.overbought }, oversold: ${ this.settings.oversold }`)
 }
 
 // What happens on every new candle?
@@ -103,7 +106,7 @@ strat.update5 = function(candle) {
   rsi5Lowest = Math.min.apply(null, rsi5History);
 
   //Send price and RSI to console every 5 minutes
-  log.info('Price', currentPrice, 'RSI', rsi5.result.toFixed(2), 'SMA', sma5.result.toFixed(2), 
+  consoleLog('update5:: Price', currentPrice, 'RSI', rsi5.result.toFixed(2), 'SMA', sma5.result.toFixed(2),
   'SMA-Up', (sma5.result * 1.01).toFixed(2), 'DPO', dpo5.result.toFixed(2));
 
 
@@ -112,8 +115,14 @@ strat.update5 = function(candle) {
 // Based on the newly calculated
 // information, check if we should
 // update or not.
-strat.check = function() {
-  
+strat.check = function(candle) {
+  let time = JSON.stringify(candle.start);
+  consoleLog(`ALL INFO (${ time }) -- advised: ${ advised }, stopLossed: ${ stopLossed }, rsi5Lowest: ${ rsi5Lowest }, rsi5History[8, 9]: ${ rsi5History[8] 
+    }, ${ rsi5History[9] }, dpo5.result: ${ dpo5.result }, rsi5.result: ${ rsi5.result }`);
+  /*
+  consoleLog(`ALL INFO (${ time }) -- advised: ${ advised }, stopLossed: ${ stopLossed }, rsi5Lowest: ${ rsi5Lowest }, rsi5History[8]: ${ rsi5History[8]
+    }, rsi5History[9]: ${ rsi5History[9] }, dpo5.result: ${ dpo5.result }, sma5.result: ${ sma5.result }, rsi5.result: ${ rsi5.result }, buyPrice: ${ buyPrice }`);*/
+
   // Buy 
   // RSI > 19.5 in last 10 candles and rsi[8] < overSold and rsi[9] > overSold 
   if (!advised && !stopLossed && rsi5Lowest > 19.5 && rsi5History[8] < this.settings.oversold && rsi5History[9] > this.settings.oversold) {
@@ -201,6 +210,7 @@ strat.onTrade = function(trade) {
 // Winning Trades: x
 // Losing Trades: y
 strat.sell = function(reason) {
+  consoleLog(`selling -- reason: ${ reason }`);
   if (reason == "Sell - Below 200 SMA and RSI > 70 but falling") {
     message = reason + '\n200 SMA: ' + sma5.result + ', RSI History: ' + rsi5History[8] + ', ' + rsi5History[9];  
   }
@@ -219,6 +229,8 @@ strat.sell = function(reason) {
   this.advice('short');
   advised = false;
   wentAbove70 = false;
+  consoleLog(`sold -- message: ${ message }`);
+
 }
 
 
@@ -229,6 +241,8 @@ strat.sell = function(reason) {
 // RSI Buy - Exited Oversold
 // RSI History: 28.33, 33.11
 strat.buy = function(reason) {
+  consoleLog(`buy -- reason: ${ reason }`);
+
   if (reason == "RSI Buy - Exited Oversold") {
     message = reason + '\nRSI History: ' + rsi5History[8] + ', ' + rsi5History[9];
   } 
@@ -241,6 +255,7 @@ strat.buy = function(reason) {
   this.advice('long');
   advised = true; // Will confirm this using onTrade
   buyPrice = currentPrice; // Will update this to correct buy price using onTrade
+  consoleLog(`bought -- message: ${ message }`);
 }
 
 strat.error = function() {
@@ -292,5 +307,8 @@ strat.onCommand = function(cmd) {
   }
 }
 
+const consoleLog = function(msg = '', obj) {
+  // console.log(msg, obj);
+}
 
 module.exports = strat;
