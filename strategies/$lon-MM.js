@@ -18,8 +18,9 @@ let strat = {};
 strat.init = function() {
   let startPrice, currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs, tradesCount = 0, tradesMaxCount = 0;
   let tradesArr = [];
-  let UNDERVALUE = this.settings.UNDERVALUE || 0.94, THRESHOLD = this.settings.THRESHOLD, TAKE_PROFIT = this.settings.TAKE_PROFIT || 1.05;
-  const MIN_TIMEOUT_MINUTES = 1, SINGLE_BET = 100; // 1%
+  let UNDERVALUE = this.settings.UNDERVALUE || 0.94, THRESHOLD = this.settings.THRESHOLD, TAKE_PROFIT = this.settings.TAKE_PROFIT || 1.05,
+    TIMEOUT_MINUTES = this.settings.TIMEOUT_MINUTES || 1440, TRAILING_STOP = this.settings.trailingStop || 5;
+  const SINGLE_BET = 100; // 1%
   // const UNDERVALUE = 0.99, TAKE_PROFIT = 1.01, MIN_TIMEOUT_MINUTES = 1, SINGLE_BET = 10; // 1% // 15min
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
@@ -64,46 +65,25 @@ strat.init = function() {
       tradesCount ++;
       // console.log(`ALL INFO: ${ time }, mmResult: ${ mmResult }, mmAdvice: ${ mmAdvice }`);
       if(!advised) {
-        this.buy({
-          advice: {
-            direction: 'long', // or short
-            reason: 'blabla',
-            dca: {
-              amount: SINGLE_BET,
-              isPercent: false
-            }
-          },
-          reason: 'mm less than 0.99'
-        });
+        this.buy('mm less than 0.99');
       }
     } else {
       if(tradesCount > tradesMaxCount) tradesMaxCount = tradesCount;
       tradesCount = 0;
-
-      // search trades, that can be sold:
     }
-    tradesArr.filter(t=>t.status !== 'sold').forEach(trade => {
-      reason = '';
-      if (!trade) return;
-      if (!advised) return;
-      const buyTs = trade.ts;
-      // if (this.candle.start.diff(buyTs, 'minutes') > MIN_TIMEOUT_MINUTES) {
-      /*if(mmResult > THRESHOLD) {
-        reason = 'mm sell';
-        this.sell({
-          trade,
-          reason
-        });
-      }*/
-      if(this.candle.close > trade.price * TAKE_PROFIT) {
-        reason = 'take profit';
-        this.sell({
-          trade,
-          reason
-        });
-      }
-      // }
-    });
+    reason = '';
+    if (!advised) return;
+    if(this.candle.close > buyPrice * TAKE_PROFIT) {
+      reason = 'take profit';
+      this.sell(reason);
+    } else if(mmResult > THRESHOLD) {
+      reason = 'mm sell';
+      this.sell(reason);
+    } else if (this.candle.start.diff(buyTs, 'minutes') > TIMEOUT_MINUTES) {
+      reason = 'timeout sell';
+      this.sell(reason);
+    }
+    // });
     // time after last BUY:
     // if ((this.candle.start.diff(buyTs, 'minutes') > this.settings.TIMEOUT)) {
     //
@@ -117,44 +97,32 @@ strat.init = function() {
     // }
   }
 
-  this.buy = function({ advice, reason }) {
+  this.buy = function(reason) {
     this.notify({
       type: 'buy advice',
       reason: reason,
     });
+    consoleLog('buy:: advice: long');
 
-    this.advice('long');
-    // this.advice(advice);
-
-    // buyTs = this.candle.start;
-    // buyPrice = currentPrice;
-    advised = true;
-    tradesArr.push({
-      status: 'bought',
-      advice,
-      reason,
-      ts: this.candle.start,
-      price: currentPrice,
-      tradeInitiated: true
-      // amount:
+    this.advice({
+      direction: 'long',
+      trigger: {
+        type: 'trailingStop',
+        trailPercentage: TRAILING_STOP
+      }
     });
-  }
-  this.sell = function({ trade, reason }) {
-    if(!trade) return;
-    const advice = trade.advice;
 
+    buyTs = this.candle.start;
+    buyPrice = currentPrice;
+    advised = true;
+  }
+  this.sell = function(reason) {
     this.notify({
       type: 'sell advice',
       reason: reason,
     });
-
-    // this.advice(advice);
+    consoleLog('sell:: advice: short');
     this.advice('short');
-
-    // find the trade..
-    trade.status = 'sold';
-    trade.tradeInitiated = false;
-
     advised = false;
   }
 
@@ -165,6 +133,10 @@ strat.init = function() {
   //
   // see https://www.youtube.com/watch?v=lc21W9_zdME
   this.onTrade = function(trade = {}) {
+    consoleLog('onTrade:: trade: ' + JSON.stringify(trade.action));
+    if(trade.action === 'sell') {
+      advised = false;
+    }
     tradeInitiated = false;
   }
   // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
@@ -174,28 +146,33 @@ strat.init = function() {
   }
 
   this.onPortfolioChange = function(portfolio) {
-    consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
+    // consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
   }
   this.onPortfolioValueChange = function(portfolio) {
     //consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
   }
+  this.onTriggerFired = function(data) {
+    // tradeInitiated = false;
+
+    consoleLog(`onTriggerFired, data: ${ JSON.stringify(data) }`);
+  }
 
   this.end = function(a, b, c) {
-    consoleLog(`gekko end, trades: ${ JSON.stringify(tradesArr) }`);
-    consoleLog(`           total trades: ${ tradesArr.length }`);
-    const profitTrades = tradesArr.filter(t=>t.status === 'sold');
-    consoleLog(`           closed trades: ${ profitTrades.length }`);
-    const openTrades = tradesArr.filter(t=>t.status !== 'sold');
-    consoleLog(`           open trades: ${ openTrades.length }`);
-    consoleLog(`           startPrice: ${ startPrice }, current price: ${ currentPrice }`);
-    let profit = profitTrades.length * ((TAKE_PROFIT - 1) - 0.002) * SINGLE_BET;
-    let loss = 0;
-    openTrades.forEach(trade => {
-      let res = (currentPrice - trade.price) / (trade.price) * SINGLE_BET;
-      loss -= res;
-    })
-
-    consoleLog(`  profit: ${ profit }$, loss: ${ loss }$, result: ${ profit - loss }$, capital: ${ SINGLE_BET * tradesArr.length }, tradesMaxCount: ${ tradesMaxCount }`);
+    // consoleLog(`gekko end, trades: ${ JSON.stringify(tradesArr) }`);
+    // consoleLog(`           total trades: ${ tradesArr.length }`);
+    // const profitTrades = tradesArr.filter(t=>t.status === 'sold');
+    // consoleLog(`           closed trades: ${ profitTrades.length }`);
+    // const openTrades = tradesArr.filter(t=>t.status !== 'sold');
+    // consoleLog(`           open trades: ${ openTrades.length }`);
+    // consoleLog(`           startPrice: ${ startPrice }, current price: ${ currentPrice }`);
+    // let profit = profitTrades.length * ((TAKE_PROFIT - 1) - 0.002) * SINGLE_BET;
+    // let loss = 0;
+    // openTrades.forEach(trade => {
+    //   let res = (currentPrice - trade.price) / (trade.price) * SINGLE_BET;
+    //   loss -= res;
+    // })
+    //
+    // consoleLog(`  profit: ${ profit }$, loss: ${ loss }$, result: ${ profit - loss }$, capital: ${ SINGLE_BET * tradesArr.length }, tradesMaxCount: ${ tradesMaxCount }`);
 
   }
   function consoleLog(msg = ''){
