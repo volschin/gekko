@@ -74,6 +74,9 @@ var Base = function(settings) {
   if(!this.onPortfolioValueChange)
     this.onPortfolioValueChange = function() {};
 
+  if(!this.onTriggerFired)
+    this.onTriggerFired = function() {};
+
   if(!this.onPendingTrade)
     this.onPendingTrade = function() {};
 
@@ -250,6 +253,10 @@ Base.prototype.updatePortfolio = function(portfolio) {
 
 Base.prototype.newPortfolioValue = function(portfolioValue) {
   this.onPortfolioValueChange(portfolioValue);
+}
+
+Base.prototype.triggerFired = function(portfolioValue) {
+  this.onTriggerFired(portfolioValue);
 }
 
 Base.prototype.processCommand = function(command) {
