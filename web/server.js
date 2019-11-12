@@ -113,6 +113,7 @@ router.get('/api/info', require(ROUTE('info')));
 router.get('/api/strategies', ensureAuthenticated(), require(ROUTE('strategies')));
 router.get('/api/configPart/:part', ensureAuthenticated(), require(ROUTE('configPart')));
 router.get('/api/apiKeys', ensureAuthenticated(), apiKeys.get);
+router.get('/api/balances/:apiKeyName', ensureAuthenticated(), require(ROUTE('balances')).get);
 
 const listWraper = require(ROUTE('list'));
 router.get('/api/imports', ensureAuthenticated('admin'), listWraper('imports'));

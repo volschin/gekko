@@ -197,7 +197,7 @@ Trader.prototype.getPortfolio = function(callback) {
       { name: this.currency, amount: currencyAmount },
     ];
 
-    return callback(undefined, portfolio);
+    return callback(undefined, portfolio, data);
   };
 
   const fetch = cb => this.binance.account({}, this.handleResponse('getPortfolio', cb));

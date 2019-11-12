@@ -24,7 +24,12 @@ const apiKeyManagerModule = {
     const keysFiltered = pickBy(apiKeys, k => k.userEmail && k.userEmail === userEmail);
     return _.keys(keysFiltered);
   },
-
+  getFull: (userEmail) => {
+    if(!userEmail)
+      return;
+    const keysFiltered = pickBy(apiKeys, k => k.userEmail && k.userEmail === userEmail);
+    return keysFiltered;
+  },
   // note: overwrites if exists, only if his own
   add: (exchange, props) => {
     props = props || {}

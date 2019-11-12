@@ -6,31 +6,45 @@ div.contain
   p(v-if='!apiKeySets.length')
     em You don't have any API keys yet.
   ul
-    li(v-for='exchange in apiKeySets') {{ exchange }} (
+    li(v-for='exchange in apiKeySets')
+      a(href='#', v-on:click.prevent='showBalancesTable(exchange)') {{ exchange }} (
       a(href='#', v-on:click.prevent='removeApiKey(exchange)') remove
       | )
+      div(v-if='exchange === selectedKey')
+        div(v-for='balance in balances') {{ balance.asset }} | {{ balance.free }} | {{ balance.locked }}
   a.btn--primary(href='#', v-if='!addApiToggle', v-on:click.prevent='openAddApi') Add an API key
   template(v-if='addApiToggle')
     .hr
     apiConfigBuilder
   .hr
-  
 </template>
 
 <script>
 import apiConfigBuilder from './apiConfigBuilder.vue';
-import { post } from '../../tools/ajax';
+import { post, get } from '../../tools/ajax';
 
 export default {
   components: {
-    apiConfigBuilder
+    apiConfigBuilder,
   },
   data: () => {
     return {
+      selectedKey: '',
       addApiToggle: false,
+      balances: [],
+      columns: ['free', 'locked']
     }
   },
   methods: {
+    showBalancesTable: function(uniqueName) {
+      get(`balances/${ uniqueName }`, (err, res) => {
+        if(err) {
+          alert(err);
+        }
+        this.selectedKey = uniqueName;
+        this.balances = res.result;
+      });
+    },
     openAddApi: function() {
       this.addApiToggle = true;
     },
@@ -47,7 +61,7 @@ export default {
   computed: {
     apiKeySets: function() {
       return this.$store.state.apiKeys
-    }
+    },
   },
   watch: {
     apiKeySets: function() {
