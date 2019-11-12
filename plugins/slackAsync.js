@@ -22,13 +22,15 @@ const SlackAsync = function(done) {
   this.setupWebApi();
   //this.setupRTM(); // todo
 };
+let gekkoNameHash, gekkoNameShort;
 
-SlackAsync.prototype.setupWebApi = function(done) {
+SlackAsync.prototype.setupWebApi = function() {
 
   let options = CreateOptionsFromConfig(config), text = '';
-  const gekkoNameHash = CreateNameHash({ options });
-  const gekkoNameShort = CreateNameShort();
+  gekkoNameHash = CreateNameHash({ options });
+  gekkoNameShort = CreateNameShort();
   this.slack = new WebClient(slackConfig.token);
+  let done = this.done;
 
   const setupSlack = function(error, result) {
     let attachments = [];
@@ -50,7 +52,7 @@ SlackAsync.prototype.setupWebApi = function(done) {
     } else {
       log.debug('Skipping Send message on startup');
     }
-    this.done();
+    done();
   };
 
 
@@ -58,6 +60,8 @@ SlackAsync.prototype.setupWebApi = function(done) {
     console.log(`slackAsync plugin:: run setupSlack, gekkoNameHash: ${ gekkoNameHash }, gekkoNameShort: ${ gekkoNameShort }, gekkoId: ${ config.gekkoId }`);
     // console.log(`slackAsync plugin:: run setupSlack, gekkoId: ${ JSON.stringify(config.gekkoId) }, type: ${ config.type }, sendNotifications: ${ config.options && config.options.sendNotifications }`);
     setupSlack.call(this);
+  } else {
+    done();
   }
 };
 
@@ -441,7 +445,7 @@ SlackAsync.prototype.processStratNotification = function({ content }) {
 SlackAsync.prototype.sendGekkoEvent = function(content, object) {
   (async () => {
     const id = object && object.id;
-    const parentHash = CreateNameHash(CreateOptionsFromConfig(config));
+    const parentHash = CreateNameHash({ options: CreateOptionsFromConfig(config) });
 
     content['channel'] = slackConfig.channel;
 
@@ -494,7 +498,7 @@ SlackAsync.prototype.checkResults = function(error) {
 SlackAsync.prototype.createUserName = function() {
   const serverName = config.name || 'unknown server';
   return config.watch.exchange[0].toUpperCase() + config.watch.exchange.slice(1) + '-' + config.watch.currency + '/' + config.watch.asset
-    + `(${ gekkoNameShort } `;
+   + `(${ gekkoNameShort } `;
   // + `(${serverName}): ${config.tradingAdvisor.method} `;
 };
 
@@ -553,7 +557,7 @@ function GetCodeLetterForGekkoName(config1){
   return ret;
 }
 const GetParentGekkoMessage = () => {
-  return messagesHash[CreateNameHash()];
+  return messagesHash[CreateNameHash({ })];
 }
 const GEKKO_STRATEGY_SETTINGS = () => {
   return tomlJs && tomlJs.dump && config && config.tradingAdvisor && {
