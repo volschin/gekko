@@ -260,7 +260,9 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
     balance: this.balance
   });
 
-  this.order = this.broker.createOrder(type, side, amount);
+  // use it in strat like this: this.limit: 0.0004, also see baseTradingMethod >> advice
+  const options = advice.limit? { limit: advice.limit } : {}
+  this.order = this.broker.createOrder(type, side, amount, options);
 
   this.order.on('fill', f => log.info('[ORDER] partial', side, 'fill, total filled:', f));
   this.order.on('statusChange', s => log.debug('[ORDER] statusChange:', s));

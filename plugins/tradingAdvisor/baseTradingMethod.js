@@ -336,9 +336,11 @@ Base.prototype.advice = function(newDirection) {
 
   const advice = {
     id: 'advice-' + this.propogatedAdvices,
-    recommendation: newDirection
+    recommendation: newDirection,
   };
-
+  if(this.limit) {
+    advice.limit = this.limit;
+  }
   if(trigger) {
     advice.trigger = trigger;
     this._pendingTriggerAdvice = 'advice-' + this.propogatedAdvices;
