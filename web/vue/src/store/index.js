@@ -23,7 +23,7 @@ _.merge(mutations, configMutations);
 
 export default new Vuex.Store({
   state: {
-    isAuthenticated: false,
+    isAuthenticated: window.CONFIG.userManagerEnabled? false: true,
     warnings: {
       connected: true, // assume we will connect
     },

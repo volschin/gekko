@@ -1,10 +1,15 @@
 const cache = require('../state/cache');
 const manager = cache.get('apiKeyManager');
+const isUserManagerPluginEnabled = require('./baseConfig').userManager && require('./baseConfig').userManager.enabled === true;
 
 module.exports = {
   get: async function (ctx, next) {
-    const userEmail = ctx.state.user.get('email');
-    if(!userEmail) {
+    let userEmail;
+
+    if(isUserManagerPluginEnabled) {
+      userEmail = ctx.state.user.get('email');
+    }
+    if(isUserManagerPluginEnabled && !userEmail) {
       ctx.body = {
         success: false,
         status: 'error'
@@ -17,7 +22,7 @@ module.exports = {
     const content = ctx.request.body;
 
     const userEmail = ctx.state.user && ctx.state.user.get('email');
-    if(userEmail){
+    if(isUserManagerPluginEnabled? !!userEmail : true){
       const props = Object.assign({
         uniqueName: content.uniqueName,
         userEmail

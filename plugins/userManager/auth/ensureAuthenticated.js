@@ -1,4 +1,4 @@
-const cache = require('../state/cache');
+const cache = require('../../../web/state/cache');
 
 module.exports = ensureAuthenticated = function (role) {
   role = role || 'user';

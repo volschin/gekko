@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-var models = require('../db');
+var models = require('../models');
 const passport = require('koa-passport');
 
 passport.use(new LocalStrategy({

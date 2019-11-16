@@ -1,13 +1,13 @@
-const cache = require('../state/cache');
+const cache = require('../../../web/state/cache');
 const manager = cache.get('apiKeyManager');
 const _ = require('lodash');
 const passport = require('koa-passport');
 
 module.exports = function (ctx, next) {
-  const body = ctx.request.body;
   if(ctx.isAuthenticated()) {
     ctx.logout();
   }
+  cache.set('user', null);
   ctx.body = { success: true };
   return next();
 /*

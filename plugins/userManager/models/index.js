@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 
-const config = require('../../core/util.js').getConfig();
-const uiConfig = require('../vue/public/UIconfig');
+const config = require('../../../core/util.js').getConfig();
+const uiConfig = require('../../../web/vue/public/UIconfig');
 
 const connectionString = config[uiConfig.adapter] && (config[uiConfig.adapter].connectionString + '/' + config[uiConfig.adapter].database);
 const sequelize = new Sequelize(connectionString, {

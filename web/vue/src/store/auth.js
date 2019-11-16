@@ -1,13 +1,25 @@
 import vueAuthInstance from '../auth-service'
 import jwt from 'jsonwebtoken';
 import config from '../../config.json';
+const userManagerEnabled = window.CONFIG.userManagerEnabled;
 
 export default {
   state: {
     profile: null,
-    isAuthenticated: vueAuthInstance.isAuthenticated(),
+    isAuthenticated: userManagerEnabled? vueAuthInstance.isAuthenticated(): true,
     user: function(fieldName) {
-      const userPayload = jwt.decode(window.localStorage[config['authTokenName']]);
+      let userPayload;
+      if(userManagerEnabled) {
+        userPayload = jwt.decode(window.localStorage[config['authTokenName']]);
+      } else {
+        userPayload = { // stub
+          email: "shiners.test@gmail.com",
+          exp: 1974107477,
+          // iat: 1573934677
+          id: 777,
+          role: "admin"
+        }
+      }
       let ret;
       if(fieldName && userPayload) {
         ret = userPayload[fieldName];

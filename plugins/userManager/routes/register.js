@@ -1,6 +1,6 @@
 // var router = express.Router();
-const models = require('../db');
-const cache = require('../state/cache');
+const models = require('../models');
+const cache = require('../../../web/state/cache');
 const manager = cache.get('apiKeyManager');
 const _ = require('lodash');
 

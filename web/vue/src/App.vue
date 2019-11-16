@@ -69,7 +69,7 @@ input {
 }
 
 .contain {
-  width: 1000px;
+  width: 1400px;
   margin-left: auto;
   margin-right: auto;
 }

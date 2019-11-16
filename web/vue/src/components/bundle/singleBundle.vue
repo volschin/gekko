@@ -222,7 +222,7 @@ export default {
         return;
       }
 
-      post('stopBundle', { id: this.data.id }, (err, res) => {
+      post('bundleStop', { id: this.data.id }, (err, res) => {
         console.log('stopped bundle');
       });
     },
@@ -235,7 +235,7 @@ export default {
         return;
       }
 
-      post('deleteBundle', { id: this.data.id }, (err, res) => {
+      post('bundleDelete', { id: this.data.id }, (err, res) => {
         this.$router.push({
           path: `/bundles/`
         });
@@ -247,7 +247,7 @@ export default {
         return;
       }
 
-      post('restartBundle', { id: this.data.id }, (err, res) => {
+      post('bundleRestart', { id: this.data.id }, (err, res) => {
         this.$router.push({
           path: `/bundles/`
         });

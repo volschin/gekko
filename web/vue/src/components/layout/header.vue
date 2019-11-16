@@ -12,8 +12,8 @@
         router-link(v-if='isAuthorized' to='/backtest').py1 Backtest
         router-link(v-if='isAuthorized' to='/data').py1 Local data
         router-link(v-if='isAuthenticated' to='/config').py1 Config
-        router-link(v-if='!isAuthenticated' to='/login').py1 Login
-        a(v-if='isAuthenticated' v-on:click='logout').py1 Logout
+        router-link(v-if='userManagerEnabled && !isAuthenticated' to='/login').py1 Login
+        a(v-if='userManagerEnabled && isAuthenticated' v-on:click='logout').py1 Logout
         a(v-if='isAuthorized' href='https://gekko.wizb.it/docs/introduction/about_gekko.html', target='_blank').py1 Documentation
 
 </template>
@@ -22,6 +22,9 @@
 import globalConfig from '../../../config';
 export default {
   computed: {
+    userManagerEnabled() {
+      return window.CONFIG.userManagerEnabled;
+    },
     isAuthenticated () {
       return this.$store.state.auth.isAuthenticated
     },

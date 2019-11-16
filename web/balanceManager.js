@@ -8,6 +8,7 @@ const pickBy = require('lodash.pickby');
 const Broker = require('../exchange/gekkoBroker');
 const exchangeUtils = require('../exchange/exchangeUtils');
 const retry = exchangeUtils.retry;
+const isUserManagerPluginEnabled = require('./routes/baseConfig').userManager && require('./routes/baseConfig').userManager.enabled === true;
 
 const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
 
@@ -24,18 +25,22 @@ const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
 
 const balanceManagerModule = {
   getBalances(userEmail, apiKeyName) {
-    if(!userEmail) {
-      throw 'userEmail not provided';
-    }
-    if(!apiKeyName) {
+    if (!apiKeyName) {
       throw 'apiKeyName not provided';
+    }
+    if(isUserManagerPluginEnabled) {
+      if (!userEmail) {
+        throw 'userEmail not provided';
+      }
+    } else {
+      userEmail = undefined;
     }
     return new Promise((resolve, reject) => {
       let configCur, promisesArr = [];
       const apiKeys = apiKeyManager.getFull(userEmail);
       if(apiKeys) {
         let apiKey = _.toArray(apiKeys).filter(ak => ak.uniqueName === apiKeyName)[0];
-        if(apiKey && apiKey.userEmail === userEmail) {
+        if(apiKey && (apiKey.userEmail === userEmail)) {
           const slug = apiKey.exchange.toLowerCase();
           if(slug === 'binance') {
             configCur = {
@@ -50,15 +55,19 @@ const balanceManagerModule = {
 
             let api = new API(configCur);
             api.getPortfolio((err, res, data)=> {
-              try {
-                let result = data.balances.map(b => {
-                  return { asset: b.asset, free: Number.parseFloat(b.free), locked: Number.parseFloat(b.locked) }
-                }).filter(b => {
-                  return b.free > 0 || b.locked > 0
-                });
-                resolve(result);
-              } catch(err2) {
-                reject(err2);
+              if(err) {
+                reject(err);
+              } else {
+                try {
+                  let result = data ? data.balances.map(b => {
+                    return { asset: b.asset, free: Number.parseFloat(b.free), locked: Number.parseFloat(b.locked) }
+                  }).filter(b => {
+                    return b.free > 0 || b.locked > 0
+                  }) : err;
+                  resolve(result);
+                } catch (err2) {
+                  reject(err2);
+                }
               }
             });
           } else {
@@ -71,12 +80,19 @@ const balanceManagerModule = {
     });
   },
   getAllBalances(userEmail) {
+    if(isUserManagerPluginEnabled) {
+      if (!userEmail) {
+        throw 'userEmail not provided';
+      }
+    } else {
+      userEmail = null;
+    }
     return new Promise((resolve, reject) => {
       let configCur, promisesArr = [];
       const apiKeys = apiKeyManager.getFull(userEmail);
       if(apiKeys) {
         _.toArray(apiKeys).forEach(apiKey => {
-          if(apiKey && apiKey.userEmail === userEmail) {
+          if(apiKey && (isUserManagerPluginEnabled? apiKey.userEmail === userEmail : true)) {
             const slug = apiKey.exchange.toLowerCase();
             if(slug === 'binance') {
               configCur = {

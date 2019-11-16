@@ -8,7 +8,6 @@
         tr
           th(v-if='isAdmin') user
           th PnL
-          th PnL / M
           th trades
           th strategy
           th exchange
@@ -24,9 +23,6 @@
           td
             template(v-if='!report(gekko)') 0
             template(v-if='report(gekko)') {{ round(report(gekko).relativeProfit) }}%
-          td
-            template(v-if='!report(gekko)') 0
-            template(v-if='report(gekko)') {{ round(report(gekko).relativeYearlyProfit / 12) }}%
           td
             template(v-if='!gekko.events.tradeCompleted') 0
             template(v-if='gekko.events.tradeCompleted') {{ gekko.events.tradeCompleted.length }}

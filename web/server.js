@@ -18,16 +18,23 @@ const wss = new WebSocketServer({ server: server });
 
 const cache = require('./state/cache');
 
-const passport = require('koa-passport');
-const session = require('koa-session');
-
-require('./auth/passport');
-const ensureAuthenticated = require('./auth/ensureAuthenticated');
-
 const nodeCommand = _.last(process.argv[1].split('/'));
 const isDevServer = nodeCommand === 'server' || nodeCommand === 'server.js';
 
-let DependencyManager, GekkosPersistent;
+let DependencyManager, GekkosPersistent, ensureAuthenticated = function() { // used for stubbing non-enabled plugins
+  cache.set('user', {
+    get: function(prop) {
+      if(prop === 'id'){
+        return 777;
+      }
+    }
+  });
+  return async function(ctx, next) {
+    await next();
+  }
+}
+  , isUserManagerPluginEnabled = baseConfig.userManager && baseConfig.userManager.enabled === true;
+
 wss.on('connection', ws => {
   ws.isAlive = true;
   ws.on('pong', () => {
@@ -89,6 +96,15 @@ try {
   console.error(e);
   console.error('Note: if you enable "dependencyManager" plugin in baseConfig.js, you need to have it installed to plugins folder!');
 }
+try {
+  if(isUserManagerPluginEnabled) {
+    ensureAuthenticated = require('../plugins/userManager/auth/ensureAuthenticated');
+    require('../plugins/userManager/auth/passport');
+  }
+} catch (e) {
+  console.error(e);
+  console.error('Note: if you enable "userManager" plugin in baseConfig.js, you need to have it installed to plugins folder!');
+}
 
 cache.set('apiKeyManager', require('./apiKeyManager'));
 
@@ -142,44 +158,51 @@ router.post('/api/bundleRestart', ensureAuthenticated(), require(ROUTE('bundleRe
 router.get('/api/bundles', ensureAuthenticated(), listWraper('bundles'));
 
 // AUTH:
-router.post('/auth/login', require(ROUTE('login')));
+if(isUserManagerPluginEnabled) {
+  router.post('/auth/login', require('../plugins/userManager/routes/login'));
 // router.post('/auth/google', require(ROUTE('login')));
-router.post('/auth/register', require(ROUTE('register')));
-router.post('/auth/logout', require(ROUTE('logout')));
+  router.post('/auth/register', require('../plugins/userManager/routes/register'));
+  router.post('/auth/logout', require('../plugins/userManager/routes/logout'));
 // router.post('/account/user-details', ensureAuthenticated(), require(ROUTE('account').userDetails));
-
+  app.keys = ['super-secret-key =]'];
+}
 // incoming WS:
 // wss.on('connection', ws => {
 //   ws.on('message', _.noop);
 // });
 
-app.keys = ['super-secret-key'];
 
 app
-  .use(cors({
-    // origin: '*',
-    origin: 'http://127.0.0.1:4000',
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    // allowHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
-    credentials: 'true'
-  }))
   .use(serve(WEBROOT + 'vue/dist'))
-  .use(session({}, app))
   .use(bodyParser())
   .use(require('koa-logger')())
-  .use(passport.initialize()) // for user accounts
-  .use(passport.session()) // for user accounts
+
+if(isUserManagerPluginEnabled) {
+  const passport = require('koa-passport');
+  const session = require('koa-session');
+  app
+    .use(cors({
+      // origin: '*',
+      origin: 'http://127.0.0.1:4000',
+      allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+      // allowHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+      credentials: 'true'
+    }))
+    .use(session({}, app))
+    .use(passport.initialize()) // for user accounts
+    .use(passport.session()) // for user accounts
+    .use(async function(ctx, next) { // authenticate custom static files (logs):
+      if (/\.log$/.test(ctx.originalUrl)) {
+        return ensureAuthenticated('admin')(ctx, next);
+      } else {
+        return next();
+      }
+    })
+}
+app
   .use(router.routes())
   .use(router.allowedMethods())
-  .use(async function(ctx, next) { // authenticate custom static files (logs):
-    if (/\.log$/.test(ctx.originalUrl)) {
-      return ensureAuthenticated('admin')(ctx, next);
-    } else {
-      return next();
-    }
-  })
   .use(serve(WEBROOT + '../logs')); // serve static logs (to admins-only)
-
 
 server.timeout = config.api.timeout || 120000;
 server.on('request', app.callback());

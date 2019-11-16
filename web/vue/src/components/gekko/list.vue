@@ -19,7 +19,6 @@
           th currency
           th asset
           th duration
-          th PnL / M
           th status
           th type
           th(v-if='isAdmin') log
@@ -41,9 +40,6 @@
           td {{ gekko.config.watch.asset }}
           td
             template(v-if='gekko.events.initial.candle && gekko.events.latest.candle') {{ timespan(gekko.events.latest.candle.start, gekko.events.initial.candle.start) }}
-          td
-            template(v-if='!report(gekko)') 0
-            template(v-if='report(gekko)') {{ round(report(gekko).relativeYearlyProfit / 12) }}%
           td {{ status(gekko) }}
           td {{ gekko.logType }}
           td(v-if='isAdmin')
@@ -62,7 +58,7 @@
           th last update
           th duration
       tbody
-        tr.clickable(v-for='gekko in watchers', v-on:click='$router.push({path: `/live-gekkos/${gekko.id}`})')
+        tr.clickable(v-for='gekko in watchers', v-on:click='$router.push({path: `/live-gekkos/${gekko.id}`})' :class='getClass(gekko)')
           td {{ gekko.config.watch.exchange }}
           td {{ gekko.config.watch.currency }}
           td {{ gekko.config.watch.asset }}
@@ -163,6 +159,9 @@ export default {
       }
       if(gekko.active !== true) {
         ret += ' non-active'
+      }
+      if(gekko.errored) {
+        ret += ' errored-gekko'
       }
       return ret;
     }

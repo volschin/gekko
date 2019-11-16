@@ -5,6 +5,7 @@ const broadcast = cache.get('broadcast');
 const pickBy = require('lodash.pickby');
 
 const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
+const isUserManagerPluginEnabled = require('./routes/baseConfig').userManager && require('./routes/baseConfig').userManager.enabled === true;
 
 // on init:
 const noApiKeysFile = !fs.existsSync(apiKeysFile);
@@ -19,21 +20,32 @@ const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
 
 const apiKeyManagerModule = {
   get: (userEmail) => {
-    if(!userEmail)
-      return;
-    const keysFiltered = pickBy(apiKeys, k => k.userEmail && k.userEmail === userEmail);
+    if(isUserManagerPluginEnabled) {
+      if (!userEmail)
+        return;
+    } else {
+      userEmail = undefined;
+    }
+    const keysFiltered = pickBy(apiKeys, k => k.userEmail === userEmail);
     return _.keys(keysFiltered);
   },
   getFull: (userEmail) => {
-    if(!userEmail)
-      return;
-    const keysFiltered = pickBy(apiKeys, k => k.userEmail && k.userEmail === userEmail);
+    if(isUserManagerPluginEnabled) {
+      if (!userEmail)
+        return;
+    } else {
+      userEmail = undefined;
+    }
+    const keysFiltered = pickBy(apiKeys, k => k.userEmail === userEmail);
     return keysFiltered;
   },
   // note: overwrites if exists, only if his own
   add: (exchange, props) => {
     props = props || {}
-    if(props.userEmail) {
+    if(!isUserManagerPluginEnabled) {
+      props.userEmail = undefined;
+    }
+    if(isUserManagerPluginEnabled? props.userEmail: true) {
       if(apiKeys[props.uniqueName] && apiKeys[props.uniqueName].userEmail !== props.userEmail) {
         throw 'already exists'
       } else {
@@ -51,8 +63,12 @@ const apiKeyManagerModule = {
     }
   },
   remove: (uniqueName, userEmail) => {
-    if(!apiKeys[uniqueName] || !userEmail)
-      return;
+    if(!isUserManagerPluginEnabled) {
+      if (!apiKeys[uniqueName] || !userEmail)
+        return;
+    } else {
+      userEmail = undefined;
+    }
     if(apiKeys[uniqueName] && apiKeys[uniqueName].userEmail === userEmail) {
       delete apiKeys[uniqueName];
       fs.writeFileSync(apiKeysFile, JSON.stringify(apiKeys));
