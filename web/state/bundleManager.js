@@ -3,11 +3,7 @@ const moment = require('moment');
 
 const cache = require('./cache');
 const broadcast = require('./cache').get('broadcast');
-let dependenciesManager = require('./cache').get('dependencies');
 
-const Logger = require('./logger');
-const pipelineRunner = require('../../core/workers/pipeline/parent');
-const reduceState = require('./reduceState.js');
 const now = () => moment().format('YYYY-MM-DD HH:mm');
 let gekkoManager;
 
@@ -32,6 +28,8 @@ BundleManager.prototype.add = function({ bundle }) {
         } else {
           console.error('BundleManager:: add: user not authenticated or uuid not provided');
         }
+      } else {
+
       }
       bundle.id = uuid;
 
@@ -63,6 +61,10 @@ BundleManager.prototype.stop = function(id) {
   this.bundles[ id ].stopped = true;
   this.bundles[ id ].active = false;
 
+  // need to stop all child gekkos:
+  _.toArray(gekkoManager.gekkos).filter(g => g.config && g.config.bundleUuid === id).forEach(gekko => {
+    gekkoManager.stop(gekko.id);
+  });
   broadcast({
     type: 'bundle_stopped',
     id
@@ -101,12 +103,16 @@ BundleManager.prototype.delete = function(id) {
     id
   });
 
+  _.toArray(gekkoManager.archivedGekkos).filter(g => g.config && g.config.bundleUuid === id).forEach(gekko => {
+    gekkoManager.delete(gekko.id);
+  });
+
   delete this.archivedBundles[ id ];
 
   return true;
 }
 
-BundleManager.prototype.restart = function({ id }) {
+BundleManager.prototype.restart = function(id) {
   let bundle = this.bundles[ id ] || this.archivedBundles[ id ];
   const user = cache.get('user');
   if(!bundle || !user)
@@ -118,7 +124,16 @@ BundleManager.prototype.restart = function({ id }) {
   delete this.bundles[ id ];
   delete this.archivedBundles[ id ];
 
-  this.add({ config: bundle.config });
+  this.bundles[id] = bundle;
+  this.bundles[ id ].stopped = false;
+  this.bundles[ id ].active = true;
+
+  _.toArray(gekkoManager.gekkos).filter(g => g.config && g.config.bundleUuid === id).forEach(gekko => {
+    gekkoManager.restart({ id: gekko.id });
+  });
+  _.toArray(gekkoManager.archivedGekkos).filter(g => g.config && g.config.bundleUuid === id).forEach(gekko => {
+    gekkoManager.restart({ id: gekko.id });
+  });
 
   broadcast({
     type: 'bundle_restarted',

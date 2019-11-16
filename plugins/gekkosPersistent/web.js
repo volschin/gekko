@@ -44,6 +44,23 @@ const GekkosPersistent = function(){
           }
 
           let newGekko = await db.addGekko(state, config);
+
+          // add to account:
+          if(newGekko && state.type === GEKKO_TYPE.TRADEBOT && config.apiKeyName) {
+            let account = await db.getAccountByApiKeyName(config.apiKeyName);
+            if(!account){
+              account = await db.createAccount({
+                apiKeyName: config.apiKeyName,
+                gekkoIds: [ state.id ]
+              });
+            } else {
+              try {
+                let res3 = await db.addGekkoToAccount(config.apiKeyName, state.id);
+              } catch(err3) {
+                consoleError(err3);
+              }
+            }
+          }
         }
       }
     } catch (handleErr){
@@ -53,17 +70,37 @@ const GekkosPersistent = function(){
   wss.on('gekko_archived', ({ id }) => {
     try {
       if (id) {
-        const gekko = getGekkoObjectFromManager(id);
         db.archiveGekko(id);
       }
     } catch (handleErr){
       consoleError(handleErr);
     }
   });
-  wss.on('gekko_deleted', ({ id }) => {
+  wss.on('gekko_restarted', ({ id }) => {
+    try {
+      if (id) {
+        db.restartGekko(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });
+  wss.on('gekko_deleted', async ({ id }) => {
     try {
       if(id) {
+
+        const gekko = gekkoManager.archivedGekkos[id] || gekkoManager.gekkos[id];
+        const type = gekko.type, apiKeyName = gekko.config.apiKeyName
         db.deleteGekko(id);
+
+        // delete from account:
+        if(id && type === GEKKO_TYPE.TRADEBOT && apiKeyName) {
+          try {
+            let res = await db.removeGekkoFromAccount(apiKeyName, id);
+          } catch(err3) {
+            consoleError(err3);
+          }
+        }
       }
     } catch (handleErr){
       consoleError(handleErr);
@@ -119,6 +156,44 @@ const GekkosPersistent = function(){
         consoleError(err1);
       }
 
+  });
+
+  /*wss.on('bundle_stopped', ({ id }) => {
+    try {
+      if (id) {
+        db.stopBundle(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });*/
+  wss.on('bundle_archived', ({ id }) => {
+    try {
+      if (id) {
+        db.archiveBundle(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });
+  wss.on('bundle_restarted', ({ id }) => {
+    try {
+      if (id) {
+        db.restartBundle(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });
+  wss.on('bundle_deleted', async ({ id }) => {
+    try {
+      if(id) {
+        db.deleteBundle(id);
+        // db.deleteBundlesGekkos(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
   });
   // send to client exapmle
   /*const broadcast = require('../../state/cache').get('broadcast');

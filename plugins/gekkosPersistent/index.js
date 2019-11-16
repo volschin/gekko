@@ -2,16 +2,15 @@ const log = require('../../core/log');
 const moment = require('moment');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
+const Db = require('./db');
 
 const util = require('../../core/util.js');
-// let cache = require('../../web/state/cache');
 const fs = require('fs');
 
 const results = [];
 
-let candleCur;
+let candleCur, config, sequelize, db;
 const debug = true;
-let config, sequelize;
 
 const Actor = function(done) {
   consoleLog('gekkosPersistent: constructor');
@@ -23,6 +22,8 @@ function setupActor() {
   config = util.getConfig();
   let connectionString = config.postgresql.connectionString + '/' + config.postgresql.database;
   sequelize = new Sequelize(connectionString);
+
+  db = new Db();
 
   let date;
 
@@ -52,6 +53,19 @@ function setupActor() {
     consoleLog('gekkosPersistent: processStratNotification');
     consoleLog(JSON.stringify(content));
   };
+  Actor.prototype.processPortfolioChange = function(portfolio) {
+    consoleLog('gekkosPersistent: processPortfolioChange');
+    consoleLog(JSON.stringify(portfolio));
+    try {
+      let res = db.portfolioChangeForAccount(portfolio, config)
+    } catch (err1) {
+      consoleLog(err1);
+    }
+  };
+  Actor.prototype.processPortfolioValueChange = function(portfolio) {
+    consoleLog('gekkosPersistent: processPortfolioValueChange');
+    consoleLog(JSON.stringify(portfolio));
+  };
   Actor.prototype.finalize = function(done) {
     consoleLog('gekkosPersistent: finalize');
   };
@@ -62,6 +76,5 @@ module.exports = Actor;
 function consoleLog(msg){
   if(debug) {
     console.log(msg);
-    log.info(msg);
   }
 }
