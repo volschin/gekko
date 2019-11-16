@@ -131,6 +131,10 @@ Actor.prototype.processTradeCompleted = function(trade) {
   this.strategy.processTrade(trade);
 }
 
+Actor.prototype.processTriggerFired = function(data) {
+  this.strategy.triggerFired(data);
+}
+
 // Actor.prototype.processTradeErrored = function(trade) {
 //   this.strategy.processTrade(trade);
 // }
