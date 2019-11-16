@@ -1,0 +1,4 @@
+firstTradeBuy = true
+[prices]
+buy = 0.00000023
+sell = 0.00000024
