@@ -57,6 +57,10 @@ const Indicator = function(settings) {
     useHeiken = this.settings.useHeiken
   }
   DXArr = new Array(adxLen).fill(0);
+  this.result = {
+    trend, stop, trendChange,
+    //adx,atr, m, src_, TUp, TDown // debug
+  }
 }
 Indicator.prototype.update = function(candle) {
   counter++;
@@ -179,7 +183,7 @@ const atrCalc = function(candle){
   trendChange = trend - trendPrev;
 
   // if(trendChange !== 0 && counter > atrLen) {
-    if(false) { //logging in debug only!
+    if(isDebug) { //logging in debug only!
       //log.info(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
       console.log(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
       console.log(`   hR: ${hR}, lR: ${lR}, dmPos: ${dmPos}, dmNeg: ${dmNeg}`)
