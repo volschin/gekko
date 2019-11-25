@@ -1,0 +1,17 @@
+# Run with 15 & 60m
+indicators = ["Bollinger Bands"]
+
+[aaat]
+USE_HEIKEN = false
+lengthMultiplyer = 4 #e.g. 15m and aaat 60m (15 * 4)
+
+[rsi]
+interval = 1 #indicator
+low = 29
+high = 79
+persistence = 1
+
+[bbands]
+TimePeriod = 20
+NbDevUp = 3
+NbDevDn = 3
