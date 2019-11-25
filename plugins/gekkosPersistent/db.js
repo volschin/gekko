@@ -364,7 +364,7 @@ Db.prototype.removeGekkoFromAccount = async function(apiKeyName, gekkoId) {
 }
 Db.prototype.portfolioChangeForAccount = async function(portfolio, config) {
   if(!portfolio || !config || !config.apiKeyName) {
-    throw 'not all data provided';
+    return 'not all data provided';
   }
   let res, options = {}, where = {
     apiKeyName: config.apiKeyName
