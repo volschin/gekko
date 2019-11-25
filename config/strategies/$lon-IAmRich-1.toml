@@ -1,5 +1,7 @@
 # Run with 15 & 60m
 indicators = ["Bollinger Bands"]
+takeProfit = 1.01 # take profit when price 0.8% bigger than buy price
+percentBelowMa = 0.017 # цена на 1.7% ниже чем оранжевая часовая МА (в рассчете на то, что должна к ней вернуться)
 
 [aaat]
 USE_HEIKEN = false

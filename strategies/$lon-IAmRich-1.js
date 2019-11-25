@@ -36,7 +36,7 @@ strat.init = function() {
   consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
-  this.debug = true;
+  this.debug = false;
 
   // performance
   config.backtest.batchSize = 1000; // increase performance
@@ -66,8 +66,9 @@ strat.init = function() {
   });
 
   this.updateAaat = function(candle) {
-    // consoleLog(`strat updateAaat:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
-    consoleLog(`strat updateAaat:: candle: ${ JSON.stringify(candle) }`);
+    if(this.debug) {
+      consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
+    }
     aaatInd.update(candle);
 
     // MAs:
@@ -78,7 +79,9 @@ strat.init = function() {
   batcherAaat.on('candle', this.updateAaat);
 
   this.update = function(candle) {
-    // consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    if(this.debug) {
+      // consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    }
 
     currentPrice = candle.close;
     currentCandle = candle;
@@ -100,9 +103,11 @@ strat.init = function() {
   this.check = function(candle) {
 
     //aaat: {"trend":-1,"stop":8138.549080000001,"trendChange":0}
-    // consoleLog(`strat check:: price: ${ price }, aaat: ${ JSON.stringify(aaat) }`);
     let candlePrev = candlesArr[1];
-    consoleLog(`strat check:: candle.close: ${ candle.close }, candle.volume: ${ candle.volume }, ma.short: ${ shortMA.result }, ma.middle: ${ middleMA.result }, ma.long: ${ longMA.result }, rsiVal: ${ rsiVal }, aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    if(this.debug) {
+      // consoleLog(`strat check:: price: ${ price }, aaat: ${ JSON.stringify(aaat) }`);
+      consoleLog(`strat check:: candle.close: ${ candle.close }, candle.volume: ${ candle.volume }, ma.short: ${ shortMA.result }, ma.middle: ${ middleMA.result }, ma.long: ${ longMA.result }, rsiVal: ${ rsiVal }, aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    }
 
     if(aaatTrendUp) {
       if(candlePrev.volume > 1000 && candlePrev.close > candlePrev.open && isSingleDirectionMoveCandle(candlePrev)) {
@@ -122,7 +127,7 @@ strat.init = function() {
           //this.buy('bb-rsi trending up');
         }
         // цена на n% ниже чем оранжевая часовая МА (в рассчете на то, что должна к ней вернуться)
-        if(candle.close < shortMA.result && ((shortMA.result - candle.close) / candle.close) > 0.017) {
+        if(candle.close < shortMA.result && ((shortMA.result - candle.close) / candle.close) > this.settings.percentBelowMa) {
           if(candle.close < middleMA.result || candle.close < longMA.result) {
             this.buy('цена на n% ниже чем оранжевая часовая МА');
           }
@@ -151,14 +156,14 @@ strat.init = function() {
         } else if(candle.close > bb.middle && rsiVal >= this.settings.rsi.high) {
           //this.sell('bb-rsi trending down');
         }
-        if (candle.close >= buyPrice * 1.01) {
+        if (candle.close >= buyPrice * this.settings.takeProfit) {
           console.error(`${ buyPrice }, ${ candle.close }`)
           this.sell(`SELL!!: TAKE PROFIT, buy: ${ buyPrice }, sell: ${ candle.close }`);
           totalTradesSuccess++;
         }
         if(candlePrev.isHighVolumeUp) {
           // взмыла, можно продавать
-          console.error('взмыла, можно продавать: '+ JSON.stringify(candlePrev))
+          // console.error('взмыла, можно продавать: '+ JSON.stringify(candlePrev))
           // this.sell('взмыла, можно продавать');
         }
         if( candle.high > middleMA.result || candle.high > longMA.result) {
