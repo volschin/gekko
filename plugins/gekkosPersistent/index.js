@@ -59,6 +59,7 @@ function setupActor() {
     try {
       let res = db.portfolioChangeForAccount(portfolio, config)
     } catch (err1) {
+      consoleLog('gekkosPersistent::processPortfolioChange:error');
       consoleLog(err1);
     }
   };
