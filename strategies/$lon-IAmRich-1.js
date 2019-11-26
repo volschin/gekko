@@ -306,16 +306,27 @@ const isSingleDirectionMoveCandle = function(candle1) {
 
 Оптимальные настройки для пар:
 
-ltc/btc, 3mo - 5%:
+BEST:
+
+btc/usdt, 15mo - 51.5%:
 takeProfit = 1.01
 percentBelowMa = 0.017
-bullTrendMa15 = true
-
+bullTrendMa15 = false
 
 eth/usdt, 15mo - 91.19%:
 takeProfit = 1.01
 percentBelowMa = 0.03
 bullTrendMa15 = false
+
+ltc/usdt, 15mo - 67.7%:
+takeProfit = 1.01 # take profit when price 0.8% bigger than buy price
+percentBelowMa = 0.03 # цена на 1.7% ниже чем оранжевая часовая МА (в расчете на то, что должна к ней вернуться)
+bullTrendMa15 = false
+
+ltc/btc, 3mo - 5%:
+takeProfit = 1.01
+percentBelowMa = 0.017
+bullTrendMa15 = true
 
 
  */

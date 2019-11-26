@@ -1,4 +1,3 @@
-indicators = ["Bollinger Bands"]
 takeProfit = 1.01
 percentBelowMa = 0.017
 bullTrendMa15 = false
