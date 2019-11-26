@@ -349,6 +349,11 @@ strat.buy = function(reason) {
     this.tradeInitiated = true;
   }
 }
+this.onTriggerFired = function(data) {
+  // tradeInitiated = false;
+
+  consoleLog(`onTriggerFired, data: ${ JSON.stringify(data) }`);
+}
 // This is called when trader.js initiates a
 // trade. Perfect place to put a block so your
 // strategy won't issue more trader orders
@@ -380,6 +385,11 @@ strat.onTrade = function(trade = {}) {
     advised = false;
   }
   consoleLog(`onTrade:: trade: ${ JSON.stringify(trade) }`);
+}
+this.onTriggerFired = function(data) {
+  // tradeInitiated = false;
+  advised = false;
+  consoleLog(`onTriggerFired, data: ${ JSON.stringify(data) }`);
 }
 // Trades that didn't complete with a buy/sell
 strat.onTerminatedTrades = function(terminatedTrades) {

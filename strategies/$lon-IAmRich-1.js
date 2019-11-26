@@ -51,9 +51,13 @@ strat.init = function() {
   this.addIndicator('bb', 'BBANDS', this.settings.bbands);
   this.addIndicator('rsi', 'RSI', this.settings.rsi);
 
-  let shortMA = new MA(21);
-  let middleMA = new MA(100);
-  let longMA = new MA(200);
+  let shortMA15 = new MA(21);
+  let middleMA15 = new MA(100);
+  let longMA15 = new MA(200);
+
+  let shortMA60 = new MA(21);
+  let middleMA60 = new MA(100);
+  let longMA60 = new MA(200);
   let hadTrade = false;
 
   let AAAT = require('./indicators/Adaptive-ATR-ADX-Trend');
@@ -65,18 +69,18 @@ strat.init = function() {
     useHeiken: this.settings.aaat.USE_HEIKEN
   });
 
-  this.updateAaat = function(candle) {
+  this.update60 = function(candle) {
     if(this.debug) {
       consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
     }
     aaatInd.update(candle);
 
     // MAs:
-    shortMA.update(candle.close);
-    middleMA.update(candle.close);
-    longMA.update(candle.close);
+    shortMA60.update(candle.close);
+    middleMA60.update(candle.close);
+    longMA60.update(candle.close);
   }
-  batcherAaat.on('candle', this.updateAaat);
+  batcherAaat.on('candle', this.update60);
 
   this.update = function(candle) {
     if(this.debug) {
@@ -96,6 +100,10 @@ strat.init = function() {
     rsiVal = rsi.result;
     aaatTrendUp = aaatInd.result.trend === 1;
     aaatStop = aaatInd.result.stop;
+
+    shortMA15.update(candle.close);
+    middleMA15.update(candle.close);
+    longMA15.update(candle.close);
   }
 
   let aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal;
@@ -106,7 +114,7 @@ strat.init = function() {
     let candlePrev = candlesArr[1];
     if(this.debug) {
       // consoleLog(`strat check:: price: ${ price }, aaat: ${ JSON.stringify(aaat) }`);
-      consoleLog(`strat check:: candle.close: ${ candle.close }, candle.volume: ${ candle.volume }, ma.short: ${ shortMA.result }, ma.middle: ${ middleMA.result }, ma.long: ${ longMA.result }, rsiVal: ${ rsiVal }, aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+      consoleLog(`strat check:: candle.close: ${ candle.close }, candle.volume: ${ candle.volume }, ma.short: ${ shortMA60.result }, ma.middle: ${ middleMA60.result }, ma.long: ${ longMA60.result }, rsiVal: ${ rsiVal }, aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
     }
 
     if(aaatTrendUp) {
@@ -127,9 +135,11 @@ strat.init = function() {
           //this.buy('bb-rsi trending up');
         }
         // цена на n% ниже чем оранжевая часовая МА (в рассчете на то, что должна к ней вернуться)
-        if(candle.close < shortMA.result && ((shortMA.result - candle.close) / candle.close) > this.settings.percentBelowMa) {
-          if(candle.close < middleMA.result || candle.close < longMA.result) {
-            this.buy('цена на n% ниже чем оранжевая часовая МА');
+        if(candle.close < shortMA60.result && ((shortMA60.result - candle.close) / candle.close) > this.settings.percentBelowMa) {
+          if(candle.close < middleMA60.result || candle.close < longMA60.result) {
+            if(this.settings.bullTrendMa15 ? middleMA15.result > longMA15.result: true) {
+              this.buy('цена на n% ниже чем оранжевая часовая МА');
+            }
           }
         }
         if(candle.low < aaatStop && candle.close > aaatStop) {
@@ -144,7 +154,7 @@ strat.init = function() {
 
         }
         // this.buy('candlePrev.isHighVolumeDown');
-        if( candle.low < shortMA.result && candle.close > aaatStop && !hadTrade) {
+        if( candle.low < shortMA60.result && candle.close > aaatStop && !hadTrade) {
           hadTrade = true;
           //this.buy('lower than 21 ma');
         }
@@ -166,7 +176,7 @@ strat.init = function() {
           // console.error('взмыла, можно продавать: '+ JSON.stringify(candlePrev))
           // this.sell('взмыла, можно продавать');
         }
-        if( candle.high > middleMA.result || candle.high > longMA.result) {
+        if( candle.high > middleMA60.result || candle.high > longMA60.result) {
           // this.sell('upper than 100ma')
         }
       }
@@ -291,3 +301,21 @@ const isSingleDirectionMoveCandle = function(candle1) {
   }
   return ret;
 }
+
+/*
+
+Оптимальные настройки для пар:
+
+ltc/btc, 3mo - 5%:
+takeProfit = 1.01
+percentBelowMa = 0.017
+bullTrendMa15 = true
+
+
+eth/usdt, 15mo - 91.19%:
+takeProfit = 1.01
+percentBelowMa = 0.03
+bullTrendMa15 = false
+
+
+ */
