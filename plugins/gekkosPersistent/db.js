@@ -5,7 +5,7 @@ const log = require('../../core/log.js');
 const util = require('../../core/util.js');
 
 let sequelize, config
-  , GekkosTable, ConfigsTable, BundlesTable, AccountsTable;
+  , GekkosTable, ConfigsTable, BundlesTable, AccountsTable, TradesTable;
 const GEKKO_TYPE = {
   WATCHER: 'watcher',
   TRADEBOT: 'leech'
@@ -36,6 +36,7 @@ const Db = function(settings = {}){
   ConfigsTable = sequelize.import('./models/configs.js');
   BundlesTable = sequelize.import('./models/bundles.js');
   AccountsTable = sequelize.import('./models/accounts.js');
+  TradesTable = sequelize.import('./models/trades.js');
 }
 
 Db.prototype.create = async function() {
@@ -59,6 +60,11 @@ Db.prototype.create = async function() {
     await require('./models/accounts').create(AccountsTable)
   } catch (e) {
     consoleError('table "AccountsTable" not created: ', e);
+  }
+  try {
+    await require('./models/trades').create(TradesTable)
+  } catch (e) {
+    consoleError('table "TradesTable" not created: ', e);
   }
 }
 // GEKKOS:
@@ -363,40 +369,53 @@ Db.prototype.removeGekkoFromAccount = async function(apiKeyName, gekkoId) {
   return ret;
 }
 Db.prototype.portfolioChangeForAccount = async function(portfolio, config) {
-  if(!portfolio || !config || !config.apiKeyName) {
-    return 'not all data provided';
-  }
-  let res, options = {}, where = {
-    apiKeyName: config.apiKeyName
-  }
-  let account = await AccountsTable.findOne({
-    where
-  });
-  if(!account) {
-    options = {
-
-      apiKeyName: {
-        type: Sequelize.STRING(50),
-        allowNull: false
-      },
-      ownerId: Sequelize.INTEGER,
-      watchers: Sequelize.ARRAY(Sequelize.JSON),
+  let res;
+  if(portfolio && config && (config.apiKeyName || config.backtest && config.apiKeyNameForBacktest)) {
+    let options = {}, where = {
+      apiKeyName: !config.backtest? config.apiKeyName : config.apiKeyNameForBacktest
     }
-    account = await this.createAccount(options);
-  }
-  const balances = account.balances, pair1name = config.watch.asset, pair1balance = portfolio.asset,
-    pair2name = config.watch.currency, pair2balance = portfolio.currency;
-  balances[ pair1name ] = pair1balance;
-  balances[ pair2name ] = pair2balance;
+    let account = await AccountsTable.findOne({
+      where
+    });
+    if (!account) {
+      options = {
+        apiKeyName: where.apiKeyName,
+      }
+      account = await this.createAccount(options);
+    }
+    const balances = account.balances, pair1name = config.watch.asset, pair1balance = portfolio.asset,
+      pair2name = config.watch.currency, pair2balance = portfolio.currency;
+    balances[pair1name] = pair1balance;
+    balances[pair2name] = pair2balance;
 
-  res = await AccountsTable.update({
-    balances
-  }, {
-    where
-  });
+    res = await AccountsTable.update({
+      balances
+    }, {
+      where
+    });
+  } else {
+    res = 'not all data provided';
+  }
   return res;
 }
 
+// trades:
+Db.prototype.saveTrade = async function(trade) {
+  let ret;
+  ret = await TradesTable.create(trade);
+  return ret;
+}
+Db.prototype.getTrades = async function(where = {}) {
+  let ret;
+  ret = await TradesTable.findAll({ where });
+  return ret;
+}
+// end trades
+
+Db.prototype.close = async function() {
+  const ret =  await sequelize.close();
+  return ret;
+}
 module.exports = Db;
 module.exports.GEKKO_TYPE = GEKKO_TYPE;
 module.exports.GEKKO_STATUS = GEKKO_STATUS;

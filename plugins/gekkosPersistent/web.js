@@ -13,7 +13,8 @@ const base = require('../../web/routes/baseConfig');
 
 const GekkosPersistent = function(){
   db = new Db();
-  // db.create(); //use only to (re)create DB!!
+  cache.set('db', db);
+  db.create(); //use only to (re)create DB!!
 
   const gekkoManager = cache.get('gekkos');
   const wss = cache.get('wss');
@@ -243,6 +244,22 @@ GekkosPersistent.prototype.restoreGekkosOnStartup = async function(){
     }
   });
 }
+
+GekkosPersistent.prototype.getCustomPerformanceReport = async function({ bundleUuid, apiKeyName, }){ // wip
+  let where = {}, ret;
+  if(bundleUuid) {
+    where['bundleUuid'] = bundleUuid;
+  }
+  if(apiKeyName) {
+    where['apiKeyName'] = apiKeyName;
+  }
+  const trades = await db.getTrades(where);
+
+
+
+  return ret;
+}
+
 
 module.exports = GekkosPersistent;
 

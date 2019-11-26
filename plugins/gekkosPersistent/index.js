@@ -1,7 +1,6 @@
 const log = require('../../core/log');
 const moment = require('moment');
 const _ = require('lodash');
-const Sequelize = require('sequelize');
 const Db = require('./db');
 
 const util = require('../../core/util.js');
@@ -9,7 +8,7 @@ const fs = require('fs');
 
 const results = [];
 
-let candleCur, config, sequelize, db;
+let candleCur, config, db;
 const debug = true;
 
 const Actor = function(done) {
@@ -20,8 +19,6 @@ const Actor = function(done) {
 }
 function setupActor() {
   config = util.getConfig();
-  let connectionString = config.postgresql.connectionString + '/' + config.postgresql.database;
-  sequelize = new Sequelize(connectionString);
 
   db = new Db();
 
@@ -37,38 +34,52 @@ function setupActor() {
   };
 
   Actor.prototype.processAdvice = function(advice, done) {
-    consoleLog('gekkosPersistent: processAdvice');
-    consoleLog(JSON.stringify(advice));
+    // consoleLog('gekkosPersistent: processAdvice');
+    // consoleLog(JSON.stringify(advice));
     done && done();
 
   };
   Actor.prototype.processTradeCompleted = function(trade, done) {
-    consoleLog('gekkosPersistent: processTradeCompleted');
-    consoleLog(JSON.stringify(trade));
+    // consoleLog('gekkosPersistent: processTradeCompleted');
+    // consoleLog(JSON.stringify(trade));
+    let tradeInp = {
+      tradeId: trade.id,
+      gekkoId: config.gekkoId,
+      apiKeyName: config.apiKeyName || config.apiKeyNameForBacktest,
+      bundleUuid: config.bundleId || config.bundleIdForBacktest,
+      json: trade,
+    }
+    try {
+      db.saveTrade(tradeInp);
+    } catch (e) {
+      consoleLog('gekkosPersistent::processTradeCompleted:error');
+      consoleLog(err1);
+    }
     done && done();
   };
   Actor.prototype.processStratWarmupCompleted  = function() {
   }
   Actor.prototype.processStratNotification = function({ content }) {
-    consoleLog('gekkosPersistent: processStratNotification');
-    consoleLog(JSON.stringify(content));
+    // consoleLog('gekkosPersistent: processStratNotification');
+    // consoleLog(JSON.stringify(content));
   };
-  Actor.prototype.processPortfolioChange = function(portfolio) {
-    consoleLog('gekkosPersistent: processPortfolioChange');
-    consoleLog(JSON.stringify(portfolio));
+  Actor.prototype.processPortfolioChange = async function(portfolio) {
+    // consoleLog('gekkosPersistent: processPortfolioChange');
+    // consoleLog(JSON.stringify(portfolio));
     try {
-      let res = db.portfolioChangeForAccount(portfolio, config)
+      let res = await db.portfolioChangeForAccount(portfolio, config)
     } catch (err1) {
       consoleLog('gekkosPersistent::processPortfolioChange:error');
       consoleLog(err1);
     }
   };
   Actor.prototype.processPortfolioValueChange = function(portfolio) {
-    consoleLog('gekkosPersistent: processPortfolioValueChange');
-    consoleLog(JSON.stringify(portfolio));
+    // consoleLog('gekkosPersistent: processPortfolioValueChange');
+    // consoleLog(JSON.stringify(portfolio));
   };
   Actor.prototype.finalize = function(done) {
     consoleLog('gekkosPersistent: finalize');
+    db.close();
   };
 }
 
