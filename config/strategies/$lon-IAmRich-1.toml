@@ -1,19 +1,30 @@
-# Run with 15 & 60m
 indicators = ["Bollinger Bands"]
-takeProfit = 1.01 # take profit when price 0.8% bigger than buy price
-percentBelowMa = 0.017 # цена на 1.7% ниже чем оранжевая часовая МА (в рассчете на то, что должна к ней вернуться)
+takeProfit = 1.01
+percentBelowMa = 0.017
+bullTrendMa15 = false
 
 [aaat]
 USE_HEIKEN = false
-lengthMultiplyer = 4 #e.g. 15m and aaat 60m (15 * 4)
+lengthMultiplyer = 4
+
+#not used yet:
 
 [rsi]
-interval = 1 #indicator
+interval = 1
 low = 29
 high = 79
 persistence = 1
+
+# indicators = ["Bollinger Bands"]
 
 [bbands]
 TimePeriod = 20
 NbDevUp = 3
 NbDevDn = 3
+
+# abount:
+# Run with 15m candle & lengthMultipluyer 4 (15 & 60m)
+
+# takeProfit = 1.01 # take profit when price 1% bigger than buy price
+# percentBelowMa = 0.017 # цена на 1.7% ниже чем оранжевая часовая МА (в рассчете на то, что должна к ней вернуться) , btc/usdt - 0.017, eth/usdt - 0.03, eth/btc (10%/year,7trades, small timeprint) - 0.03
+# bullTrendMa15 = false # long ma 15 lower than middle, false for usdt/xxx pairs, true for btc/xxx pairs
