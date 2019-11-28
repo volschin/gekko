@@ -1,12 +1,11 @@
 <template lang='pug'>
 .grd
-  .grd-row
-    .grd-row-col-3-6.px1
-      div
-        h3 DEPENDENCIES
-        p  Gekkos JSON (TODO):
-        textarea.params(v-model='rawDependencies').control--dependencies-input
-        p.bg--red.p1(v-if='rawDependenciesError') {{ rawDependenciesError.message }}
+  div
+    h3
+      a(v-on:click='isHidden = false') Dependencies
+    p(v-if='!isHidden')  Gekkos JSON (TODO):
+    textarea(v-if='!isHidden').params(v-model='rawDependencies').control--dependencies-input
+    p.bg--red.p1(v-if='rawDependenciesError') {{ rawDependenciesError.message }}
 </template>
 
 <script>
@@ -17,6 +16,7 @@ import { get } from '../../../tools/ajax'
 export default {
   data: () => {
     return {
+      isHidden: true,
       rawDependencies: defTxt,
       rawDependenciesError: false,
 

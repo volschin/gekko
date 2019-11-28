@@ -6,10 +6,11 @@
     .hr
     strat-picker.my2(v-on:stratConfig='updateStrat').contain
     .hr
-    dependency-picker.contain.my2(v-on:dependenciesConfig='updateDependencies')
-    .hr
-    paper-trader(v-on:settings='updatePaperTrader').contain
-    .hr
+    .grd-row
+      .grd-row-col-3-6
+        paper-trader(v-on:settings='updatePaperTrader')
+      .grd-row-col-3-6
+        dependency-picker(v-on:dependenciesConfig='updateDependencies')
 </template>
 
 <script>
