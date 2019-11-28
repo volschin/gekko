@@ -45,7 +45,7 @@ export default {
       rawCandleSize: 1,
 
       strategy: 'MACD',
-      historySize: 10,
+      historySize: 14,
 
       rawStratParams: '',
       rawStratParamsError: false,
