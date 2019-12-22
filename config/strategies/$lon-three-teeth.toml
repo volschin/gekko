@@ -1,0 +1,15 @@
+takeProfit = 1.2 # 20%
+stopLoss = 0.99 # 1%
+
+[rsi]
+low = 29 # start of dn tooth
+low_clear = 32 # end of dn tooth
+high = 68
+high_clear = 68
+reset_low = 50
+reset_high = 50
+
+[teeth]
+down = 3
+up = 1
+# non-losing params (btc/usdt): size: 1440m / warmup: 140m / takeProfit: 20%
