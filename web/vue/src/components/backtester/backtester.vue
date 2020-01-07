@@ -3,7 +3,8 @@
     h2.contain Backtest
     .hr
     config-builder(v-on:config='check')
-    .hr.contain
+
+    result(v-if='backtestResult && backtestState === "fetched"', :result='backtestResult', v-bind:config={  })
 
     div.tradingviewContainer(v-bind:style="{ display: tradingviewDisplay }")
       tradingviewChart(:height='500', v-bind:config="config", v-bind:backtestResult="backtestResult")
@@ -13,7 +14,6 @@
         div(v-if='backtestState === "fetching"').scan-btn
           p Running backtest..
           spinner
-    result(v-if='backtestResult && backtestState === "fetched"', :result='backtestResult', v-bind:config={  })
 </template>
 
 <script>

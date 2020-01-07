@@ -1,5 +1,5 @@
 feeMaker = 0.10
-feeTaker = 0.20
+feeTaker = 0.10
 feeUsing = 'taker'
 slippage = 0.05
 

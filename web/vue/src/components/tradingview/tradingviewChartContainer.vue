@@ -1,5 +1,8 @@
-<template>
-<div class="TVChartContainer" :id="containerId" />
+<template lang='pug'>
+  div.contain
+    h3
+      a(v-on:click.prevent='switchToggle') TradingView Chart
+    div.TVChartContainer(:id='containerId' v-bind:style="{ display: toggle === 'open'? 'block': 'none' }")
 </template>
 <style>
   .control--toml-input-fixed {
@@ -110,7 +113,7 @@ export default {
   tvWidget: null,
   data: function () {
     return {
-      //config: this.config
+      toggle: 'open'
     }
   },
   watch: {
@@ -140,6 +143,12 @@ export default {
     }
   },
   methods: {
+    switchToggle: function() {
+      if(this.toggle === 'open')
+        this.toggle = 'closed';
+      else
+        this.toggle = 'open';
+    },
     makeInputsFloatStyle(){
       let elem = window.document.getElementsByClassName('control--toml-input');
       elem && elem[0] && elem[0].classList.add('control--toml-input-fixed');
