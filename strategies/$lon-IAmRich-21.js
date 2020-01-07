@@ -30,7 +30,7 @@ strat.init = function() {
   consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
-  this.debug = false;
+  this.debug = true;
 
   // performance
   config.backtest.batchSize = 1000; // increase performance
@@ -142,7 +142,7 @@ strat.init = function() {
       }`);
     }
     // цена пересекла зеленую
-    if(!advised && aaatTrendUp && (candle.low < aaatStop) && !isMarketLostForThisTrend) {
+    if(!advised && aaatTrendUp && (candle.low < (aaatStop * (1 + this.settings.bias))) && !isMarketLostForThisTrend) {
       // this.limit = aaatStop;
       hadTrade = true;
       this.buy(`цена пересекла зеленую: aaaStop: ${ JSON.stringify( aaatStop )}, longCandle: ${ JSON.stringify( longCandle )}`, aaatStop);
@@ -150,16 +150,19 @@ strat.init = function() {
     if (advised) {
       if (candle.close >= buyPrice * this.settings.takeProfit) {
         this.sell(`SELL!!: TAKE PROFIT, buy: ${buyPrice}, sell: ${candle.close}`);
-      } else if(longCandle.close < aaatStop) {
+      } else if(!aaatTrendUp && aaatTrendUpPrev) {
+         // immediate sell on trend change to dn
+         this.sell('immediate sell on trend change to dn');
+       } else if(longCandle.close < (aaatStop * (1 - this.settings.bias))) {
       // } else if (candle.close < aaatStop) {
         // stop loss, urgent sell!
         // this.sell('exiting: long candle close below aaat!');
-        totalTradesLongCandleBelowAaat++;
-        isMarketLostForThisTrend = true;
+        // totalTradesLongCandleBelowAaat++;
+        // isMarketLostForThisTrend = true;
       } else if (candle.close <= buyPrice * this.settings.stopLoss) {
         // if (candle.close < aaatStop) {
         // stop loss, urgent sell!
-        // this.sell(`stop loss: below ${ this.settings.stopLoss }%`);
+        this.sell(`stop loss: below ${ this.settings.stopLoss }%`);
         totalTradesAaatStopLoss++;
         isMarketLostForThisTrend = true;
       }
@@ -197,7 +200,7 @@ strat.init = function() {
       if(currentPrice > buyPrice * 1.002) {
         totalTradesSuccess++;
       }
-      buyPrice = 0;
+      buyPrice = null;
       totalSold ++;
     }
   }

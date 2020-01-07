@@ -59,7 +59,7 @@ Indicator.prototype.update = function(candle) {
 	  return;
 	}
 
-*
+/*
 * Handle calculations
 */
 Indicator.prototype.calculate = function(candle) {

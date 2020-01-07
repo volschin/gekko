@@ -1,0 +1,24 @@
+takeProfit = 1.03 # 1%
+#stopLoss = 0.99 # 1%
+bias = 0.001 #1%
+
+[aaat]
+USE_HEIKEN = false
+lengthMultiplyer = 6
+
+#not used yet:
+
+[rsi]
+interval = 1
+low = 29
+high = 79
+persistence = 1
+
+# indicators = ["Bollinger Bands"]
+
+[bbands]
+TimePeriod = 20
+NbDevUp = 3
+NbDevDn = 3
+# abount:
+# start with 1hr && 24 hr (LM = 24)

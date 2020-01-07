@@ -1,14 +1,14 @@
 // Downloaded from: https://github.com/xFFFFF/Gekko-Strategies
 
 var convnetjs = require('convnetjs')
-var z = require('zero-fill')
+// var z = require('zero-fill')
 var stats = require('stats-lite')
-var n = require('numbro')
+// var n = require('numbro')
 var math = require('mathjs')
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 var _ = require('lodash');
-var gauss = require('gauss');
+// var gauss = require('gauss');
 const deepqlearn = require('convnetjs/build/deepqlearn');
 
 var BB = require('./indicators/BB2.js'); //Bollinger Bands

@@ -22,16 +22,13 @@ strat.init = function() {
     log.remote('This strategy must run with candleSize=15');
     // throw "This strategy must run with candleSize=15";
   }
-  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs, candlesArr = new Array(10),
-    aaatLengh;
-  candlesArr.forEach(candle => {
-    candle = {
+  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs, candlesArr = Array(10).fill({
       open: -1,
       close: -1,
       high: -1,
       low: -1
-    }
-  })
+    }),
+    aaatLengh;
 
   consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
@@ -109,8 +106,7 @@ strat.init = function() {
   let aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal;
 
   this.check = function(candle) {
-
-    //aaat: {"trend":-1,"stop":8138.549080000001,"trendChange":0}
+    aaatTrendUp = true;
     let candlePrev = candlesArr[1];
     if(this.debug) {
       // consoleLog(`strat check:: price: ${ price }, aaat: ${ JSON.stringify(aaat) }`);
@@ -266,8 +262,8 @@ strat.init = function() {
   this.end = function(a, b, c) {
     consoleLog('gekko end')
     console.error('gekko end, here is some statistics for you Sir:')
-    console.error(`totalUptrends: ${ totalUptrends }, totalBought: ${ totalBought } (out of ${ totalBoughtAttempts } attempts), totalSold: ${ totalSold 
-      } (out of ${ totalSoldAttempts } attempts), statsTotalTradesSuccess: ${ totalTradesSuccess }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss 
+    console.error(`totalUptrends: ${ totalUptrends }, totalBought: ${ totalBought } (out of ${ totalBoughtAttempts } attempts), totalSold: ${ totalSold
+      } (out of ${ totalSoldAttempts } attempts), statsTotalTradesSuccess: ${ totalTradesSuccess }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss
     }, totalHighVolumeCandles: ${ totalHighVolumeCandles }`);
 
   }
