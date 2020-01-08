@@ -2,6 +2,17 @@ import { get } from '../../../tools/ajax'
 import store from '../../'
 import { bus } from '../../../components/global/ws'
 
+export const transformConfigs = data => {
+  return data.map(config => {
+    let ret = config.configJson;
+    Object.assign(ret, {
+      id: config.id,
+      name: config.name
+    });
+    return ret;
+  })
+}
+
 const transformMarkets = backendData => {
   if(!backendData) {
     return {};
@@ -39,12 +50,23 @@ const init = () => {
 
   get('exchanges', (err, resp) => {
     store.commit('syncExchanges', transformMarkets(resp));
-  })
+  });
+
+  get('configs', (err, resp) => {
+    if(err) {
+      console.error(err);
+    } else {
+      store.commit('syncConfigs', transformConfigs(resp));
+    }
+  });
 }
 
 const sync = () => {
   bus.$on('apiKeys', data => {
     store.commit('syncApiKeys', data.exchanges);
+  });
+  bus.$on('configs', data => {
+    store.commit('syncConfigs', data.exchanges);
   });
 }
 

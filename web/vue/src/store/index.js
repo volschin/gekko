@@ -9,6 +9,8 @@ import * as bundleMutations from './modules/bundles/mutations'
 import * as notificationMutations from './modules/notifications/mutations'
 import * as configMutations from './modules/config/mutations'
 
+import * as configActions from './modules/config/actions';
+
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -20,6 +22,9 @@ _.merge(mutations, gekkoMutations);
 _.merge(mutations, bundleMutations);
 _.merge(mutations, notificationMutations);
 _.merge(mutations, configMutations);
+
+let actions = {}
+_.merge(actions, configActions);
 
 export default new Vuex.Store({
   state: {
@@ -37,8 +42,11 @@ export default new Vuex.Store({
       reconnected: false
     },
     apiKeys: [],
-    exchanges: {}
+    exchanges: {},
+    configs: [],
+    configCurrent: null
   },
+  actions,
   mutations,
   strict: debug,
   modules: {

@@ -17,6 +17,7 @@ import multiMarketPicker from './multiMarketpicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
 import apiKeyPicker from '../global/configbuilder/apiKeyPicker';
+import toml from 'toml-js';
 
 import { get } from '../../tools/ajax'
 import _ from 'lodash'

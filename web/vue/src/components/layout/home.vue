@@ -1,7 +1,9 @@
 <template lang='pug'>
   div
     section.contain.grd-row
-      .grd-row-col-3-6(v-html='left')
+      .grd-row-col-3-6
+        div(v-html='left')
+        top-ten-configs()
       .grd-row-col-3-6.txt--center
         img(src='static/gekko.jpg')
         p(v-if='Date.now() % 7 === 0')
@@ -26,7 +28,7 @@
 
 <script>
 import marked from '../../tools/marked';
-
+import topTenConfigs from '../config/topTenConfigs';
 const left = marked(`
 
 ## $LON
@@ -50,6 +52,9 @@ export default {
     isAuthenticated (){
       return this.$store.state.auth.isAuthenticated
     },
+  },
+  components: {
+    topTenConfigs
   }
 }
 </script>

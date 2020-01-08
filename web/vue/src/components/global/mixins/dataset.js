@@ -6,12 +6,16 @@ var mixin = {
       datasets: [],
       datasetScanstate: 'idle',
       unscannableMakets: []
-    }    
+    }
   },
   methods: {
+    scanFake: function(data) {
+      // this.datasetScanstate = 'fakeScanned';
+      this.datasets = [data];
+    },
     scan: function() {
       this.datasetScanstate = 'scanning';
-
+      this.setIndex = -1;
       post('scansets', {}, (error, response) => {
         if(error) {
           if (error.status === 403) {

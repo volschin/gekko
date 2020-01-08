@@ -30,3 +30,10 @@ export const get = (to, next) => {
     .withCredentials()
     .end(processResponse(next));
 }
+export const del = (to, next) => {
+  superagent
+    .del(restPath + to)
+    .use(noCache)
+    .withCredentials()
+    .end(processResponse(next));
+}

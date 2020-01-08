@@ -19,7 +19,7 @@
 </template>
 
 <script>
-
+import toml from 'toml-js';
 import marketPicker from '../global/configbuilder/marketpicker.vue'
 import typePicker from '../global/configbuilder/typepicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'

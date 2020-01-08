@@ -13,11 +13,14 @@
 
 import _ from 'lodash'
 import { get } from '../../../tools/ajax'
+import toml from 'toml-js';
 
 export default {
   created: function() {
     get('configPart/paperTrader', (error, response) => {
-      this.rawPaperTraderParams = response.part;
+      if(!this.configCurrent.paperTrader) {
+        this.rawPaperTraderParams = response.part;
+      }
     });
   },
   data: () => {
@@ -28,7 +31,18 @@ export default {
       toggle: 'closed'
     };
   },
+  props: ['configCurrent'],
   watch: {
+    configCurrent: {
+      immediate: true,
+      handler(val, oldVal) {
+        if(val && val.paperTrader) {
+          const pt = val.paperTrader;
+          const origObj = _.omit(pt, ['reportRoundtrips', 'enabled']);
+          this.rawPaperTraderParams = toml.dump(origObj);
+        }
+      }
+    },
     rawPaperTraderParams: function() { this.emitConfig() }
   },
   methods: {

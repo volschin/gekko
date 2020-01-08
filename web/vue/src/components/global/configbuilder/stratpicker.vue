@@ -35,6 +35,7 @@
 
 import _ from 'lodash'
 import { get } from '../../../tools/ajax'
+import toml from 'toml-js';
 
 export default {
   data: () => {
@@ -64,20 +65,51 @@ export default {
         _.each(this.strategies, function(s) {
           s.empty = s.params === '';
         });
+        if(!this.configCurrent.tradingAdvisor) {
+          this.rawStratParams = _.find(this.strategies, { name: this.strategy }).params;
+          this.emptyStrat = _.find(this.strategies, { name: this.strategy }).empty;
 
-        this.rawStratParams = _.find(this.strategies, { name: this.strategy }).params;
-        this.emptyStrat = _.find(this.strategies, { name: this.strategy }).empty;
-        this.emitConfig();
+          this.emitConfig();
+        }
       }
     });
   },
+  props: ['configCurrent'],
   watch: {
+    configCurrent: {
+      immediate: true,
+      handler(val, oldVal) {
+        if(val && val.tradingAdvisor) {
+          const ta = val.tradingAdvisor;
+          this.strategy = ta.method;
+          this.historySize = ta.historySize;
+          if(ta.candleSize % 1440 === 0) {
+            this.candleSizeUnit = 'days'
+            this.rawCandleSize = ta.candleSize / 1440;
+          } else if(ta.candleSize % 60 === 0) {
+            this.candleSizeUnit = 'hours';
+            this.rawCandleSize = ta.candleSize / 60;
+          } else {
+            this.candleSizeUnit = 'minutes';
+            this.rawCandleSize = ta.candleSize;
+          }
+          this.stratParams = val[ta.method];
+          this.rawStratParams = toml.dump(val[ta.method]);
+        }
+      }
+    },
     strategy: function(strat) {
+      const stratOrig = strat;
       strat = _.find(this.strategies, { name: strat });
-      this.rawStratParams = strat.params;
-      this.emptyStrat = strat.empty;
+      if(this.configCurrent.tradingAdvisor && this.configCurrent.tradingAdvisor.method === stratOrig) {
+        // avoid overriding raw strat params
+      } else if(strat) {
+        this.rawStratParams = strat.params;
 
-      this.emitConfig();
+        this.emptyStrat = strat.empty;
+
+        this.emitConfig();
+      }
     },
     candleSize: function() { this.emitConfig() },
     historySize: function() { this.emitConfig() },

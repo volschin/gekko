@@ -1,15 +1,15 @@
 <template lang='pug'>
   div
-    dataset-picker.my2(v-on:dataset='updateDataset').contain
+    dataset-picker.my2(v-on:dataset='updateDataset' :configCurrent="configCurrent").contain
     //.hr.contain
     //tradingviewChart(:height='500', config={asdf: "a"})
     .hr
-    strat-picker.my2(v-on:stratConfig='updateStrat').contain
+    strat-picker.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent").contain
     .hr
     div.my2.contain
       .grd-row
         .grd-row-col-3-6
-          paper-trader(v-on:settings='updatePaperTrader')
+          paper-trader(v-on:settings='updatePaperTrader' :configCurrent="configCurrent")
         .grd-row-col-3-6
           dependency-picker(v-on:dependenciesConfig='updateDependencies')
 </template>
@@ -23,22 +23,26 @@ import DependencyPicker from '../global/configbuilder/dependencyPicker';
 
 import _ from 'lodash'
 import { get } from '../../tools/ajax'
+import toml from 'toml-js';
 // import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
 
 export default {
+  props: ['configCurrent'],
   created: function() {
     get('configPart/performanceAnalyzer', (error, response) => {
       this.performanceAnalyzer = toml.parse(response.part);
       this.performanceAnalyzer.enabled = true;
     });
   },
-  data: () => {
+  mounted() {
+  },
+  data() {
     return {
       dataset: {},
       strat: {},
       paperTrader: {},
       performanceAnalyzer: {},
-      dependencyPicker: []
+      dependencyPicker: [],
     }
   },
   components: {
@@ -54,6 +58,7 @@ export default {
         return {};
 
       return {
+        configCurrent: this.configCurrent,
         exchange: this.dataset.exchange,
         currency: this.dataset.currency,
         asset: this.dataset.asset
@@ -97,7 +102,6 @@ export default {
 
       config.valid = this.validConfig(config);
       config.backtestResultExporter.enabled = true;
-
       return config;
     }
   },

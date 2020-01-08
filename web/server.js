@@ -87,6 +87,8 @@ const BundleManager = require('./state/bundleManager');
 cache.set('imports', new ListManager);
 cache.set('gekkos', new GekkoManager);
 cache.set('bundles', new BundleManager);
+
+// load server plugins (defined in the same baseConfig file as gekko plugins):
 try {
   if(baseConfig.dependencyManager && baseConfig.dependencyManager.enabled === true){
     DependencyManager = require('../plugins/dependencyManager/web');
@@ -156,6 +158,16 @@ router.post('/api/bundleStart', ensureAuthenticated(), require(ROUTE('bundleStar
 router.post('/api/bundleDelete', ensureAuthenticated(), require(ROUTE('bundleDelete')));
 router.post('/api/bundleRestart', ensureAuthenticated(), require(ROUTE('bundleRestart')));
 router.get('/api/bundles', ensureAuthenticated(), listWraper('bundles'));
+
+// CONFIGS:
+router.post('/api/config/new', ensureAuthenticated(), require(ROUTE('configSave')));
+router.get('/api/configs', ensureAuthenticated(), require(ROUTE('configsGet')));
+router.get('/api/configs/:id', ensureAuthenticated(), require(ROUTE('configsGet')));
+router.get('/api/configs/top/:amount', ensureAuthenticated(), require(ROUTE('configsGet')));
+router.delete('/api/configs/:id', ensureAuthenticated(), require(ROUTE('configsDelete')));
+
+// ACCOUNTS PERFORMANCE REPORTS (WIP!):
+router.get('/api/getCustomPerformanceReport', ensureAuthenticated(), require(ROUTE('getCustomPerformanceReport')));
 
 // AUTH:
 if(isUserManagerPluginEnabled) {

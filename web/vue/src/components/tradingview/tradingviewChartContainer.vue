@@ -32,7 +32,6 @@
 import Vue from 'vue'
 import './charting_library';
 import Datafeed from './api/index.js';
-import datasetpicker from '../global/configbuilder/datasetpicker'
 
 const STUDY_NAMES = {
   RSI: 'Relative Strength Index',
@@ -50,6 +49,10 @@ let border1Current, border2Current, allExecutionShapes = [];
 export default {
   name: 'TVChartContainer',
   props: {
+    configCurrent:  {
+      default: {},
+      type: [ Object ]
+    },
     symbol: {
       default: 'Poloniex:BTC/USD',
       type: String,
@@ -117,22 +120,11 @@ export default {
     }
   },
   watch: {
+    configCurrent: function(config) {
+      this.reloadChartFromConfig(config);
+    },
     config: function(config) {
-      let exchange = '';
-      if(config && config.watch && config.watch.exchange && config.watch.asset && config.watch.currency){
-        if(config.watch.exchange.toUpperCase() === 'GDAX') {
-          exchange = 'COINBASE';
-        } else {
-          exchange = config.watch.exchange.toUpperCase();
-        }
-        const symba = `${ exchange }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`; //'Poloniex:LTC/BTC'
-        let candleSize = config && config.tradingAdvisor && config.tradingAdvisor.candleSize;
-        let from = config && config.backtest && config.backtest.daterange && config.backtest.daterange.from && new Date(config.backtest.daterange.from).getTime();
-        let to = config && config.backtest && config.backtest.daterange && config.backtest.daterange.to && new Date(config.backtest.daterange.to).getTime();
-        const tomlObj = config[config && config.tradingAdvisor && config.tradingAdvisor.method];
-        const indicators = tomlObj && tomlObj.indicators || [];
-        this.reloadChart(config, symba, this.calculateInterval(candleSize, from, to), from, to, indicators);
-      }
+      this.reloadChartFromConfig(config);
     },
     backtestResult: function(config) {
       this.tvWidget.chart().removeAllShapes();
@@ -168,6 +160,25 @@ export default {
         let elem2C = elem2[0].cloneNode(true);
         elem2[0].parentElement.appendChild(elem2C);
         elem2C.classList.add('txt--backtest-fixed');
+      }
+    },
+    reloadChartFromConfig(config) {
+      let exchange = '';
+      if(config && config.watch && config.watch.exchange && config.watch.asset && config.watch.currency){
+        if(config.watch.exchange.toUpperCase() === 'GDAX') {
+          exchange = 'COINBASE';
+        } else {
+          exchange = config.watch.exchange.toUpperCase();
+        }
+        const symba = `${ exchange }:${ config.watch.asset.toUpperCase() }/${ config.watch.currency.toUpperCase() }`; //'Poloniex:LTC/BTC'
+        let candleSize = config && config.tradingAdvisor && config.tradingAdvisor.candleSize;
+        let from = config && config.backtest && config.backtest.daterange && config.backtest.daterange.from && new Date(config.backtest.daterange.from).getTime();
+        let to = config && config.backtest && config.backtest.daterange && config.backtest.daterange.to && new Date(config.backtest.daterange.to).getTime();
+        const tomlObj = config[config && config.tradingAdvisor && config.tradingAdvisor.method];
+        const indicators = tomlObj && tomlObj.indicators || [];
+        if(this.tvWidget._ready) {
+          this.reloadChart(config, symba, this.calculateInterval(candleSize, from, to), from, to, indicators);
+        }
       }
     },
     reloadChart(config, symbol, interval, dateFrom, dateTo, indicators) {
@@ -211,7 +222,6 @@ export default {
             linecolor: '#FF0000'
           },
         });
-      console.log('drawTimeRangeBorders, ', from, to);
     },
     calculateInterval(candleSize, from, to){
       // if more 1mo, then int-l 1hr
@@ -389,6 +399,11 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
+      if(this.configCurrent.watch) {
+        this.reloadChartFromConfig(this.configCurrent);
+      } else {
+        this.reloadChartFromConfig(this.config);
+      }
       this.addDefaultIndicators();
 
       if(indicators) {

@@ -260,6 +260,20 @@ GekkosPersistent.prototype.getCustomPerformanceReport = async function({ bundleU
   return ret;
 }
 
+// CONFIGS:
+GekkosPersistent.prototype.saveConfig = async function(state){ // wip
+  let newConfig = await db.addConfig(state);
+  return newConfig;
+}
+GekkosPersistent.prototype.getConfigs = async function(options){ // wip
+  let ret = await db.getConfigs(options);
+  return ret;
+}
+GekkosPersistent.prototype.deleteConfig = async function({ id, userId }){ // wip
+  let ret = await db.deleteConfig({ id, userId});
+  return ret;
+}
+
 
 module.exports = GekkosPersistent;
 

@@ -257,7 +257,39 @@ Db.prototype.getConfigById = async function(id) {
   });
   return ret;
 }
+Db.prototype.getConfigs = async function({ configId, amount, userId }) {
+  let ret = [], options = {
+    where: {
+      ownerId: userId
+    }
+  };
+  if (configId) {
+    options.where.id = configId;
+  } else if (amount) {
+    options.where['optionsJson.result.yearlyProfit'] = {
+      [Op.ne]: null
+    }
+    options.order = [[sequelize.json('optionsJson.result.yearlyProfit'), 'DESC']];
+    options.limit = amount;
+  }
+  ret = await ConfigsTable.findAll(options);
 
+  return ret;
+}
+Db.prototype.deleteConfig = async function({ id, userId }) {
+  let del = await ConfigsTable.destroy({
+    where: {
+      id: id,
+      ownerId: userId
+    }
+  });
+  let ret = await ConfigsTable.findAll({
+    where: {
+      ownerId: userId
+    }
+  });
+  return ret;
+}
 // BUNDLES:
 Db.prototype.getAllBundles = async function() {
   let where = {}

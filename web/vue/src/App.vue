@@ -108,4 +108,18 @@ input {
 .btn--primary:active {
   transform: translateY(1px);
 }
+.btn--primary.btn--empty {
+  background-color: transparent;
+  border: 1px #3498db solid;
+  color: #3498db;
+  text-shadow: 0 1px 1px rgba(36,180,126,.2);
+}
+
+/*
+  Sweet Alert2
+  https://sweetalert2.github.io/
+ */
+.swal2-title {
+  font-weight: 400 !important;
+}
 </style>

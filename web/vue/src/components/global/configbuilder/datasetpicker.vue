@@ -5,13 +5,13 @@ div
     a.w100--s.btn--primary.scan-btn(href='#', v-on:click.prevent='scan') Scan available data
   .txt--center.my2(v-if='datasetScanstate === "scanning"')
     spinner
-  .my2(v-if='datasetScanstate === "scanned"')
+  .my2(v-if='datasetScanstate === "scanned" || !!configCurrent.backtest')
 
     div(v-if='datasets.length != 0')
       table.full
         thead
           tr
-            th 
+            th
             th exchange
             th currency
             th asset
@@ -22,19 +22,19 @@ div
           tr(v-for='(set, i) in datasets')
             td.radio
               input(type='radio', name='dataset', :value='i', v-model='setIndex', v-bind:id='set.id')
-            td 
+            td
               label(v-bind:for='set.id') {{ set.exchange }}
-            td 
+            td
               label(v-bind:for='set.id') {{ set.currency }}
             td
               label(v-bind:for='set.id') {{ set.asset }}
-            td 
+            td
               label(v-bind:for='set.id') {{ fmt(set.from) }}
-            td 
+            td
               label(v-bind:for='set.id') {{ fmt(set.to) }}
             td
               label(v-bind:for='set.id') {{ humanizeDuration(set.to.diff(set.from)) }}
-      a.btn--primary(href='#', v-on:click.prevent='openRange', v-if='!rangeVisible') Adjust range
+      a.btn--primary(href='#', v-on:click.prevent='openRange', v-if='!rangeVisible && !(configCurrent.backtest && datasetScanstate !== "scanned")') Adjust range
       template(v-if='rangeVisible')
         div
           label(for='customFrom') From:
@@ -43,7 +43,7 @@ div
           label(for='customTo') To:
           input(v-model='customTo')
 
-    em(v-else) No Data found 
+    em(v-else) No Data found
       a(href='#/data/importer') Lets add some
 
 </template>
@@ -56,11 +56,13 @@ import Vue from 'vue'
 import { post } from '../../../tools/ajax'
 import spinner from '../../global/blockSpinner.vue'
 import dataset from '../../global/mixins/dataset'
+import toml from 'toml-js';
 
 export default {
   components: {
     spinner
   },
+  props: ['configCurrent'],
   data: () => {
     return {
       setIndex: -1,
@@ -106,7 +108,31 @@ export default {
     }
   },
   watch: {
-
+    configCurrent: {
+      immediate: true,
+      handler(val, oldVal) {
+        if(val && val.watch && val.backtest && val.backtest.daterange) {
+          const watch = val.watch;
+          const daterange = val.backtest.daterange;
+          this.customTo = daterange.to;
+          this.customFrom = daterange.from;
+          const id = val.watch.exchange + val.watch.asset + val.watch.currency + Math.floor(Math.random() * Math.floor(1000)); // random int < 1000
+          const obj = {
+            exchange: val.watch.exchange,
+            currency: val.watch.currency,
+            asset: val.watch.asset,
+            from: moment(daterange.from),
+            to: moment(daterange.to),
+          }
+          if(this.datasetScanstate === 'idle'){
+            obj.id = id;
+            this.scanFake(obj);
+            this.setIndex = 0;
+          } else {
+          }
+        }
+      }
+    },
     setIndex: function() {
       this.set = this.datasets[this.setIndex];
 

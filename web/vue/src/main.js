@@ -2,7 +2,20 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import VueRouter from 'vue-router'
+import VueSweetalert2 from 'vue-sweetalert2';
+// If you don't need the styles, do not connect
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 Vue.use(VueRouter);
+
+const SweetAlertGlobalOptions = {
+  confirmButtonColor: '#3498db',
+  cancelButtonColor: '#e74c3c',
+  // no animation by default
+  animation: false
+};
+Vue.use(VueSweetalert2, SweetAlertGlobalOptions);
+global.vue = Vue;
 
 import store from './store'
 
