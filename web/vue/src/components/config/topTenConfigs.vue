@@ -2,9 +2,12 @@
 div.contain
   h3 Top 10
 
-  p(v-if='!configs.length')
+  p(v-if='!isAuthenticated')
+    em Please login to see top ten strategies.
+
+  p(v-if='isAuthenticated && !configs.length')
     em No configs now.
-  ul
+  ul(v-if='isAuthenticated')
     li(v-for='config in configs')
       hr
       span {{ config.name }}
@@ -34,19 +37,21 @@ export default {
     }
   },
   mounted: async function() {
-    this.$store.dispatch({
-      type: 'FETCH_TOP_CONFIG_LIST',
-      payload: { amount: 10 }
-    }).then(configs => {
-      this.topConfigs = configs;
-    }, error => {
-      console.error(error);
-      this.$toast({
-        text: 'Could not fetch configs',
-        fullText: error,
-        icon: 'error'
+    if(this.isAuthenticated) {
+      this.$store.dispatch({
+        type: 'FETCH_TOP_CONFIG_LIST',
+        payload: { amount: 10 }
+      }).then(configs => {
+        this.topConfigs = configs;
+      }, error => {
+        console.error(error);
+        this.$toast({
+          text: 'Could not fetch configs',
+          fullText: error,
+          icon: 'error'
+        });
       });
-    });
+    }
   },
   methods: {
     getBacktestingUrl(config) {
@@ -63,7 +68,9 @@ export default {
     configs: function() {
       return this.topConfigs;
     },
-
+    isAuthenticated () {
+      return this.$store.state.auth.isAuthenticated
+    },
   },
   watch: {
   }
