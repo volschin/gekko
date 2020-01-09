@@ -46,11 +46,11 @@ Db.prototype.create = async function() {
   } catch (e) {
     consoleError('table "GekkosTable" not created: ', e);
   }
-  try {
+  /*try {
     await require('./models/configs').create(ConfigsTable);
   } catch (e) {
     consoleError('table "ConfigsTable" not created: ', e);
-  }
+  }*/
   try {
     await require('./models/bundles').create(BundlesTable)
   } catch (e) {
@@ -264,8 +264,10 @@ Db.prototype.getConfigs = async function({ configId, amount, userId }) {
     }
   };
   if (configId) {
+    delete options.where.ownerId;
     options.where.id = configId;
   } else if (amount) {
+    delete options.where.ownerId;
     options.where['optionsJson.result.yearlyProfit'] = {
       [Op.ne]: null
     }
