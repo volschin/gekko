@@ -35,6 +35,7 @@ div.contain
       a(href='#', v-on:click.prevent='deleteConfig(config)') ( delete )
       json-view(:data='{ config }' rootKey="Details")
   .hr
+  change-password
 </template>
 
 <script>
@@ -42,9 +43,11 @@ import apiConfigBuilder from './apiConfigBuilder.vue';
 import { post, get } from '../../tools/ajax';
 import { JSONView } from "vue-json-component";
 import Vue from 'vue';
+import ChangePassword from '../auth/userAccount';
 
 export default Vue.extend({
   components: {
+    ChangePassword,
     apiConfigBuilder,
     "json-view": JSONView
   },

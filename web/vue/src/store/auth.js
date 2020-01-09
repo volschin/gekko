@@ -2,6 +2,10 @@ import vueAuthInstance from '../auth-service'
 import jwt from 'jsonwebtoken';
 import config from '../../config.json';
 const userManagerEnabled = window.CONFIG.userManagerEnabled;
+import { processResponse } from '../tools/ajax';
+import superagent from 'superagent';
+import { restPath } from '../tools/api';
+import noCache from 'superagent-no-cache';
 
 export default {
   state: {
@@ -31,6 +35,10 @@ export default {
     isAdmin: function() {
       const role = this.user('role');
       return role === 'admin' || role === 'host';
+    },
+    isGuest: function() {
+      const role = this.user('role');
+      return role === 'guest';
     }
   },
   getters: {
@@ -62,10 +70,12 @@ export default {
 
     register (context, payload) {
       payload = payload || {}
-      return vueAuthInstance.register(payload.user, payload.requestOptions).then(function () {
-        context.commit('isAuthenticated', {
-          isAuthenticated: vueAuthInstance.isAuthenticated()
-        })
+      return vueAuthInstance.register(payload.user, payload.requestOptions).then(res => {
+        if(res.status === 200 && res.data.success) {
+          context.commit('isAuthenticated', {
+            isAuthenticated: true
+          });
+        }
       })
     },
 
@@ -79,12 +89,43 @@ export default {
     },
 
     authenticate (context, payload) {
+      this.$toast({
+        text: `Welcome, ${this.email}`,
+        icon: 'success',
+      });
       payload = payload || {}
       return vueAuthInstance.authenticate(payload.provider, payload.userData, payload.requestOptions).then(function () {
         context.commit('isAuthenticated', {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
       })
+    },
+    changePassword (context, payload = {}) {
+      return new Promise((resolve, reject) => {
+        // can't use ajax' post, coz prefix is not 'api'
+        superagent
+          .post('auth/changePassword')
+          .use(noCache)
+          .send({
+            newPassword: payload.newPassword
+          })
+          .withCredentials()
+          .end(processResponse((error, response)=> {
+            if(error) {
+              reject(error);
+            } else {
+              resolve(response);
+            }
+          }));
+
+        /*return post('auth/changePassword', payload.newPassword, (error, response) => {
+          if(error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });*/
+      });
     }
   }
 }

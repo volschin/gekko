@@ -18,7 +18,7 @@ import toml from 'toml-js';
 export default {
   created: function() {
     get('configPart/paperTrader', (error, response) => {
-      if(!this.configCurrent.paperTrader) {
+      if(!(this.configCurrent && this.configCurrent.paperTrader)) {
         this.rawPaperTraderParams = response.part;
       }
     });

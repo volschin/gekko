@@ -65,7 +65,7 @@ export default {
         _.each(this.strategies, function(s) {
           s.empty = s.params === '';
         });
-        if(!this.configCurrent.tradingAdvisor) {
+        if(!(this.configCurrent && this.configCurrent.tradingAdvisor)) {
           this.rawStratParams = _.find(this.strategies, { name: this.strategy }).params;
           this.emptyStrat = _.find(this.strategies, { name: this.strategy }).empty;
 
@@ -101,7 +101,7 @@ export default {
     strategy: function(strat) {
       const stratOrig = strat;
       strat = _.find(this.strategies, { name: strat });
-      if(this.configCurrent.tradingAdvisor && this.configCurrent.tradingAdvisor.method === stratOrig) {
+      if(this.configCurrent && this.configCurrent.tradingAdvisor && this.configCurrent.tradingAdvisor.method === stratOrig) {
         // avoid overriding raw strat params
       } else if(strat) {
         this.rawStratParams = strat.params;

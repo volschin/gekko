@@ -2,7 +2,7 @@ import superagent from 'superagent'
 import noCache from 'superagent-no-cache'
 import { restPath } from './api.js'
 
-const processResponse = next => (err, res) => {
+export const processResponse = next => (err, res) => {
   if(err)
     return next(err);
 

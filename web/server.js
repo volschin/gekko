@@ -141,8 +141,8 @@ router.get('/api/exchanges', ensureAuthenticated(), require(ROUTE('exchanges')))
 router.post('/api/addApiKey', ensureAuthenticated(), apiKeys.add);
 router.post('/api/removeApiKey', ensureAuthenticated(), apiKeys.remove);
 router.post('/api/scan', ensureAuthenticated(), require(ROUTE('scanDateRange')));
-router.post('/api/scansets', ensureAuthenticated('admin'), require(ROUTE('scanDatasets')));
-router.post('/api/backtest', ensureAuthenticated('admin'), require(ROUTE('backtest')));
+router.post('/api/scansets', ensureAuthenticated(), require(ROUTE('scanDatasets')));
+router.post('/api/backtest', ensureAuthenticated(), require(ROUTE('backtest')));
 router.post('/api/import', ensureAuthenticated('admin'), require(ROUTE('import')));
 router.post('/api/getCandles', ensureAuthenticated(), require(ROUTE('getCandles')));
 
@@ -175,6 +175,7 @@ if(isUserManagerPluginEnabled) {
 // router.post('/auth/google', require(ROUTE('login')));
   router.post('/auth/register', require('../plugins/userManager/routes/register'));
   router.post('/auth/logout', require('../plugins/userManager/routes/logout'));
+  router.post('/auth/changePassword', require('../plugins/userManager/routes/passwordChange'));
 // router.post('/account/user-details', ensureAuthenticated(), require(ROUTE('account').userDetails));
   app.keys = ['super-secret-key =]'];
 }

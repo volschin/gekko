@@ -23,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     role: {
       type: DataTypes.STRING,
-      defaultValue: 'user'
+      defaultValue: 'guest'
     }
   }, {
     tableName: '_slon.users',
@@ -36,9 +36,9 @@ module.exports = function(sequelize, DataTypes) {
         // with (err, null)
         bcrypt.compare(password, hash, function(err, isMatch) {
           if(err) {
-            return callback(err, null);
+            return callback && callback(err, null);
           } else {
-            callback(null, isMatch);
+            callback && callback(null, isMatch);
           }
         });
       },
@@ -63,11 +63,9 @@ module.exports = function(sequelize, DataTypes) {
       });
     });
   };
-  // This hook is called when an entry is being added to the back end.
-  // This method is used to hash the password before storing it
-  // in our database.
-  userSchema.addHook('beforeCreate', function(user, options, callback) {
+  userSchema.generatePasswordHash = function(user, options, callback) {
     var SALT_WORK_FACTOR = 10;
+
     const res = new Promise((resolve, reject) => {
       bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
         if(err) {
@@ -85,6 +83,13 @@ module.exports = function(sequelize, DataTypes) {
         });
       });
     });
+    return res;
+  }
+  // This hook is called when an entry is being added to the back end.
+  // This method is used to hash the password before storing it
+  // in our database.
+  userSchema.addHook('beforeCreate', function(user, options, callback) {
+    const res = userSchema.generatePasswordHash(user, options, callback);
     return res;
   });
 

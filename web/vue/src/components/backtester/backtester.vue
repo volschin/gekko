@@ -1,8 +1,8 @@
 <template lang='pug'>
   div
     h2.contain Backtest
-    h3(v-if='configCurrent && configCurrent.options && configCurrent.options.name') {{ configCurrent.options.name }}
-    p(v-if='configCurrent && configCurrent.options && configCurrent.options.description')
+    h3.contain(v-if='configCurrent && configCurrent.options && configCurrent.options.name') {{ configCurrent.options.name }}
+    p.contain(v-if='configCurrent && configCurrent.options && configCurrent.options.description')
       pre {{ configCurrent.options.description }}
     .hr
     config-builder(v-on:config='check' :configCurrent="configCurrent")
