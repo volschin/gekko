@@ -160,7 +160,7 @@ router.post('/api/bundleRestart', ensureAuthenticated(), require(ROUTE('bundleRe
 router.get('/api/bundles', ensureAuthenticated(), listWraper('bundles'));
 
 // CONFIGS:
-router.post('/api/config/new', ensureAuthenticated(), require(ROUTE('configSave')));
+router.post('/api/configs/new', ensureAuthenticated(), require(ROUTE('configSave')));
 router.get('/api/configs', ensureAuthenticated(), require(ROUTE('configsGet')));
 router.get('/api/configs/:id', ensureAuthenticated(), require(ROUTE('configsGet')));
 router.get('/api/configs/top/:amount', ensureAuthenticated(), require(ROUTE('configsGet')));
