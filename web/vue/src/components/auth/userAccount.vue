@@ -28,8 +28,12 @@
           showCancelButton: true,
           preConfirm: () => {
             const password = document.getElementById('swal-input1').value;
-            if(password === '' || password.length < 8) {
+            if(password === '') {
               document.getElementById('swal-error1').innerText = 'Password cannot be empty!';
+              return false;
+            }
+            if(password.length < 8) {
+              document.getElementById('swal-error1').innerText = 'Password should be 8 symbols or longer!';
               return false;
             }
             return [
