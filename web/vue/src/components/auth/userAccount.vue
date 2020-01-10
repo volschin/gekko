@@ -1,6 +1,7 @@
 <template lang='pug'>
  div.user-account--component
   h3.title User Account
+  p {{ userEmail }}
   div.row
     a.btn--primary(href='#', v-if='isAuthenticated', v-on:click.prevent='changePassword') Set New Password
 </template>
@@ -56,6 +57,9 @@
       },
     },
     computed: {
+      userEmail () {
+        return this.$store.state.auth.user && this.$store.state.auth.user() && this.$store.state.auth.user().email;
+      },
       isAuthenticated () {
         return this.$store.state.auth.isAuthenticated
       },

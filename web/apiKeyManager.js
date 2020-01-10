@@ -63,7 +63,7 @@ const apiKeyManagerModule = {
     }
   },
   remove: (uniqueName, userEmail) => {
-    if(!isUserManagerPluginEnabled) {
+    if(isUserManagerPluginEnabled) {
       if (!apiKeys[uniqueName] || !userEmail)
         return;
     } else {
