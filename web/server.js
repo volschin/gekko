@@ -167,7 +167,7 @@ router.get('/api/configs/top/:amount', ensureAuthenticated(), require(ROUTE('con
 router.delete('/api/configs/:id', ensureAuthenticated(), require(ROUTE('configsDelete')));
 
 // ACCOUNTS PERFORMANCE REPORTS (WIP!):
-router.get('/api/getCustomPerformanceReport', ensureAuthenticated(), require(ROUTE('getCustomPerformanceReport')));
+//router.get('/api/getCustomPerformanceReport', ensureAuthenticated(), require(ROUTE('getCustomPerformanceReport')));
 
 // AUTH:
 if(isUserManagerPluginEnabled) {
