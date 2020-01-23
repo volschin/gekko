@@ -41,11 +41,11 @@ const Db = function(settings = {}){
 
 Db.prototype.create = async function() {
   // create all tables:
-  try {
+  /*try {
     await require('./models/gekko').create(GekkosTable)
   } catch (e) {
     consoleError('table "GekkosTable" not created: ', e);
-  }
+  }*/
   /*try {
     await require('./models/configs').create(ConfigsTable);
   } catch (e) {

@@ -23,6 +23,11 @@
         label(for='historySize') Warmup period (in {{ rawCandleSize }} {{ singularCandleSizeUnit }} candles):
         input(v-model='historySize')
         em.label-like (will use {{ humanizeDuration(candleSize * historySize * 1000 * 60) }} of data as history)
+      div
+        a(v-if='!isBacktest' v-on:click='setExactBlockVisible = !setExactBlockVisible') Set exact start time (UTC)
+        span(v-if='setExactBlockVisible')
+          input(v-on:change='startAtChange' v-model='getStartAtTimeFormatted')
+          em.label-like (Change this ONLY if you FIRST started watcher and THEN downloaded candles from the start time, till present)
     .grd-row-col-3-6.px1
       div
         h3 Parameters
@@ -36,6 +41,8 @@
 import _ from 'lodash'
 import { get } from '../../../tools/ajax'
 import toml from 'toml-js';
+const dateFormat = 'YYYY-MM-DD HH:mm';
+// const dateFormat = 'DD-MM-YYYY HH:mm';
 
 export default {
   data: () => {
@@ -52,7 +59,9 @@ export default {
       rawStratParamsError: false,
 
       emptyStrat: false,
-      stratParams: {}
+      stratParams: {},
+      startAtExact: null,
+      setExactBlockVisible: false
     };
   },
   created: function () {
@@ -74,7 +83,7 @@ export default {
       }
     });
   },
-  props: ['configCurrent'],
+  props: ['configCurrent', 'isBacktest'],
   watch: {
     configCurrent: {
       immediate: true,
@@ -83,6 +92,7 @@ export default {
           const ta = val.tradingAdvisor;
           this.strategy = ta.method;
           this.historySize = ta.historySize;
+          this.startAtExact = ta.startAtExact;
           if(ta.candleSize % 1440 === 0) {
             this.candleSizeUnit = 'days'
             this.rawCandleSize = ta.candleSize / 1440;
@@ -113,6 +123,7 @@ export default {
     },
     candleSize: function() { this.emitConfig() },
     historySize: function() { this.emitConfig() },
+    startAtExact: function() { this.emitConfig() },
     rawStratParams: function() { this.emitConfig() }
   },
   computed: {
@@ -134,7 +145,8 @@ export default {
           enabled: true,
           method: this.strategy,
           candleSize: +this.candleSize,
-          historySize: +this.historySize
+          historySize: +this.historySize,
+          startAtExact: this.startAtExact
         }
       }
 
@@ -144,6 +156,15 @@ export default {
         config[this.strategy] = this.stratParams;
 
       return config;
+    },
+    getStartAtTimeFormatted: function(){
+      return this.getStartAtTime.format(dateFormat);
+    },
+    getStartAtTime: function() {
+      const requiredHistoricalData = this.candleSize * this.historySize;
+      let startAt = this.startAtExact || moment().utc().startOf('minute')
+        .subtract(requiredHistoricalData, 'minutes')
+      return startAt;
     }
   },
   methods: {
@@ -160,6 +181,42 @@ export default {
         this.rawStratParamsError = e;
         this.stratParams = {};
       }
+    },
+    startAtChange: async function(e) {
+      const histValue = e.currentTarget._value;
+      const newValue = moment.utc(e.currentTarget.value, dateFormat);
+      let dataSpan = moment().diff(newValue);
+
+      const res = await this.$swal({
+        title: `Are you sure about warmup since ${ newValue.format(dateFormat) }?`,
+        html: `About to set warmup for <b>${ window.humanizeDuration(dataSpan) }</b>.
+            <ul>
+                <li>Change time <b>only if you first started watcher and then downloaded candles</b> for the set time, till present</li>
+                <li>Better to <b>set round values</b>, that are dividable to candle size to have standard market candles (00:00 for 1 day, 13:00 for 1 hr, 21:05 for 5 minutes etc.)</li>
+                <li><b>No more than 1000-3000 candles</b> for warmup period</li>
+            </ul>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ok',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      });
+      if(res.value === true && this.isValidExactStartTime(newValue)) {
+        this.startAtExact = newValue;
+      } else {
+        e.target.value = histValue;
+      }
+    },
+    isValidExactStartTime: function(time) {
+
+      let ret = false;
+      if(time && time.isValid()) {
+        const isHistoricalBefore = this.getStartAtTime.isBefore(time);
+        if(!isHistoricalBefore) {
+          ret = true;
+        }
+      }
+      return ret;
     }
   }
 }

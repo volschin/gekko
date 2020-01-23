@@ -309,7 +309,8 @@ GekkoManager.prototype.restart = function({ id }) {
 
   broadcast({
     type: 'gekko_restarted',
-    id
+    id,
+    gekko
   });
 
   // this.archive(id);

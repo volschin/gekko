@@ -24,11 +24,12 @@ var Actor = function(done) {
 
   var mode = util.gekkoMode();
 
+  const isExactStartAt = !!config.tradingAdvisor.startAtExact;
   // the stitcher will try to pump in historical data
   // so that the strat can use this data as a "warmup period"
   //
   // the realtime "leech" market won't use the stitcher
-  if(mode === 'realtime' && !isLeecher) {
+  if(mode === 'realtime' && !isLeecher || isExactStartAt) {
     var Stitcher = require(dirs.tools + 'dataStitcher');
     var stitcher = new Stitcher(this.batcher);
     stitcher.prepareHistoricalData(done);

@@ -2,16 +2,16 @@
   div.contain.my2
     h3 Start a new gekko
     .grd-row
-      .grd-row-col-3-6.px1
+      .grd-row-col-3-6.px1(v-if='!isWatcher')
         label(for='gekkoName').wrapper Name:
         input(v-model='gekkoName')
-      .grd-row-col-3-6.px1
+      .grd-row-col-3-6.px1(v-if='!isWatcher')
         label(for='gekkoDescription').wrapper Description:
         textarea(v-model='gekkoDescription' rows="3").control--toml-input
-    .grd-row(v-if='isAdmin')
+    .grd-row(v-if='isAdmin && !isWatcher')
       label(for='sendNotifications').wrapper Send Notifications:
       input(v-model='sendNotifications' type="checkbox")
-    gekko-config-builder(v-on:config='updateConfig')
+    gekko-config-builder(v-on:config='updateConfig' :configCurrent="configCurrent")
     .hr
     .txt--center(v-if='config.valid')
       a.w100--s.my1.btn--primary(href='#', v-on:click.prevent='start', v-if="!pendingStratrunner") Start
@@ -38,9 +38,13 @@ export default {
       gekkoName: '',
       gekkoDescription: '',
       sendNotifications: false,
+      savedConfigId: null
     }
   },
   computed: {
+    isWatcher: function() {
+      return this.config.type === 'market watcher';
+    },
     isAdmin: function() {
       const isAdmin = this.$store.state.auth.isAdmin();
       return !!isAdmin;
@@ -68,9 +72,11 @@ export default {
       if(!this.existingMarketWatcher)
         return;
 
-      if(!this.requiredHistoricalData)
+      if(!this.requiredHistoricalData) {
         startAt = moment().utc().startOf('minute').format();
-      else {
+      } else if(this.config.tradingAdvisor.startAtExact) {
+        startAt = this.config.tradingAdvisor.startAtExact.utc().format();
+      } else {
         // TODO: figure out whether we can stitch data
         // without looking at the existing watcher
         const optimal = moment().utc().startOf('minute')
@@ -130,13 +136,14 @@ export default {
     },
     availableApiKeys: function() {
       return this.$store.state.apiKeys;
-    }
+    },
+    configCurrent: function() {
+      return this.$store.state.configCurrent || {};
+    },
   },
   watch: {
     // start the stratrunner
     existingMarketWatcher: function(val, prev) {
-      let a = this.isPendingStratrunner;
-      console.log(a);
       if(!this.pendingStratrunner)
         return;
 
@@ -145,12 +152,34 @@ export default {
       if(gekko.events.latest.candle) {
         this.pendingStratrunner = false;
 
-        this.startGekko((err, resp) => {
+        this.o((err, resp) => {
           this.$router.push({
             path: `/live-gekkos/${resp.id}`
           });
         });
       }
+    }
+  },
+  mounted: async function() {
+    if(this.$route.query.configId) {
+      this.savedConfigId = this.$route.query.configId;
+      this.$store.dispatch({
+        type: 'FETCH_CONFIG_CURRENT',
+        payload: { configId: this.savedConfigId }
+      }).then(response => {
+        if(this.configCurrent && this.configCurrent.options) {
+          this.gekkoName = this.configCurrent.options.name;
+          this.gekkoDescription = this.configCurrent.options.description;
+        }
+        // TODO: stop the ajax spinner, loading is done at this point.
+      }, error => {
+        this.$toast({
+          text: 'Config NOT fetched',
+          fullText: error,
+          icon: 'error'
+        });
+        console.error(error);
+      });
     }
   },
   methods: {
@@ -201,7 +230,7 @@ export default {
           // the specified market is already being watched,
           // just start a gekko!
           this.startGekko(this.routeToGekko);
-          
+
         } else {
           // the specified market is not yet being watched,
           // we need to create a watcher

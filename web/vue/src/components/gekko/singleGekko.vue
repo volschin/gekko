@@ -27,13 +27,13 @@
             h3 Market
             .grd-row
               .grd-row-col-3-6 Exchange
-              .grd-row-col-3-6 {{ config.watch.exchange }}
+              .grd-row-col-3-6 {{ config.watch && config.watch.exchange }}
             .grd-row
               .grd-row-col-3-6 Currency
-              .grd-row-col-3-6 {{ config.watch.currency }}
+              .grd-row-col-3-6 {{ config.watch && config.watch.currency }}
             .grd-row
               .grd-row-col-3-6 Asset
-              .grd-row-col-3-6 {{ config.watch.asset }}
+              .grd-row-col-3-6 {{ config.watch && config.watch.asset }}
             .grd-row
               .grd-row-col-3-6 Type
               .grd-row-col-3-6 {{ type }}
@@ -134,6 +134,7 @@ import chart from '../backtester/result/chartWrapper.vue'
 import roundtrips from '../backtester/result/roundtripTable.vue'
 import paperTradeSummary from '../global/paperTradeSummary.vue'
 import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
+import toml from 'toml-js';
 
 // global moment
 
@@ -271,8 +272,7 @@ export default {
 
       if(_.isEmpty(stratParams))
         return 'No parameters'
-
-      return JSON.stringify(stratParams, null, 4);
+      return toml.dump(stratParams);
     },
     isLoading: function() {
       if(!this.data)

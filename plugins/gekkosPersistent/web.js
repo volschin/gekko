@@ -77,10 +77,10 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
-  wss.on('gekko_restarted', ({ id }) => {
+  wss.on('gekko_restarted', ({ id, gekko }) => {
     try {
       if (id) {
-        db.restartGekko(id);
+        db.restartGekko(id, gekko);
       }
     } catch (handleErr){
       consoleError(handleErr);

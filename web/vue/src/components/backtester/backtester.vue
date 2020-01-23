@@ -15,7 +15,7 @@
       .txt--center
         a.button--save.w100--s.my1.btn--primary.btn--empty(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='saveConfig') Save
         a.button--backtest.w100--s.my1.btn--primary(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='run') Backtest
-        a.button--backtest.w100--s.my1.btn--primary(href='#', v-if='backtestState !== "fetching" && savedConfigId', v-on:click.prevent='run') Start Gekko
+        router-link.button--backtest.w100--s.my1.btn--primary(:to='`live-gekkos/new?configId=${ savedConfigId }`', v-if='backtestState !== "fetching" && savedConfigId', v-on:click.prevent='run') Start Gekko
         div(v-if='backtestState === "fetching"').scan-btn
           p Running backtest..
           spinner

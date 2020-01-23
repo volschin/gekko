@@ -4,16 +4,16 @@
     .grd-row-col-3-6.mx1
       h3 Market
       market-picker(v-on:market='updateMarketConfig', :only-tradable='isTradebot')
-      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig', v-if='type === "tradebot"')
+      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig', v-if='isTradebot')
     .grd-row-col-3-6.mx1
       type-picker(v-on:type='updateType')
   template(v-if='type !== "market watcher"')
     .hr
-    strat-picker.contain.my2(v-on:stratConfig='updateStrat')
+    strat-picker.contain.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent")
     div.my2.contain
       .grd-row(v-if='type === "paper trader"')
         .grd-row-col-3-6
-          paper-trader(v-on:settings='updatePaperTrader')
+          paper-trader(v-on:settings='updatePaperTrader' :configCurrent="configCurrent")
         .grd-row-col-3-6
           dependency-picker(v-on:dependenciesConfig='updateDependencies')
 </template>
@@ -32,6 +32,7 @@ import _ from 'lodash'
 
 export default {
 
+  props: ['configCurrent'],
   created: function() {
     get('configPart/candleWriter', (error, response) => {
       this.candleWriter = toml.parse(response.part);

@@ -4,7 +4,7 @@
     //.hr.contain
     //tradingviewChart(:height='500', config={asdf: "a"})
     .hr
-    strat-picker.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent").contain
+    strat-picker.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent" :isBacktest='true').contain
     .hr
     div.my2.contain
       .grd-row

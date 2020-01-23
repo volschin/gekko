@@ -75,9 +75,11 @@ export default {
       if(!this.existingMarketWatcher)
         return;
 
-      if(!this.requiredHistoricalData)
+      if(!this.requiredHistoricalData) {
         startAt = moment().utc().startOf('minute').format();
-      else {
+      } else if(this.config.tradingAdvisor.startAtExact) {
+        startAt = this.config.tradingAdvisor.startAtExact.utc().format();
+      } else {
         // TODO: figure out whether we can stitch data
         // without looking at the existing watcher
         const optimal = moment().utc().startOf('minute')
@@ -261,7 +263,7 @@ export default {
           // the specified market is already being watched,
           // just start a gekko!
           this.startGekko(this.routeToGekko);
-          
+
         } else {
           // the specified market is not yet being watched,
           // we need to create a watcher

@@ -30,7 +30,7 @@ strat.init = function() {
   consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
-  this.debug = false;
+  this.debug = true;
 
   // performance
   config.backtest.batchSize = 1000; // increase performance
@@ -134,7 +134,7 @@ strat.init = function() {
     if(this.debug) {
       consoleLog(`strat check:: ${ ''
         } candle.close: ${ candle.close }, candle.volume: ${ candle.volume
-        } longCandle.start: ${ JSON.stringify(longCandle.start) }, longCandle.close: ${ longCandle.close }, longCandle.volume: ${longCandle.volume
+        } longCandle.start: ${ JSON.stringify(longCandle && longCandle.start) }, longCandle.close: ${ longCandle && longCandle.close }, longCandle.volume: ${longCandle && longCandle.volume
         } aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp
         // }, ma.short: ${ shortMA60.result }, ma.middle: ${ middleMA60.result }, ma.long: ${ longMA60.result
         // }, rsiVal: ${ rsiVal }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle
