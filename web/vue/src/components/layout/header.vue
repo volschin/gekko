@@ -8,7 +8,7 @@
       .menu.contain
         router-link(to='/home').py1 Home
         router-link(v-if='isAuthenticated' to='/live-gekkos').py1 Live Gekkos
-        router-link(v-if='isAuthorized("admin")' to='/bundles').py1 Bundles
+        router-link(v-if='isAuthenticated' to='/bundles').py1 Bundles
         router-link(v-if='isAuthenticated' to='/backtest').py1 Backtest
         router-link(v-if='isAuthorized("admin")' to='/data').py1 Local data
         router-link(v-if='isAuthenticated' to='/config').py1 Config
