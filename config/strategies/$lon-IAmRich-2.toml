@@ -1,5 +1,6 @@
 takeProfit = 1.01 # 1%
 stopLoss = 0.99 # 1%
+USE_MARKET_LOST_FOR_TREND = true
 
 [aaat]
 USE_HEIKEN = false

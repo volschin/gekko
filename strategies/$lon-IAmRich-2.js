@@ -30,7 +30,7 @@ strat.init = function() {
   consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
-  this.debug = true;
+  this.debug = false;
 
   // performance
   config.backtest.batchSize = 1000; // increase performance
@@ -62,7 +62,7 @@ strat.init = function() {
     debug: false,
     useHeiken: this.settings.aaat.USE_HEIKEN
   });
-
+  const USE_MARKET_LOST_FOR_TREND = this.settings.USE_MARKET_LOST_FOR_TREND;
   this.updateAaat = function(candle) {
     if(this.debug) {
       consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
@@ -145,6 +145,7 @@ strat.init = function() {
     if(!advised && aaatTrendUp && (candle.low < aaatStop) && !isMarketLostForThisTrend) {
       // this.limit = aaatStop;
       hadTrade = true;
+
       this.buy(`цена пересекла зеленую: aaaStop: ${ JSON.stringify( aaatStop )}, longCandle: ${ JSON.stringify( longCandle )}`, aaatStop);
     }
     if (advised) {
@@ -155,13 +156,17 @@ strat.init = function() {
         // stop loss, urgent sell!
         // this.sell('exiting: long candle close below aaat!');
         totalTradesLongCandleBelowAaat++;
-        isMarketLostForThisTrend = true;
+        if(USE_MARKET_LOST_FOR_TREND) {
+          isMarketLostForThisTrend = true;
+        }
       } else if (candle.close <= buyPrice * this.settings.stopLoss) {
         // if (candle.close < aaatStop) {
         // stop loss, urgent sell!
         // this.sell(`stop loss: below ${ this.settings.stopLoss }%`);
         totalTradesAaatStopLoss++;
-        isMarketLostForThisTrend = true;
+        if(USE_MARKET_LOST_FOR_TREND) {
+          isMarketLostForThisTrend = true;
+        }
       }
     }
     if(aaatTrendUp) {
