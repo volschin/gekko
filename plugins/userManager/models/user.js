@@ -92,6 +92,40 @@ module.exports = function(sequelize, DataTypes) {
     const res = userSchema.generatePasswordHash(user, options, callback);
     return res;
   });
+  if(false) {
+    createAndSeed(userSchema);
+  }
 
   return userSchema;
+}
+function createAndSeed(model){
+  const users = [ /*{
+    username: 'xxx',
+    email: 'xxx',
+    password: 'xxx',
+    role: 'admin'
+  }*/ ];
+
+  return new Promise(async (resolve, reject) => {
+    model.drop({
+      cascade: true
+    }).then(() => {
+      model.sync().then(async () => {
+        const result = await Promise.all(_.each(users, u=> model.create(u))).catch(err => {
+          console.error('Promise.all: ');
+          console.error(err);
+          reject(err)
+        });
+        resolve(result);
+      }).catch(err => {
+        console.error('model.sync: ');
+        console.error(err);
+        reject(err);
+      });
+    }).catch(err => {
+      console.error('model.drop: ');
+      console.error(err);
+      reject(err);
+    });
+  });
 }
