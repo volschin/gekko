@@ -63,6 +63,8 @@ strat.init = function() {
     useHeiken: this.settings.aaat.USE_HEIKEN
   });
   const USE_MARKET_LOST_FOR_TREND = this.settings.USE_MARKET_LOST_FOR_TREND;
+  const EXIT_ON_AAAT_CHANGE = this.settings.EXIT_ON_AAAT_CHANGE;
+
   this.updateAaat = function(candle) {
     if(this.debug) {
       consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
@@ -149,6 +151,9 @@ strat.init = function() {
       this.buy(`цена пересекла зеленую: aaaStop: ${ JSON.stringify( aaatStop )}, longCandle: ${ JSON.stringify( longCandle )}`, aaatStop);
     }
     if (advised) {
+      if(EXIT_ON_AAAT_CHANGE && aaatTrendUpPrev === true && aaatTrendUp === false) {
+        this.sell(`SELL!!: EXIT - зеленая сменилась на красную!`);
+      }
       if (candle.close >= buyPrice * this.settings.takeProfit) {
         this.sell(`SELL!!: TAKE PROFIT, buy: ${buyPrice}, sell: ${candle.close}`);
       } else if(longCandle.close < aaatStop) {

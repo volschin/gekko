@@ -106,7 +106,6 @@ strat.init = function() {
   let aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal;
 
   this.check = function(candle) {
-    aaatTrendUp = true;
     let candlePrev = candlesArr[1];
     if(this.debug) {
       // consoleLog(`strat check:: price: ${ price }, aaat: ${ JSON.stringify(aaat) }`);
