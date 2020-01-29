@@ -2,13 +2,15 @@ trailingStop = 300 #just not use it
 
 UNDERVALUE = 0.8
 
-TAKE_PROFIT = 1.2
+TAKE_PROFIT = 20 #just not use it
 
 THRESHOLD = 2.4
 
-TIMEOUT_MINUTES = 1051200 #2 years
+TIMEOUT_MINUTES = 10512000 #20 years - just not use it
 
-#- использовать с 1 днем!
+isAccumulative = true # allows multiple buys/sells (makes this INVESTMENT strategy: you can keep adding $$ to your exchange accnt and buys will keep going
+
+#- использовать с Candle Size =1 day, Warmup period = 200, round day start (00:00)
 #- в рельной торговли это АККУМУЛЯТИВНАЯ стратегия (DCA)! (просто подкупаем/продаем по сигналам небольшими порциями, сигналы могут приходить каждый день в течение )
 #- безубыточная!
 # BT этой страты показывает,что просто покупка/продажа дает ~80%/год. См. стратегию MM-DCA - для аккумуляции

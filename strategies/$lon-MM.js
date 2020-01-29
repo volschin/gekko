@@ -36,13 +36,11 @@ strat.init = function() {
     threshold: THRESHOLD,
     undervalue: UNDERVALUE
   });
-
+  let hadDeal = false;
 
   // What happens on every new candle?
   this.update = function(candle = {}) {
-    this.indicators.mm.update(candle);
-
-    //consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
+    // consoleLog(`strat update:: mmResult: ${ this.indicators.mm.result }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
 
     if(!startPrice) startPrice = candle.close;
     currentPrice = candle.close;
@@ -63,8 +61,7 @@ strat.init = function() {
     let reason;
     if( mmResult < UNDERVALUE ) {
       tradesCount ++;
-      // console.log(`ALL INFO: ${ time }, mmResult: ${ mmResult }, mmAdvice: ${ mmAdvice }`);
-      if(!advised) {
+      if(this.settings.isAccumulative ? true: !advised) {
         this.buy('mm less than 0.99');
       }
     } else {
@@ -72,7 +69,14 @@ strat.init = function() {
       tradesCount = 0;
     }
     reason = '';
-    if (!advised) return;
+    if(mmResult < UNDERVALUE) {
+      consoleLog(`mmResult < ${ UNDERVALUE } ( ${ mmResult })`);
+    }
+    if(mmResult > THRESHOLD) {
+      consoleLog(`mmResult > ${ THRESHOLD } ( ${ mmResult })`);
+    }
+    if (this.settings.isAccumulative ? !hadDeal: !advised) return;
+    // if (!advised) return;
     if(this.candle.close > buyPrice * TAKE_PROFIT) {
       reason = 'take profit';
       this.sell(reason);
@@ -115,6 +119,9 @@ strat.init = function() {
     buyTs = this.candle.start;
     buyPrice = currentPrice;
     advised = true;
+    if(!hadDeal) {
+      hadDeal = true; // only set once: strange startAt.unix() bug
+    }
   }
   this.sell = function(reason) {
     this.notify({

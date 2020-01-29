@@ -6,6 +6,8 @@ const THRESHOLD_DEFAULT = 2.4;
 const UNDERVALUE_DEFAULT = 1.0;
 const SMA = require('./SMA.js');
 
+let length, threshold, undervalue;
+
 var Indicator = function(options = {}){
   this.input = 'candle';
 
@@ -14,6 +16,9 @@ var Indicator = function(options = {}){
     threshold: options.threshold || THRESHOLD_DEFAULT, // psma_length
     undervalue: options.undervalue || UNDERVALUE_DEFAULT, // undervalue
   }
+  threshold = this.config.threshold;
+  undervalue = this.config.undervalue;
+  length = this.config.length;
 
   this.candleCur = {
     high: null,
@@ -22,17 +27,15 @@ var Indicator = function(options = {}){
     close: null,
   }
 
-  this.sma = new SMA(this.config.length);
-  // this.first = true;
+  this.sma = new SMA(length);
 }
 
 Indicator.prototype.update = function(candle) {
-  const threshold = this.config.threshold;
-  const undervalue = this.config.undervalue;
-
   this.sma.update(candle.close);
 
-  let multiple = candle.close / this.sma.result;
+  const maResult = this.sma.result;
+
+  let multiple = candle.close / maResult;
 
   this.result = multiple;
   this.advice = multiple > threshold ? 'short': multiple < undervalue ? 'long' : null;
