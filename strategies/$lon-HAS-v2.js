@@ -10,7 +10,7 @@ const config = require ('../core/util').getConfig();
 const DependenciesManager = require('../plugins/dependencyManager/web');
 const TradingView = require('./tools/tradingView');
 const CandleBatcher = require('../core/candleBatcher');
-const HeikenAshi = require('./indicators/Heiken-Ashi');
+const HeikenAshi = require('./indicators/$lon-Heiken-Ashi');
 const MACD = require('./indicators/MACD');
 const EMA = require('./indicators/EMA');
 
