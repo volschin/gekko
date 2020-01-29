@@ -62,8 +62,8 @@ export default {
     run: function() {
       let daysApart = this.daysApart(this.config.importer.daterange);
 
-      if(daysApart < 1)
-        return alert('You can only import at least one day of data..')
+      /*if(daysApart < 1)
+        return alert('You can only import at least one day of data..')*/
 
       let exchange = this.$store.state.exchanges[this.config.watch.exchange];
       if ("exchangeMaxHistoryAge" in exchange) {
