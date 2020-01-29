@@ -22,15 +22,16 @@ Store.prototype.writeCandles = function() {
   //log.debug('Writing candles to DB!');
   _.each(this.cache, candle => {
     var stmt =  `
-    BEGIN; 
-    LOCK TABLE ${postgresUtil.table('candles')} IN SHARE ROW EXCLUSIVE MODE; 
-    INSERT INTO ${postgresUtil.table('candles')} 
-    (start, open, high,low, close, vwp, volume, trades) 
-    VALUES 
-    (${candle.start.unix()}, ${candle.open}, ${candle.high}, ${candle.low}, ${candle.close}, ${candle.vwp}, ${candle.volume}, ${candle.trades}) 
-    ON CONFLICT ON CONSTRAINT ${postgresUtil.startconstraint('candles')} 
-    DO NOTHING; 
-    COMMIT; 
+    BEGIN;
+    LOCK TABLE ${postgresUtil.table('candles')} IN SHARE ROW EXCLUSIVE MODE;
+    INSERT INTO ${postgresUtil.table('candles')}
+    (start, open, high,low, close, vwp, volume, trades)
+    VALUES
+    (${candle.start.unix()}, ${candle.open}, ${candle.high}, ${candle.low}, ${candle.close}, ${candle.vwp}, ${candle.volume}, ${candle.trades})
+    ON CONFLICT ON CONSTRAINT ${postgresUtil.startconstraint('candles')}
+    --DO NOTHING (comment original, coz we want to overwrite corrupt candles if any!)
+    DO UPDATE SET open=${candle.open}, high=${candle.high}, low=${candle.low}, close=${candle.close}, vwp=${candle.vwp}, volume=${candle.volume}, trades=${candle.trades};
+    COMMIT;
     `;
 
     this.db.connect((err,client,done) => {
