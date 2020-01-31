@@ -81,8 +81,10 @@ strat.init = function() {
         reason: reason,
       });
       consoleLog(reason);
-      this.limit = FIXED_SELL_PRICE;
-      this.advice('short');
+      this.advice({
+        direction: 'short',
+        limit: FIXED_SELL_PRICE
+      });
       advised = false;
       buyPrice = 0;
     }
@@ -99,8 +101,10 @@ strat.init = function() {
         reason: reason,
       });
       consoleLog(reason);
-      this.limit = FIXED_BUY_PRICE;
-      this.advice('long');
+      this.advice({
+        direction: 'long',
+        limit: FIXED_BUY_PRICE
+      });
       buyTs = this.candle.start;
       buyPrice = currentPrice;
       tradeInitiated = true;
