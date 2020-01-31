@@ -133,7 +133,7 @@ PaperTrader.prototype.updatePosition = function(what) {
     this.trades++;
   }
 
-  const effectivePrice = (this.price + (what === 'long'?  this.meta.config.spread : 0)) * this.fee;
+  const effectivePrice = (this.price + (what.recommendation === 'long'?  this.meta.config.spread : 0)) * this.fee;
 
   return { cost, amount, effectivePrice };
 }
@@ -274,7 +274,7 @@ PaperTrader.prototype.onStopTrigger = function() {
     date
   });
 
-  const { cost, amount, effectivePrice } = this.updatePosition('short');
+  const { cost, amount, effectivePrice } = this.updatePosition({ recommendation: 'short' });
 
   this.relayPortfolioChange();
   this.relayPortfolioValueChange();
