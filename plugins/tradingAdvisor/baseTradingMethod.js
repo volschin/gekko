@@ -289,7 +289,7 @@ Base.prototype.advice = function(newDirection) {
     return;
   }
 
-  let trigger;
+  let trigger, limit;
   if(_.isObject(newDirection)) {
     if(!_.isString(newDirection.direction)) {
       log.error('Strategy emitted unparsable advice:', newDirection);
@@ -317,6 +317,9 @@ Base.prototype.advice = function(newDirection) {
         }
       }
     }
+    if(newDirection.limit) {
+      limit = newDirection.limit;
+    }
 
     newDirection = newDirection.direction;
   }
@@ -338,8 +341,8 @@ Base.prototype.advice = function(newDirection) {
     id: 'advice-' + this.propogatedAdvices,
     recommendation: newDirection,
   };
-  if(this.limit) {
-    advice.limit = this.limit;
+  if(limit) {
+    advice.limit = limit;
   }
   if(trigger) {
     advice.trigger = trigger;
