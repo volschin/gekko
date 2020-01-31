@@ -1,0 +1,16 @@
+
+enterFast = 20
+exitFast = 10
+enterSlow = 55
+exitSlow = 20
+
+useAtrStop = true
+useTrailingAtrStop = true
+atrPeriod = 39
+atrStop = 20 # было 2 в оригинале
+
+hiekenAshi = false
+
+#trailingStopLoss = 5 --> not working yet
+
+# Использовать с 1 днем, BTC/USDT => 260% за 2.5 года
