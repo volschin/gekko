@@ -34,19 +34,27 @@ const m2 = 1.75; //"ATR Multiplier - ADX Falling"
 const adxLen = 14;
 const adxThresh = 25; //"ADX Threshold"
 const aboveThresh = true; //true, title = "ADX Above Threshold uses ATR Falling Multiplier Even if Rising?")
-let useHeiken = false; //(false, title = "Use Heiken-Ashi Bars (Source will be ohlc4)")
 // --- end of settings
 const block = 0.000010; // BIG QUESTION!! taken from TV
-let isDebug = false;
-let previousCandle = { //Initialise previousCandle with 0
-  "open": null,
-  "close": null,
-  "high": null,
-  "low": null
-};
-let res = 0;
+
 
 const Indicator = function(settings) {
+  let counter = 0, high, low, close, open, highPrev, lowPrev, closePrev, hR, lR, dmPos, dmNeg, tr, sTR, sTRPrev, sDMPos, sDMPosPrev, sDMNeg, sDMNegPrev,
+    DIP, DIN, DX, DXArr, adx, adxPrev,
+    xOpen, xOpenPrev, xClose, xClosePrev, xHigh, xLow, v1, v2, v3, trueRange,     //Heineken stuff
+    atr, m, mPrev, mUp, mDn, src, src_, src_Prev, c, cPrev, t, up, dn, TUp, TUpPrev, TDown, TDownPrev, trend, trendPrev, stop, trendChange;
+
+  let useHeiken = false; //(false, title = "Use Heiken-Ashi Bars (Source will be ohlc4)")
+  let isDebug = false;
+  let previousCandle = { //Initialise previousCandle with 0
+    "open": null,
+    "close": null,
+    "high": null,
+    "low": null
+  };
+  let res = 0;
+
+
   this.settings = settings || {}; // not used now
   this.input = 'candle';
 
@@ -61,128 +69,124 @@ const Indicator = function(settings) {
     trend, stop, trendChange,
     //adx,atr, m, src_, TUp, TDown // debug
   }
-}
-Indicator.prototype.update = function(candle) {
-  counter++;
-  if(counter % 60 === 0){
-    // plus 1 hr:
 
+
+  this.update = function(candle) {
+    counter++;
+    if(counter % 60 === 0){
+      // plus 1 hr:
+
+    }
+    this.atr.update(candle);
+
+    res = atrCalc.call(this, candle);
+
+    this.result = res;
+
+    previousCandle = candle; //for HA calculation
+
+    return this.result;
   }
-  this.atr.update(candle);
 
-  res = atrCalc.call(this, candle);
+  const atrCalc = function(candle){
+    let ret = 0;
+    // DI-Pos, DI-Neg, ADX
+    high = candle.high;
+    low = candle.low;
+    close = candle.close;
+    open = candle.open;
 
-  this.result = res;
+    highPrev = previousCandle.high || high;
+    lowPrev = previousCandle.low || low;
+    closePrev = previousCandle.close || close;
 
-  previousCandle = candle; //for HA calculation
+    /*
+      highPrev = !_.isUndefined(previousCandle.high) ? previousCandle.high : high;
+      lowPrev = !_.isUndefined(previousCandle.low) ? previousCandle.low : low;
+      closePrev = !_.isUndefined(previousCandle.close) ? previousCandle.close : close;
+    */
 
-  return this.result;
-}
+    hR = high-highPrev;
+    lR = -(low-lowPrev);
 
-let counter = 0, high, low, close, open, highPrev, lowPrev, closePrev, hR, lR, dmPos, dmNeg, tr, sTR, sTRPrev, sDMPos, sDMPosPrev, sDMNeg, sDMNegPrev,
-  DIP, DIN, DX, DXArr, adx, adxPrev,
-  xOpen, xOpenPrev, xClose, xClosePrev, xHigh, xLow, v1, v2, v3, trueRange,     //Heineken stuff
-  atr, m, mPrev, mUp, mDn, src, src_, src_Prev, c, cPrev, t, up, dn, TUp, TUpPrev, TDown, TDownPrev, trend, trendPrev, stop, trendChange;
+    dmPos = hR > lR ? Math.max(hR, 0) : 0;
+    dmNeg = lR > hR ? Math.max(lR, 0) : 0;
 
-const atrCalc = function(candle){
-  let ret = 0;
-  // DI-Pos, DI-Neg, ADX
-  high = candle.high;
-  low = candle.low;
-  close = candle.close;
-  open = candle.open;
+    tr = Math.max(high - low, Math.abs(high - closePrev), Math.abs(low - closePrev));
+    sTR = tr;
 
-  highPrev = previousCandle.high || high;
-  lowPrev = previousCandle.low || low;
-  closePrev = previousCandle.close || close;
+    sTR = TradingView.nz(sTRPrev, sTR) - TradingView.nz(sTRPrev, sTR) / adxLen + tr;
+    sDMPos = TradingView.nz(sDMPosPrev) - TradingView.nz(sDMPosPrev) / adxLen + dmPos;
+    sDMNeg = TradingView.nz(sDMNegPrev) - TradingView.nz(sDMNegPrev) / adxLen + dmNeg;
 
-/*
-  highPrev = !_.isUndefined(previousCandle.high) ? previousCandle.high : high;
-  lowPrev = !_.isUndefined(previousCandle.low) ? previousCandle.low : low;
-  closePrev = !_.isUndefined(previousCandle.close) ? previousCandle.close : close;
-*/
-
-  hR = high-highPrev;
-  lR = -(low-lowPrev);
-
-  dmPos = hR > lR ? Math.max(hR, 0) : 0;
-  dmNeg = lR > hR ? Math.max(lR, 0) : 0;
-
-  tr = Math.max(high - low, Math.abs(high - closePrev), Math.abs(low - closePrev));
-  sTR = tr;
-
-  sTR = TradingView.nz(sTRPrev, sTR) - TradingView.nz(sTRPrev, sTR) / adxLen + tr;
-  sDMPos = TradingView.nz(sDMPosPrev) - TradingView.nz(sDMPosPrev) / adxLen + dmPos;
-  sDMNeg = TradingView.nz(sDMNegPrev) - TradingView.nz(sDMNegPrev) / adxLen + dmNeg;
-
-  DIP = sDMPos / sTR * 100;
-  DIN = sDMNeg / sTR * 100;
-  DX = Math.abs(DIP - DIN) / (DIP + DIN) * 100;
-  // 21:38 - adx 20.7265
-  DXArr.push(DX);
-  DXArr.shift();
-  adx = TradingView.sma(DXArr, adxLen);
+    DIP = sDMPos / sTR * 100;
+    DIN = sDMNeg / sTR * 100;
+    DX = Math.abs(DIP - DIN) / (DIP + DIN) * 100;
+    // 21:38 - adx 20.7265
+    DXArr.push(DX);
+    DXArr.shift();
+    adx = TradingView.sma(DXArr, adxLen);
 
 
-  // Heikin-Ashi
-  xClose = TradingView.ohlc4(candle);
+    // Heikin-Ashi
+    xClose = TradingView.ohlc4(candle);
 
-  if(_.isUndefined(xOpenPrev)) xOpenPrev = open;
-  if(_.isUndefined(xClosePrev)) xClosePrev = close;
+    if(_.isUndefined(xOpenPrev)) xOpenPrev = open;
+    if(_.isUndefined(xClosePrev)) xClosePrev = close;
 
-  // xOpen = open
-  xOpen = (xOpenPrev + xClosePrev) / 2;
-  xHigh = Math.max(high, Math.max(xOpen, xClose));
-  xLow = Math.min(low, Math.min(xOpen, xClose));
+    // xOpen = open
+    xOpen = (xOpenPrev + xClosePrev) / 2;
+    xHigh = Math.max(high, Math.max(xOpen, xClose));
+    xLow = Math.min(low, Math.min(xOpen, xClose));
 
-  // Trailing ATR
-  v1 = Math.abs(xHigh - xClosePrev);
-  v2 = Math.abs(xLow - xClosePrev);
-  v3 = xHigh - xLow;
-  trueRange = Math.max(v1, Math.max(v2, v3));
+    // Trailing ATR
+    v1 = Math.abs(xHigh - xClosePrev);
+    v2 = Math.abs(xLow - xClosePrev);
+    v3 = xHigh - xLow;
+    trueRange = Math.max(v1, Math.max(v2, v3));
 
-  // atr = this.atr.result;
-  atr = useHeiken ? TradingView.rma(trueRange, atrLen) : this.atr.result;
-  // console.error(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
+    // atr = this.atr.result;
+    atr = useHeiken ? TradingView.rma(trueRange, atrLen) : this.atr.result;
+    // console.error(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
 
-  if(_.isUndefined(adxPrev)) adxPrev = adx;
-  if(_.isUndefined(mPrev)) mPrev = m;
-  // m := rising(adx, 1) and (adx < adxThresh or not aboveThresh) ? m1 : falling(adx, 1) or (adx > adxThresh and aboveThresh) ? m2 : nz(m[1])
-  m = (adx > adxPrev) && ((adx < adxThresh) || !aboveThresh) ? m1 : ((adx < adxPrev) || (adx > adxThresh) && aboveThresh) ? m2 : TradingView.nz(mPrev);
-  mUp = (DIP >= DIN) ? m : m2;
-  mDn = (DIN >= DIP) ? m : m2;
+    if(_.isUndefined(adxPrev)) adxPrev = adx;
+    if(_.isUndefined(mPrev)) mPrev = m;
+    // m := rising(adx, 1) and (adx < adxThresh or not aboveThresh) ? m1 : falling(adx, 1) or (adx > adxThresh and aboveThresh) ? m2 : nz(m[1])
+    m = (adx > adxPrev) && ((adx < adxThresh) || !aboveThresh) ? m1 : ((adx < adxPrev) || (adx > adxThresh) && aboveThresh) ? m2 : TradingView.nz(mPrev);
+    mUp = (DIP >= DIN) ? m : m2;
+    mDn = (DIN >= DIP) ? m : m2;
 
-  src = TradingView.ohlc4(candle);
+    src = TradingView.ohlc4(candle);
 
-  // src_ = src;
-  src_ = useHeiken ? (xOpen + xHigh + xLow + xClose) / 4 : src;
-  c = useHeiken ? xClose : close;
-  t = useHeiken ? (xHigh + xLow) / 2 : TradingView.hl2(candle);
+    // src_ = src;
+    src_ = useHeiken ? (xOpen + xHigh + xLow + xClose) / 4 : src;
+    c = useHeiken ? xClose : close;
+    t = useHeiken ? (xHigh + xLow) / 2 : TradingView.hl2(candle);
 
-  up = t - mUp * atr;
-  dn = t + mDn * atr;
+    up = t - mUp * atr;
+    dn = t + mDn * atr;
 
-  if(_.isUndefined(src_Prev)) src_Prev = src_;
+    if(_.isUndefined(src_Prev)) src_Prev = src_;
 
-  TUp = close;
-  if(_.isUndefined(TUpPrev)) TUpPrev = TUp;
-  if(_.isUndefined(cPrev)) cPrev = c;
-  TUp = Math.max(src_Prev, Math.max(cPrev, closePrev)) > TUpPrev ? Math.max(up, TUpPrev) : up;
+    TUp = close;
+    if(_.isUndefined(TUpPrev)) TUpPrev = TUp;
+    if(_.isUndefined(cPrev)) cPrev = c;
+    TUp = Math.max(src_Prev, Math.max(cPrev, closePrev)) > TUpPrev ? Math.max(up, TUpPrev) : up;
 
-  TDown = close;
-  if(_.isUndefined(TDownPrev)) TDownPrev = TDown;
-  TDown = Math.min(src_Prev, Math.min(cPrev, closePrev)) < TDownPrev ? Math.min(dn, TDownPrev) : dn;
+    TDown = close;
+    if(_.isUndefined(TDownPrev)) TDownPrev = TDown;
+    TDown = Math.min(src_Prev, Math.min(cPrev, closePrev)) < TDownPrev ? Math.min(dn, TDownPrev) : dn;
 
-  trend = 1;
-  if(_.isUndefined(trendPrev)) trendPrev = trend;
-  // trend = Math.min(src_, Math.min(c, close)) > TDownPrev ? 1 : Math.max(src_, Math.max(c, close)) < TUp[1]? -1 : nz(trend[1], 1); // makes sense for Heikin!!!
-  trend = (Math.min(src_, c) > TDownPrev) ? 1 : (Math.max(src_, c) < TUpPrev) ? -1 : trendPrev;
+    trend = 1;
+    if(_.isUndefined(trendPrev)) trendPrev = trend;
+    // trend = Math.min(src_, Math.min(c, close)) > TDownPrev ? 1 : Math.max(src_, Math.max(c, close)) < TUp[1]? -1 : nz(trend[1], 1); // makes sense for Heikin!!!
+    trend = (Math.min(src_, c) > TDownPrev) ? 1 : (Math.max(src_, c) < TUpPrev) ? -1 : trendPrev;
 
-  // ceil positive trend to nearest pip/tick, floor negative trend to nearest pip/tick
-  stop = (trend === 1) ? Math.ceil(TUp / block) * block : Math.floor(TDown / block) * block;
-  trendChange = trend - trendPrev;
+    // ceil positive trend to nearest pip/tick, floor negative trend to nearest pip/tick
+    stop = (trend === 1) ? Math.ceil(TUp / block) * block : Math.floor(TDown / block) * block;
+    trendChange = trend - trendPrev;
 
-  // if(trendChange !== 0 && counter > atrLen) {
+    // if(trendChange !== 0 && counter > atrLen) {
     if(isDebug) { //logging in debug only!
       //log.info(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
       console.log(`Date: ${JSON.stringify(candle.start)}, counter: ${counter}, candle ${JSON.stringify(candle)}`);
@@ -193,25 +197,28 @@ const atrCalc = function(candle){
       console.log(`   m: ${m}, mUp: ${mUp}, mDn: ${mDn}, src_: ${src_}, c: ${c}, t: ${t}, up: ${up}, dn: ${dn}, TUp: ${TUp}, TDown: ${TDown}
       , trend: ${trend}, stop: ${stop}, trendChange: ${trendChange}`);
     }
-  // }
+    // }
 
-  sTRPrev = sTR;
-  sDMPosPrev = sDMPos;
-  sDMNegPrev = sDMNeg;
-  adxPrev = adx;
-  mPrev = m;
-  cPrev = c;
-  TUpPrev = TUp;
-  TDownPrev = TDown;
-  src_Prev = src_;
-  trendPrev = trend;
-  xClosePrev = xClose;
-  xOpenPrev = xOpen;
+    sTRPrev = sTR;
+    sDMPosPrev = sDMPos;
+    sDMNegPrev = sDMNeg;
+    adxPrev = adx;
+    mPrev = m;
+    cPrev = c;
+    TUpPrev = TUp;
+    TDownPrev = TDown;
+    src_Prev = src_;
+    trendPrev = trend;
+    xClosePrev = xClose;
+    xOpenPrev = xOpen;
 
-  return {
-    trend, stop, trendChange,
-    //adx,atr, m, src_, TUp, TDown // debug
+    return {
+      trend, stop, trendChange,
+      //adx,atr, m, src_, TUp, TDown // debug
+    }
   }
+
+
 }
 
 module.exports = Indicator;
