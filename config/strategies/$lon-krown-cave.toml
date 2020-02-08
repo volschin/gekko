@@ -1,0 +1,14 @@
+takeProfit = 1.2 # 20%
+#stopLoss = 0.99 # 1%
+#USE_MARKET_LOST_FOR_TREND = true
+#EXIT_ON_AAAT_CHANGE = true # treat as Stop Loss
+
+[aaat]
+USE_HEIKEN = false
+sellOnRedThresholdMedium = true
+sellOnRedThresholdHigh = true
+
+# run with pair USDT/BTC, candle 1hr, Warmup 280
+# 2.5 yrs - 150%, '18 1yr - -23%
+# lot of trades, will exit if enter bearland (no zasazhenniy)
+# this strat takes well bull runs and pays for small ups-and-downs - плохо работает на "рваном" рынке
