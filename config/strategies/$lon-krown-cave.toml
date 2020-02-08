@@ -8,7 +8,7 @@ USE_HEIKEN = false
 sellOnRedThresholdMedium = true
 sellOnRedThresholdHigh = true
 
+# good strategy for big swings, performs badly on sideways market
 # run with pair USDT/BTC, candle 1hr, Warmup 280
 # 2.5 yrs - 150%, '18 1yr - -23%
 # lot of trades, will exit if enter bearland (no zasazhenniy)
-# this strat takes well bull runs and pays for small ups-and-downs - плохо работает на "рваном" рынке
