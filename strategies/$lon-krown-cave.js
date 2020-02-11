@@ -15,7 +15,7 @@ let strat = {};
 // seal everything into init to have the ability to use local variables unique for each strat instance
 // , instead of using 'this.someVar', to optimize performance:
 strat.init = function(options = {}) {
-  let startPrice, currentCandle, prevCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs
+  let startPrice, currentCandle, prevCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, advisedShort = false, tradeInitiated = false, buyTs
     , tradesCount = 0, tradesMaxCount = 0
     , candlesArr = Array(10).fill({
     open: -1,
@@ -137,16 +137,16 @@ strat.init = function(options = {}) {
         // }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated
       }`);
     }
-    if(this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === -1 && candle.high >= aaatResultMedium) {
-      totalTradesHighAboveAaatDnTrendRedMedium++;
-      this.sell(`SELL!!: crossed: aaatResultMedium(in dn trend): ${ aaatResultMedium }`, { limitPrice: aaatResultMedium });
-    }
-    if(this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === -1 && candle.high >= aaatResultHigh) {
-      totalTradesHighAboveAaatDnTrendRedHigh++;
-      this.sell(`SELL!!: crossed: aaatResultHigh(in dn trend): ${ aaatResultHigh }`, { limitPrice: aaatResultHigh });
-    }
-    if (advised) {
 
+    if (advised) {
+      if(this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === -1 && candle.high >= aaatResultMedium) {
+        totalTradesHighAboveAaatDnTrendRedMedium++;
+        this.sell(`SELL!!: crossed: aaatResultMedium(in dn trend): ${ aaatResultMedium }`, { limitPrice: aaatResultMedium });
+      }
+      if(this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === -1 && candle.high >= aaatResultHigh) {
+        totalTradesHighAboveAaatDnTrendRedHigh++;
+        this.sell(`SELL!!: crossed: aaatResultHigh(in dn trend): ${ aaatResultHigh }`, { limitPrice: aaatResultHigh });
+      }
       if (candle.close >= buyPrice * this.settings.takeProfit) {
         totalSellTakeProfit++;
         this.sell(`SELL!!: TAKE PROFIT, bought@ ${buyPrice}, sell: ${candle.close}`);
@@ -166,6 +166,35 @@ strat.init = function(options = {}) {
         }
       }*/
     }
+    // shorts cases:
+    if(this.settings.margin && this.settings.margin.useShort) {
+      if (!advisedShort && aaatIndMedium.result.trend === -1 && (candle.high > aaatResultMedium && candle.close < aaatResultMedium)) {
+        // totalBoughtAttempts++;
+        this.buy(`цена пересекла красную 240 (${JSON.stringify(aaatResultMedium)}), candle240: ${JSON.stringify(candle240)}`
+          , { limitPrice: aaatResultMedium, margin: { type: 'short', limit: 1 } });
+      }
+
+      if (advisedShort) {
+        if (this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === 1 && candle.high <= aaatResultMedium) {
+          // totalTradesHighAboveAaatDnTrendRedMedium++;
+          this.sell(`SELL SHORT!!: crossed: aaatResultMedium(in UP trend): ${aaatResultMedium}`
+            , { limitPrice: aaatResultMedium, margin: { type: 'short', limit: 1 } });
+        }
+        if (this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === 1 && candle.high <= aaatResultHigh) {
+          // totalTradesHighAboveAaatDnTrendRedHigh++;
+          this.sell(`SELL SHORT!!: crossed: aaatResultHigh(in UP trend): ${aaatResultHigh}`
+            , { limitPrice: aaatResultHigh, margin: { type: 'short', limit: 1 } });
+        }
+        if (candle.close <= buyPrice * (2 - this.settings.takeProfit)) {
+          // totalSellTakeProfit++;
+          this.sell(`SELL!!: TAKE PROFIT, bought@ ${buyPrice}, sell: ${candle.close}`
+            , { margin: { type: 'short', limit: 1 } });
+        } else if (candle.close > aaatResultMedium) {
+          // totalTradesLongCandleBelowAaat++;
+          this.sell('exiting: long candle close ABOVE aaat!', { margin: { type: 'short', limit: 1 } });
+        }
+      }
+    }
   };
 
   this.buy = function(reason, options = {}) {
@@ -173,10 +202,11 @@ strat.init = function(options = {}) {
       type: 'buy advice',
       reason: reason,
     });
-    consoleLog('buy:: advice: long');
+    consoleLog(`buy:: advice: long, margin: ${ !!options.margin }`);
     this.advice({
       limit: options.limitPrice,
       direction: 'long',
+      margin: options.margin
       /*trigger: {
         type: 'trailingStop',
         trailPercentage: TRAILING_STOP
@@ -185,7 +215,11 @@ strat.init = function(options = {}) {
 
     buyTs = this.candle.start;
     buyPrice = currentPrice;
-    advised = true;
+    if(options.margin && options.margin.type === 'short') {
+      advisedShort = true;
+    } else {
+      advised = true;
+    }
     if(!hadDeal) {
       hadDeal = true; // only set once: strange startAt.unix() bug
     }
@@ -195,12 +229,17 @@ strat.init = function(options = {}) {
       type: 'sell advice',
       reason: reason,
     });
-    consoleLog('sell:: advice: short');
+    consoleLog(`sell:: advice: short, margin: ${ !!options.margin }`);
     this.advice({
       direction: 'short',
       limit: options.limitPrice,
+      margin: options.margin
     });
-    advised = false;
+    if(options.margin && options.margin.type === 'short') {
+      advisedShort = false;
+    } else {
+      advised = false;
+    }
   }
 
   this.onPendingTrade = function(pendingTrade) {
@@ -212,7 +251,11 @@ strat.init = function(options = {}) {
   this.onTrade = function(trade = {}) {
     consoleLog('onTrade:: trade: ' + JSON.stringify(trade.action));
     if(trade.action === 'sell') {
-      advised = false;
+      if(trade.margin && trade.margin.type === 'short') {
+        advisedShort = false;
+      } else {
+        advised = false;
+      }
     }
     tradeInitiated = false;
   }
@@ -226,7 +269,7 @@ strat.init = function(options = {}) {
     // consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
   }
   this.onPortfolioValueChange = function(portfolio) {
-    //consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
+    // consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
   }
   this.onTriggerFired = function(data) {
     // tradeInitiated = false;
