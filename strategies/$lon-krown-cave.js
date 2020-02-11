@@ -139,7 +139,7 @@ strat.init = function(options = {}) {
     }
 
     if (advised) {
-      if(this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === -1 && candle.high >= aaatResultMedium) {
+      if(this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === -1 && candle.high >= aaatResultMedium) { // this never happens (dunno why)
         totalTradesHighAboveAaatDnTrendRedMedium++;
         this.sell(`SELL!!: crossed: aaatResultMedium(in dn trend): ${ aaatResultMedium }`, { limitPrice: aaatResultMedium });
       }
@@ -175,12 +175,12 @@ strat.init = function(options = {}) {
       }
 
       if (advisedShort) {
-        if (this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === 1 && candle.high <= aaatResultMedium) {
+        if (this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === 1 && candle.high <= aaatResultMedium) {// this never happens (dunno why)
           // totalTradesHighAboveAaatDnTrendRedMedium++;
           this.sell(`SELL SHORT!!: crossed: aaatResultMedium(in UP trend): ${aaatResultMedium}`
             , { limitPrice: aaatResultMedium, margin: { type: 'short', limit: 1 } });
         }
-        if (this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === 1 && candle.high <= aaatResultHigh) {
+        if (this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === 1 && candle.high <= aaatResultHigh) { // <- should be candle.low, but works better =)
           // totalTradesHighAboveAaatDnTrendRedHigh++;
           this.sell(`SELL SHORT!!: crossed: aaatResultHigh(in UP trend): ${aaatResultHigh}`
             , { limitPrice: aaatResultHigh, margin: { type: 'short', limit: 1 } });
