@@ -1,0 +1,6 @@
+brickSize = 100
+candleSize = 1
+trailingStop = 5 #5%
+
+[margin]
+useShort = true
