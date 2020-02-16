@@ -289,7 +289,7 @@ Base.prototype.advice = function(newDirection) {
     return;
   }
 
-  let trigger, limit;
+  let trigger, limit, margin;
   if(_.isObject(newDirection)) {
     if(!_.isString(newDirection.direction)) {
       log.error('Strategy emitted unparsable advice:', newDirection);
@@ -320,7 +320,9 @@ Base.prototype.advice = function(newDirection) {
     if(newDirection.limit) {
       limit = newDirection.limit;
     }
-
+    if(newDirection.margin) { // this.is.margin.trade!
+      margin = newDirection.margin;
+    }
     newDirection = newDirection.direction;
   }
 
@@ -350,7 +352,9 @@ Base.prototype.advice = function(newDirection) {
   } else {
     this._pendingTriggerAdvice = null;
   }
-
+  if(margin) {
+    advice.margin = margin;
+  }
   this.emit('advice', advice);
 
   return this.propogatedAdvices;

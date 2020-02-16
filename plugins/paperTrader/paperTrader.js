@@ -98,7 +98,9 @@ PaperTrader.prototype.updatePosition = function(what) {
     //   this.portfolio.asset += this.extractFee(this.portfolio.currency / this.price);
     // }
     this.portfolio.asset += this.extractFee(this.portfolio.currency / this.price);
-
+    if(what.margin) {
+      this.portfolio.currencyMargin = this.portfolio.currency;
+    }
     amount = this.portfolio.asset;
 
     if (what.amount) {
@@ -123,8 +125,11 @@ PaperTrader.prototype.updatePosition = function(what) {
     //   this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
     //   amount = this.portfolio.currency / this.price;
     // }
-
-    this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
+    if(what.margin) {
+      this.portfolio.currency += this.extractFee((this.portfolio.currencyMargin * 2) - this.portfolio.asset * this.price); // todo: verify extractFee correctness!
+    } else {
+      this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
+    }
     amount = what.amount * this.price;
 
     this.portfolio.asset = 0;
@@ -226,7 +231,8 @@ if (this.candle.volume < avgVol && !this.waitForVolume) {
     balance: this.getBalance(),
     date: advice.date,
     effectivePrice,
-    feePercent: this.rawFee
+    feePercent: this.rawFee,
+    margin: advice.margin
   });
 }
 
@@ -290,7 +296,8 @@ PaperTrader.prototype.onStopTrigger = function() {
     balance: this.getBalance(),
     date,
     effectivePrice,
-    feePercent: this.rawFee
+    feePercent: this.rawFee,
+    // margin: ? // TODO!!
   });
 
   delete this.activeStopTrigger;

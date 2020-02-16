@@ -329,7 +329,8 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
           balance: this.balance,
           date: summary.date,
           feePercent: summary.feePercent,
-          effectivePrice
+          effectivePrice,
+          margin: advice.margin
         });
 
         if(

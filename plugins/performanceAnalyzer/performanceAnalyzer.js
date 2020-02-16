@@ -143,6 +143,7 @@ PerformanceAnalyzer.prototype.registerRoundtripPart = function(trade) {
       date: trade.date,
       price: trade.price,
       total: trade.portfolio.currency + (trade.portfolio.asset * trade.price),
+      margin: trade.margin || {}
     }
     this.openRoundTrip = false;
 
@@ -164,9 +165,17 @@ PerformanceAnalyzer.prototype.handleCompletedRoundtrip = function() {
 
     duration: this.roundTrip.exit.date.diff(this.roundTrip.entry.date)
   }
+  if(this.roundTrip.exit.margin.type !== 'short') {
+    // todo: check if margin.leverage !== 1 (multiply profit for long)
+    roundtrip.pnl = roundtrip.exitBalance - roundtrip.entryBalance;
+    roundtrip.profit = (100 * roundtrip.exitBalance / roundtrip.entryBalance) - 100;
+  } else if(this.roundTrip.exit.margin.type === 'short') {
+    roundtrip.pnl = roundtrip.exitBalance - roundtrip.entryBalance;
+    roundtrip.profit = (100 * roundtrip.exitBalance / roundtrip.entryBalance) - 100;
+    /*roundtrip.pnl =  roundtrip.entryBalance - roundtrip.exitBalance;
+    roundtrip.profit = (100 * roundtrip.entryBalance / roundtrip.exitBalance) - 100;*/
+  }
 
-  roundtrip.pnl = roundtrip.exitBalance - roundtrip.entryBalance;
-  roundtrip.profit = (100 * roundtrip.exitBalance / roundtrip.entryBalance) - 100;
 
   this.roundTrips[this.roundTrip.id] = roundtrip;
 
