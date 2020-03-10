@@ -59,16 +59,30 @@ const shouldEnterLong = function(candle, currentFrame, isShort = false) {
 }
 
 const checkEnterFastLong = function(candle, currentFrame, isShort = false) {
-  if (candle.high > highest(currentFrame.enterFast, currentFrame)) {
-    currentFrame.currentTrend = 'fastLong'
-    return true
+  if(!isShort) {
+    if (candle.high > highest(currentFrame.enterFast, currentFrame)) {
+      currentFrame.currentTrend = 'fastLong'
+      return true
+    }
+  } else {
+    if (candle.low < lowest(currentFrame.enterFast, currentFrame)) {
+      currentFrame.currentTrend = 'fastShort'
+      return true
+    }
   }
 }
 
 const checkEnterSlowLong = function(candle, currentFrame, isShort = false) {
-  if (candle.high > highest(currentFrame.enterSlow, currentFrame)) {
-    currentFrame.currentTrend = 'slowLong'
-    return true
+  if(!isShort) {
+    if (candle.high > highest(currentFrame.enterSlow, currentFrame)) {
+      currentFrame.currentTrend = 'slowLong'
+      return true
+    }
+  } else {
+    if (candle.low < lowest(currentFrame.enterSlow, currentFrame)) {
+      currentFrame.currentTrend = 'slowShort'
+      return true
+    }
   }
 }
 
@@ -88,10 +102,17 @@ const shouldExitLong = function(candle, currentFrame, isShort = false) {
   }
 }
 
-const checkExitSlowLong = function(candle, currentFrame) {
-  if (candle.low <= lowest(currentFrame.exitSlow, currentFrame) || (currentFrame.stop !== 0 && candle.close <= currentFrame.stop)) {
-    currentFrame.currentTrend = 'short'
-    return true
+const checkExitSlowLong = function(candle, currentFrame, isShort) {
+  if(!isShort) {
+    if (candle.low <= lowest(currentFrame.exitSlow, currentFrame) || (currentFrame.stop !== 0 && candle.close <= currentFrame.stop)) {
+      currentFrame.currentTrend = 'short'
+      return true
+    }
+  } else {
+    if (candle.high >= highest(currentFrame.exitSlow, currentFrame) || (currentFrame.stop !== 0 && candle.close >= currentFrame.stop)) {
+      currentFrame.currentTrend = 'short'
+      return true
+    }
   }
 }
 
@@ -149,12 +170,19 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
       if (shouldExitLong(candle, currentFrame)) {
         currentFrame.currentTrend = 'short';
         currentFrame.stop = 0;
+        consoleLog('long, short', candle);
         currentFrame.advice('short');
+        // TODO! check why following doesn't work:
+        /*currentFrame.advice({
+          direction: 'short',
+          margin: { type: 'long', limit: 1 }
+        });*/
       }
     }
   } else {
     if (currentFrame.currentTrend === 'fastShort' || currentFrame.currentTrend === 'slowShort') {
       if (shouldExitLong(candle, currentFrame, true)) {
+        consoleLog('short, short', candle);
         currentFrame.currentTrend = 'short';
         currentFrame.stop = 0;
         currentFrame.advice({
@@ -173,22 +201,30 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
         manageStopLoss(candle, currentFrame)
 
         if(!currentFrame.settings.trailingStopLoss) {
+          consoleLog('long, long', candle);
           currentFrame.advice('long');
+          // TODO! check why following doesn't work:
+
+          /*currentFrame.advice({
+            direction: 'long',
+            margin: { type: 'long', limit: 1 }
+          });*/
         } else {
-          currentFrame.advice({
+          /*currentFrame.advice({
             direction: 'long',
             trigger: {
               type: 'trailingStop',
               trailPercentage: currentFrame.settings.trailingStopLoss
             }
-          });
+          });*/
         }
       }
     }
   } else {
-    if(currentFrame.currentTrend === 'fastLong' || currentFrame.currentTrend === 'slowLong') {
+    if(currentFrame.currentTrend === 'short') {
       if (shouldEnterLong(candle, currentFrame, true)) {
-        manageStopLoss(candle, currentFrame, true)
+        manageStopLoss(candle, currentFrame, true);
+        consoleLog('long, short', candle);
         currentFrame.advice({
           direction: 'long',
           margin: { type: 'short', limit: 1 }
@@ -198,12 +234,15 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
   }
 }
 
-let trendPrev;
+let trendPrev, shortPrev = false, longPrev = false;
 strat.check = function(candle) {
+
   // won't do anything until we have slowEntry+1 number of candles
   if (this.candles.length === this.maxCandlesLength) {
-    computeExitSignal(candle, this, true);
-    computeEntrySignal(candle, this, true);
+    if(this.settings.margin.useShort) {
+      computeExitSignal(candle, this, true);
+      computeEntrySignal(candle, this, true);
+    }
     computeExitSignal(candle, this);
     computeEntrySignal(candle, this);
   }
