@@ -170,7 +170,7 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
       if (shouldExitLong(candle, currentFrame)) {
         currentFrame.currentTrend = 'short';
         currentFrame.stop = 0;
-        consoleLog('long, short', candle);
+        consoleLog('short, long', candle);
         currentFrame.advice('short');
         // TODO! check why following doesn't work:
         /*currentFrame.advice({
