@@ -152,7 +152,7 @@ export default {
       if(gekko.events.latest.candle) {
         this.pendingStratrunner = false;
 
-        this.o((err, resp) => {
+        this.startGekko((err, resp) => {
           this.$router.push({
             path: `/live-gekkos/${resp.id}`
           });
@@ -191,11 +191,11 @@ export default {
       // if the user starts a tradebot we do some
       // checks first.
       if(this.config.type === 'tradebot') {
-        if(this.existingTradebot) {
+        /*if(this.existingTradebot) {
           let str = 'You already have a tradebot running on this Api Key';
           str += ', you can only run one tradebot per Api Key.';
           return alert(str);
-        }
+        }*/
 
         if(_.isEmpty(this.config.apiKeyName)) {
           return alert('Please first select API key');
