@@ -9,7 +9,8 @@ var config = {};
 config.debug = false;
 config.silent = false;
 
-util.setConfig(config);
+util.setConfigProperty(null, 'debug', false);
+util.setConfigProperty(null, 'silent', false);
 
 module.exports = async function (ctx, next) {
   const exchangesDir = await fs.readdir(gekkoRoot + 'exchange/wrappers/');
