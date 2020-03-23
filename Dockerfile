@@ -5,7 +5,7 @@ ENV PORT 3000
 ENV MEMORYNODE 2048
 ENV USE_SSL 0
 ENV CONFIG_EXT 0
-ENV CONFIG "/home/users/config.js"
+VOLUME CONFIG "/home/users/config.js:./config.js:/usr/src/app/config.js"
 
 # Add some extra tool
 RUN apt-get update && \
