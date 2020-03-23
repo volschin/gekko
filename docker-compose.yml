@@ -3,8 +3,8 @@ services:
   gekko:
     build: ./
     volumes:
-      - ./volumes/gekko/history:/usr/src/app/history
-      - ./config.js:/usr/src/app/config.js
+      - /homes/users/gekko/history:/usr/src/app/history
+      - /homes/users/config.js:/usr/src/app/config.js
     links:
       - redis
 #      - postgresql
