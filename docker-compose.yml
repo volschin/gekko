@@ -3,8 +3,7 @@ services:
   gekko:
     build: ./
     volumes:
-      - /homes/users/gekko/history:/usr/src/app/history
-      - config.js:/usr/src/app/config.js
+      - CONFIG
     links:
       - redis
 #      - postgresql
@@ -14,6 +13,5 @@ services:
      - USE_SSL
      - MEMORYNODE
      - CONFIG_EXT
-     - CONFIG
     ports: # you can comment this out when using the nginx frontend
       - "${PORT}:${PORT}"
