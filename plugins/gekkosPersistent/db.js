@@ -3,9 +3,10 @@ const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
 const log = require('../../core/log.js');
 const util = require('../../core/util.js');
+const cache = require('../../web/state/cache');
 
 let sequelize, config
-  , GekkosTable, ConfigsTable, BundlesTable, AccountsTable, TradesTable;
+  , GekkosTable, ConfigsTable, BundlesTable, AccountsTable, TradesTable, ApisTable;
 const GEKKO_TYPE = {
   WATCHER: 'watcher',
   TRADEBOT: 'leech'
@@ -37,20 +38,21 @@ const Db = function(settings = {}){
   BundlesTable = sequelize.import('./models/bundles.js');
   AccountsTable = sequelize.import('./models/accounts.js');
   TradesTable = sequelize.import('./models/trades.js');
+  ApisTable = sequelize.import('./models/apis.js');
 }
 
 Db.prototype.create = async function() {
   // create all tables:
-  /*try {
+  try {
     await require('./models/gekko').create(GekkosTable)
   } catch (e) {
     consoleError('table "GekkosTable" not created: ', e);
-  }*/
-  /*try {
+  }
+  try {
     await require('./models/configs').create(ConfigsTable);
   } catch (e) {
     consoleError('table "ConfigsTable" not created: ', e);
-  }*/
+  }
   try {
     await require('./models/bundles').create(BundlesTable)
   } catch (e) {
@@ -61,10 +63,18 @@ Db.prototype.create = async function() {
   } catch (e) {
     consoleError('table "AccountsTable" not created: ', e);
   }
-  try {
+  /*try {
     await require('./models/trades').create(TradesTable)
   } catch (e) {
     consoleError('table "TradesTable" not created: ', e);
+  }*/
+  try {
+    await require('./models/apis').create(ApisTable);
+    const apiKeyManager = cache.get('apiKeyManager');
+    let apiKeys = apiKeyManager.getAllApis();
+    this.upsertApis(apiKeys);
+  } catch (e) {
+    consoleError('table "ApisTable" not created: ', e);
   }
 }
 // GEKKOS:
@@ -445,6 +455,91 @@ Db.prototype.getTrades = async function(where = {}) {
   return ret;
 }
 // end trades
+
+// APIS:
+Db.prototype.upsertApis = async function(apis) {
+  let ret;
+  try {
+    _.forEach(_.toArray(apis), (api) => {
+      ret = ApisTable.upsert({
+        uniqueName: api.uniqueName,
+        userEmail: api.userEmail,
+        key: api.key,
+        secret: api.secret,
+        exchange: api.exchange
+      });
+    });
+
+  } catch (err1) {
+    consoleError('upsertApis', err1);
+  }
+  return ret;
+}
+Db.prototype.addGekkoToApi = async function(gekkoId, uniqueName) {
+  let ret;
+  if(!uniqueName) {
+    return false;
+  }
+  try {
+    ret = await ApisTable.update({
+      gekkosIds: sequelize.fn('array_append', sequelize.col('gekkosIds'), gekkoId)
+    }, {
+      where: {
+        uniqueName
+      }
+    });
+  } catch (e) {
+    consoleError('addGekkoToApi', e);
+  }
+  return ret;
+}
+Db.prototype.removeGekkoFromApi = async function(gekkoId, uniqueName) {
+  let ret;
+  if(!uniqueName) {
+    return false;
+  }
+  try {
+    ret = await ApisTable.update({
+      gekkosIds: sequelize.fn('array_remove', sequelize.col('gekkosIds'), gekkoId)
+    }, {
+      where: {
+        uniqueName
+      }
+    });
+  } catch (e) {
+    consoleError('removeGekkoFromApi', e);
+  }
+  return ret;
+}
+Db.prototype.getApi = async function(uniqueName) {
+  let ret;
+  try {
+    ret = await ApisTable.findOne({
+      where: {
+        uniqueName
+      }
+    });
+  } catch (e) {
+    consoleError('getApi', e);
+  }
+  return ret;
+}
+Db.prototype.setApi = async function(uniqueName, gekkoId) {
+  let ret;
+  try {
+    ret = await ApisTable.update({
+      tradeGekkoId: gekkoId
+    }, {
+      where: {
+        uniqueName
+      }
+    });
+  } catch (e) {
+    consoleError('setApi', e);
+  }
+  return ret;
+}
+// END APIS
 
 Db.prototype.close = async function() {
   const ret =  await sequelize.close();

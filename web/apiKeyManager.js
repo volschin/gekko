@@ -7,7 +7,8 @@ const pickBy = require('lodash.pickby');
 const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
 const isUserManagerPluginEnabled = require('./routes/baseConfig').userManager && require('./routes/baseConfig').userManager.enabled === true;
 
-// on init:
+let apiKeys;
+/*// on init:
 const noApiKeysFile = !fs.existsSync(apiKeysFile);
 
 if(noApiKeysFile)
@@ -16,9 +17,28 @@ if(noApiKeysFile)
     JSON.stringify({})
   );
 
-const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
+const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );*/
 
 const apiKeyManagerModule = {
+  getAllApis: function() {
+    return apiKeys;
+  },
+  writeApisFile: function() {
+    let apiKeys1;
+    const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
+
+    // on init:
+    const noApiKeysFile = !fs.existsSync(apiKeysFile);
+
+    if(noApiKeysFile)
+      fs.writeFileSync(
+        apiKeysFile,
+        JSON.stringify({})
+      );
+
+    apiKeys1 = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
+    return apiKeys1;
+  },
   get: (userEmail) => {
     if(isUserManagerPluginEnabled) {
       if (!userEmail)
@@ -84,4 +104,6 @@ const apiKeyManagerModule = {
   // this cannot touch the frontend for security reaons.
   _getApiKeyPair: key => apiKeys[key]
 }
+apiKeys = apiKeyManagerModule.writeApisFile();
+
 module.exports = apiKeyManagerModule;

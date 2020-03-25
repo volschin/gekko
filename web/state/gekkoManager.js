@@ -322,4 +322,32 @@ GekkoManager.prototype.list = function() {
   return { live: this.gekkos, archive: this.archivedGekkos };
 }
 
+GekkoManager.prototype.command = function(id, command) {
+  let ret = { success: false, payload: {}}, gekkoProcess = this.instances[id];
+  if(gekkoProcess && !gekkoProcess.killed && !!gekkoProcess.connected && gekkoProcess.exitCode !== 1) {
+    try {
+      const ret1 = gekkoProcess.send({
+        event: 'command1',
+        type: 'command1',
+        payload: {
+          command, id
+        },
+      });
+      ret.success = true;
+      ret.payload = ret1;
+    } catch (e) {
+      console.error('GekkoManager.prototype.command::thrown exception: ', e);
+      ret.success = false;
+      ret.reason = 'thrown exception';
+      ret.payload = e;
+    }
+  } else {
+    console.error('GekkoManager.prototype.command::process is not running: ', JSON.stringify(gekkoProcess));
+    ret.success = false;
+    ret.reason = 'process is not running (probably this Gekko died)';
+    ret.payload = gekkoProcess;
+  }
+  return ret;
+}
+
 module.exports = GekkoManager;

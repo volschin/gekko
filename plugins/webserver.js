@@ -14,6 +14,11 @@ Actor.prototype.init = function(data) {
   this.server.broadcastHistory(data);
 };
 
+Actor.prototype.processCommand = function(candle, next) {
+  console.error('processCommand');
+  next();
+};
+
 Actor.prototype.processCandle = function(candle, next) {
   this.server.broadcastCandle(candle);
 

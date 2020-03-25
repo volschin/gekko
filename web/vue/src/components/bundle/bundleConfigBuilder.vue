@@ -4,6 +4,9 @@
     .grd-row-col-3-6.mx1
       h3 Market
       multi-market-picker(v-on:market='updateMarketConfig', :only-tradable='isTradebot')
+      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig' :is-paper-trader='isPaperTrader')
+    .grd-row-col-3-6.mx1
+      type-picker(v-on:type='updateType' :is-bundle='true')
   template(v-if='type !== "market watcher"')
     .hr
     strat-picker.contain.my2(v-on:stratConfig='updateStrat')
@@ -13,6 +16,7 @@
 
 <script>
 
+import typePicker from '../global/configbuilder/typepicker.vue'
 import multiMarketPicker from './multiMarketpicker.vue'
 import stratPicker from '../global/configbuilder/stratpicker.vue'
 import paperTrader from '../global/configbuilder/papertrader.vue'
@@ -47,6 +51,7 @@ export default {
   },
   components: {
     multiMarketPicker,
+    typePicker,
     stratPicker,
     paperTrader,
     apiKeyPicker
@@ -54,6 +59,9 @@ export default {
   computed: {
     isTradebot: function() {
       return this.type === 'tradebot';
+    },
+    isPaperTrader: function() {
+      return this.type === 'paper trader';
     },
     config: function() {
       let config = {};
@@ -119,7 +127,13 @@ export default {
       this.config.dependencies = deps;
       this.emitConfig();
     },
-
+    updateType: function(type) {
+      this.type = type;
+      if(!this.isTradebot) {
+        delete this.config.apiKeyName;
+      }
+      this.emitConfig();
+    },
     emitConfig: function() {
       this.$emit('config', this.config);
     }

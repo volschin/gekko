@@ -37,7 +37,7 @@
             .grd-row
               .grd-row-col-3-6 Type
               .grd-row-col-3-6 {{ type }}
-            dib(v-if='isTradebot').grd-row
+            dib(v-if='isTradebot || (isPaperTrader && isAdmin)').grd-row
               .grd-row-col-3-6 Api Key
               .grd-row-col-3-6 {{ apiKey }}
           .grd-row-col-3-6
@@ -101,18 +101,25 @@
         p(v-if='isStratrunner && !watcher && !isArchived') WARNING: stale gekko, not attached to a watcher, please report
           a(href='https://github.com/askmike/gekko/issues') here
           | .
-        p(v-if='!isArchived && isAuthorized')
-          a(v-on:click='stopGekko', class='w100--s my1 btn--red') Stop Gekko
-        p(v-if='isArchived && isAuthorized')
-          a(v-on:click='deleteGekko', class='w100--s my1 btn--red') Delete Gekko
-        p(v-if='isAuthorized')
-          a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
-        p(v-if='isAdmin')
-          a(:href='logLink()' target='_blank' class='w100--s my1') Log
-        p(v-if='isStratrunner && watcher && !isArchived')
-          em This gekko gets market data from
-            router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
-          | .
+        .grd-row
+          .grd-row-col-3-6
+            p(v-if='!isArchived && isAuthorized')
+              a(v-on:click='stopGekko', class='w100--s my1 btn--red') Stop Gekko
+            p(v-if='isArchived && isAuthorized')
+              a(v-on:click='deleteGekko', class='w100--s my1 btn--red') Delete Gekko
+            p(v-if='isAuthorized')
+              a(v-on:click='restartGekko', class='w100--s my1 btn--blue') Restart Gekko
+            p(v-if='isAdmin')
+              a(:href='logLink()' target='_blank' class='w100--s my1') Log
+            p(v-if='isStratrunner && watcher && !isArchived')
+              em This gekko gets market data from &nbsp
+                router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
+              | .
+          .grd-row-col-3-6(v-if='!isLoading && !warmupRemaining && !isArchived && isAuthorized && isAdmin')
+            p(v-if='true')
+              a(v-on:click='forceBuy', class='w100--s my1 btn--red') Force-buy
+            p(v-if='true')
+              a(v-on:click='forceSell', class='w100--s my1 btn--red') Force-sell
       template(v-if='!isLoading')
         h3.contain Market graph
         template(v-if='candleFetch === "fetched"')
@@ -219,6 +226,9 @@ export default {
     },
     isTradebot: function() {
       return  _.get(this, 'data.config.type') === 'tradebot';
+    },
+    isPaperTrader: function() {
+      return  _.get(this, 'data.config.type') === 'paper trader';
     },
     warmupRemaining: function() {
       if(!this.isStratrunner) {
@@ -426,6 +436,16 @@ export default {
         this.$router.push({
           path: `/live-gekkos/`
         });
+      });
+    },
+    forceBuy: function() {
+      post('forceBuyGekko', { id: this.data.id }, (err, res) => {
+        console.log(err, res);
+      });
+    },
+    forceSell: function() {
+      post('forceSellGekko', { id: this.data.id }, (err, res) => {
+        console.log(err, res);
       });
     },
     logLink() {

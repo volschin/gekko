@@ -151,6 +151,8 @@ router.post('/api/startGekko', ensureAuthenticated(), require(ROUTE('startGekko'
 router.post('/api/stopGekko', ensureAuthenticated(), require(ROUTE('stopGekko')));
 router.post('/api/deleteGekko', ensureAuthenticated(), require(ROUTE('deleteGekko')));
 router.post('/api/restartGekko', ensureAuthenticated(), require(ROUTE('restartGekko')));
+router.post('/api/forceBuyGekko', ensureAuthenticated(), require(ROUTE('forceBuyGekko')));
+router.post('/api/forceSellGekko', ensureAuthenticated(), require(ROUTE('forceSellGekko')));
 
 // BUNDLES:
 router.post('/api/bundleStop', ensureAuthenticated(), require(ROUTE('bundleStop')));

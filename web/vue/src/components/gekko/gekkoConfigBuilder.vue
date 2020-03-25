@@ -4,9 +4,9 @@
     .grd-row-col-3-6.mx1
       h3 Market
       market-picker(v-on:market='updateMarketConfig', :only-tradable='isTradebot')
-      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig', v-if='isTradebot')
+      apiKeyPicker(v-on:apiKeyPicked='updateApiKeyConfig', v-if='isTradebot || isPaperTrader && isAdmin')
     .grd-row-col-3-6.mx1
-      type-picker(v-on:type='updateType')
+      type-picker(v-on:type='updateType' :is-bundle='false')
   template(v-if='type !== "market watcher"')
     .hr
     strat-picker.contain.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent")
@@ -63,8 +63,15 @@ export default {
     apiKeyPicker
   },
   computed: {
+    isAdmin: function() {
+      const isAdmin = this.$store.state.auth.isAdmin();
+      return !!isAdmin;
+    },
     isTradebot: function() {
       return this.type === 'tradebot';
+    },
+    isPaperTrader: function() {
+      return this.type === 'paper trader';
     },
     config: function() {
       let config = {};

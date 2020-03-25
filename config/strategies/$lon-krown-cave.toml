@@ -16,3 +16,6 @@ useShort = true
 # 2.5 yrs - 150%, '18 1yr - -23%
 # lot of trades, will exit if enter bearland (no zasazhenniy)
 # if traded with no fees (e.g. on some exchanges) it gives 70%-100% times more (2.5yrs-250%)!
+# for pairs btc/eth and btc/ltc ->
+# takeProfit = 1.05
+# will give ~30-40% / yr

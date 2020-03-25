@@ -152,20 +152,20 @@ PaperTrader.prototype.now = function() {
 }
 
 PaperTrader.prototype.processAdvice = function(advice) {
-// Do not process advice and clear previous advice as they cancel out each other
-if (this.waitForVolume && advice.recommendation != this.previousAdvice.recommendation) {
-  this.waitForVolume = false;
-  this.previousAdvice = undefined;
-  return log.warn('[Papertrader] Cancel trade as previous unexecuted trade would negate each other');
-}
+  // Do not process advice and clear previous advice as they cancel out each other
+  if (this.waitForVolume && advice.recommendation !== this.previousAdvice.recommendation) {
+    this.waitForVolume = false;
+    this.previousAdvice = undefined;
+    return log.warn('[Papertrader] Cancel trade as previous unexecuted trade would negate each other');
+  }
 
 
-// Set flags to delay trade until candle with enough volume
-if (this.candle.volume < avgVol && !this.waitForVolume) {
-  this.previousAdvice = advice;
-  this.waitForVolume = true;
-  return log.info('[Papertrader] Not enough volume to process trade, will wait til next candle');
-}
+  // Set flags to delay trade until candle with enough volume
+  if (this.candle.volume < avgVol && !this.waitForVolume) {
+    this.previousAdvice = advice;
+    this.waitForVolume = true;
+    return log.info('[Papertrader] Not enough volume to process trade, will wait til next candle');
+  }
 
   let action;
   if(advice.recommendation === 'short') {

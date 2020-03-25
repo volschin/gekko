@@ -4,36 +4,42 @@ const { Op } = require('sequelize');
 const log = require('../../../core/log.js');
 const util = require('../../../core/util.js');
 
-let config, TradesTable;
+let config, ApisTable;
 
 module.exports = function(sequelize, DataTypes) {
-
-  TradesTable = sequelize.define('Trades', {
+  ApisTable = sequelize.define('Apis', {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    tradeId: {
-      type: Sequelize.STRING(50),
+    uniqueName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      uniqueKey: true
+    },
+    userEmail: {
+      type: Sequelize.STRING,
+    },
+    key: {
+      type: Sequelize.STRING,
+    },
+    secret: {
+      type: Sequelize.STRING,
+    },
+    exchange: {
+      type: Sequelize.STRING,
       allowNull: false
     },
-    apiKeyName: {
-      type: Sequelize.STRING(50),
-    },
-    bundleUuid: {
-      type: Sequelize.UUID,
-      // defaultValue: Sequelize.UUIDV4,
-      // allowNull: false
-    },
-    gekkoId: {
-      type: Sequelize.STRING(100),
-    },
-    json: Sequelize.JSON
+    tradeGekkoId: DataTypes.STRING(100),
+    gekkosIds: {
+      type: Sequelize.ARRAY(Sequelize.STRING(100)),
+      defaultValue: []
+    }
   }, {
-    tableName: '_slon.trades'
+    tableName: '_slon.apis'
   });
-  return TradesTable;
+  return ApisTable;
 }
 
 const createTable = async function(model) {
@@ -54,9 +60,10 @@ const createTable = async function(model) {
   });
 }
 
+
 module.exports.create = createTable;
 
 const consoleError = function(msg) {
   console.error(msg);
-  log.info('TradesTABLE DB error:', msg);
+  log.info('ApisTABLE DB error:', msg);
 }

@@ -12,7 +12,11 @@ div
 <script>
 
 export default {
+  props: ['isBundle'],
   created: function() {
+    if(this.isBundle) {
+      this.types = ['paper trader', 'tradebot'];
+    }
     this.emitType();
   },
   data: () => {

@@ -10,19 +10,6 @@ const exchangeUtils = require('../exchange/exchangeUtils');
 const retry = exchangeUtils.retry;
 const isUserManagerPluginEnabled = require('./routes/baseConfig').userManager && require('./routes/baseConfig').userManager.enabled === true;
 
-const apiKeysFile = __dirname + '/../SECRET-api-keys.json';
-
-// on init:
-const noApiKeysFile = !fs.existsSync(apiKeysFile);
-
-if(noApiKeysFile)
-  fs.writeFileSync(
-    apiKeysFile,
-    JSON.stringify({})
-  );
-
-const apiKeys = JSON.parse( fs.readFileSync(apiKeysFile, 'utf8') );
-
 const balanceManagerModule = {
   getBalances(userEmail, apiKeyName) {
     if (!apiKeyName) {

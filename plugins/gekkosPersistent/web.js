@@ -186,6 +186,7 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
+  // APIS:
   wss.on('bundle_deleted', async ({ id }) => {
     try {
       if(id) {
@@ -196,6 +197,33 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
+  wss.on('apiKeys', async ({ id }) => {
+    try {
+      if(id) {
+        db.upsertApis(id);
+        // db.deleteBundlesGekkos(id);
+      }
+    } catch (handleErr){
+      consoleError(handleErr);
+    }
+  });
+  wss.on('gekko_new', async ({ id, state }) => {
+    if(state && state.config && state.config.mode === 'realtime'
+      && (state.config.type === 'tradebot' || state.config.type === 'paper trader') && !!state.config.apiKeyName) {
+      const uniqueName = state.config.apiKeyName || state.config.trader && state.config.trader.uniqueName;
+      if (uniqueName) {
+        await db.addGekkoToApi(id, uniqueName);
+      }
+    }
+  });
+  wss.on('gekko_archived', async ({ id, state }) => {
+    await db.removeGekkoFromApi(id);
+  });
+  wss.on('gekko_deleted', async ({ id, state }) => {
+    await db.removeGekkoFromApi(id);
+  });
+  // END APIS
+
   // send to client exapmle
   /*const broadcast = require('../../state/cache').get('broadcast');
   broadcast({

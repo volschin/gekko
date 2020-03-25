@@ -48,7 +48,15 @@ Actor.prototype.setupStrategy = function() {
 
   // bind all trading strategy specific functions
   // to the WrappedStrategy.
-  const WrappedStrategy = require('./baseTradingMethod');
+  let WrappedStrategy;
+
+  if(config.asyncStrategies.indexOf(this.strategyName) > -1) {
+    // meaning we want to make async this strat!
+    WrappedStrategy = require('./baseTradingMethodAsync');
+  } else {
+    WrappedStrategy = require('./baseTradingMethod');
+  }
+
 
   _.each(strategy, function(fn, name) {
     WrappedStrategy.prototype[name] = fn;
@@ -141,6 +149,33 @@ Actor.prototype.processTriggerFired = function(data) {
 // }
 
 Actor.prototype.processCommand = function(command) {
+  if(command && command.command && command.command.name === 'forceBuy') {
+    if(this.strategy && this.strategy.buy) {
+      // this is wrapped strat, so we need to do strat.buy instead of advise:
+      this.strategy.buy('forceBuy command was triggered by user', {
+        // todo: add limitPrice and margin to options later
+      });
+    } else {
+      this.relayAdvice({
+        // limit: options.limitPrice, // add field in ui later
+        direction: 'long',
+        // margin: options.margin
+      });
+    }
+  } else if(command && command.command && command.command.name === 'forceSell') {
+    if(this.strategy && this.strategy.sell) {
+      // this is wrapped strat, so we need to do strat.sell instead of advise:
+      this.strategy.sell('forceSell command was triggered by user', {
+        // todo: add limitPrice and margin to options later
+      });
+    } else {
+      this.relayAdvice({
+        // limit: options.limitPrice, // add field in ui later
+        direction: 'short',
+        // margin: options.margin
+      });
+    }
+  }
   this.strategy.processCommand(command);
 }
 
