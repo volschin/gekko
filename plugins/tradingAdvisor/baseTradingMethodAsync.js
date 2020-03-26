@@ -126,13 +126,27 @@ Base.prototype.initWrapper = function() {
   this.candlesArr = Array(10).fill({ open: -1, close: -1, high: -1, low: -1 });
   this.tradesArr = [];
   this.tradesCount = 0;
+  this.config.backtest.batchSize = 1000; // increase performance
+  this.totalSellAttempts = 0;
+  this.totalBuyAttempts = 0;
+  this.totalBought = 0;
+  this.totalSold = 0;
 
+  this.consoleLog(`initWrapper:: gekkoId: ${ config.gekkoId }, type: ${ config.type }`);
   return this.init();
 }
+Base.prototype.onStratWarmupCompletedWrapper = function() {
+  this.consoleLog(`onStratWarmupCompletedWrapper:: `);
+  // todo!
+}
+
 Base.prototype.checkWrapper = function(candle) {
   return this.check(candle);
 }
 Base.prototype.updateWrapper = function(candle, done) {
+  if(this.debug) {
+    this.consoleLog(`updateWrapper:: advised: ${ this.advised }, advisedShort: ${ this.advisedShort }, tradeInitiated: ${ this.tradeInitiated }`);
+  }
   this.currentCandle = candle;
   this.currentPrice = candle.close;
   this.candlesArr.pop();
@@ -141,76 +155,24 @@ Base.prototype.updateWrapper = function(candle, done) {
   return this.update(candle, done);
 }
 
-Base.prototype.onTradeWrapper = function(trade) {   // see https://www.youtube.com/watch?v=lc21W9_zdME
-  this.consoleLog('onTradeWrapper:: trade: ' + JSON.stringify(trade && trade.action));
-  if(trade.action === 'sell') {
-    this.unsetApiTrade();
-
-    if(trade.margin && trade.margin.type === 'short') {
-      this.advisedShort = false;
-    } else {
-      this.advised = false;
-    }
-  }
-  this.tradeInitiated = false;
-
-  return this.onTrade(trade);
-}
-Base.prototype.onPendingTradeWrapper = function(pendingTrade) {
-  this.consoleLog('onPendingTradeWrapper:: pendingTrade: ' + JSON.stringify(pendingTrade && pendingTrade));
-  this.tradeInitiated = true;
-  return this.onPendingTrade(pendingTrade);
-}
-Base.prototype.onTerminatedTradesWrapper = function(terminatedTrades = {}) {  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
-  this.consoleLog('onTerminatedTradesWrapper:: Trade failed. Reason: ' + terminatedTrades.reason);
-  this.tradeInitiated = false;
-  this.unsetApiTrade();
-  return this.onTerminatedTrades(terminatedTrades);
-}
-Base.prototype.onPortfolioChangeWrapper = function(portfolio) {
-  this.consoleLog(`onPortfolioChangeWrapper:: Portfolio: ${ JSON.stringify(portfolio) }`);
-  return this.onPortfolioChange(portfolio);
-}
-Base.prototype.onPortfolioValueChangeWrapper = function(portfolioValue) {
-  return this.onPortfolioValueChange(portfolioValue);
-}
-Base.prototype.onTriggerFiredWrapper = function(portfolioValue) {
-  this.consoleLog(`onTriggerFiredWrapper:: portfolioValue: ${ JSON.stringify(portfolioValue) }`);
-  this.notify({
-    type: 'sell advice',
-    reason: 'trailing stop trigger fired',
-  });
-
-  return this.onTriggerFired(portfolioValue);
-}
-
-Base.prototype.onCommandWrapper = function(command) {
-  this.consoleLog(`onCommandWrapper:: command: ${ JSON.stringify(command) }`);
-  return this.onCommand(command);
-}
-Base.prototype.endWrapper = function() {
-  this.consoleLog(`endWrapper::`);
-  return this.end();
-}
-
-Base.prototype.consoleLog = function(msg = '') {
-  this.currentCandle = this.currentCandle || {}
-  const prefix = `${ config && config.gekkoId }, ${ JSON.stringify(this.currentCandle.start) || JSON.stringify(moment()) } -- `;
-  console.log(prefix, msg);
-}
 Base.prototype.buy = async function(reason, options = {}) {
   let api = await this.getApi();
+  this.totalBuyAttempts++;
 
-  this.consoleLog(`buy:: advice: long, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}`);
+  this.consoleLog(`buy:: advice: long, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}, tradeInitiated=${ this.tradeInitiated }`);
+
 
   if(!IsValidConfigForApi(config) || api && !api.tradeGekkoId) {
+    this.consoleLog(`strat.buy:: adviced, reason: ${ reason }`);
+
     await this.setApiTrade();
+
     this.notify({
       type: 'buy advice',
       reason: reason,
     });
     this.advice({
-      limit: options.limitPrice,
+      limit: options.limitPrice || _.isNumber(options.limit) && options.limit,
       direction: 'long',
       margin: options.margin
     });
@@ -225,12 +187,15 @@ Base.prototype.buy = async function(reason, options = {}) {
     if (!this.hadDeal) {
       this.hadDeal = true; // only set once: strange startAt.unix() bug
     }
+    this.totalBought++;
+
   }
 }
 Base.prototype.sell = async function(reason, options = {}) {
   let api = await this.getApi();
+  this.totalSellAttempts ++;
 
-  this.consoleLog(`sell:: advice: short, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}`);
+  this.consoleLog(`sell:: (attempting) advice: short, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}`);
   if(!IsValidConfigForApi(config) || api && api.tradeGekkoId === config.gekkoId) {
 
     this.notify({
@@ -247,8 +212,76 @@ Base.prototype.sell = async function(reason, options = {}) {
     } else {
       this.advised = false;
     }
+    this.totalSold++;
+    this.buyPrice = 0;
   }
 }
+Base.prototype.onPendingTradeWrapper = function(pendingTrade) {
+  this.consoleLog('onPendingTradeWrapper:: pendingTrade: ' + JSON.stringify(pendingTrade && pendingTrade));
+  this.tradeInitiated = true;
+  return this.onPendingTrade(pendingTrade);
+}
+Base.prototype.onTradeWrapper = function(trade) {   // see https://www.youtube.com/watch?v=lc21W9_zdME
+  this.consoleLog('onTradeWrapper:: trade: ' + JSON.stringify(trade && trade.action));
+  if(trade.action === 'sell') {
+    this.unsetApiTrade();
+
+    if(trade.margin && trade.margin.type === 'short') {
+      this.advisedShort = false;
+    } else {
+      this.advised = false;
+    }
+  }
+  this.tradeInitiated = false;
+  this.buyPrice = trade.price;
+
+  return this.onTrade(trade);
+}
+Base.prototype.onTerminatedTradesWrapper = function(terminatedTrades = {}) {  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
+  this.consoleLog('onTerminatedTradesWrapper:: Trade failed. Reason: ' + terminatedTrades.reason);
+  this.tradeInitiated = false;
+  this.unsetApiTrade();
+  return this.onTerminatedTrades(terminatedTrades);
+}
+Base.prototype.onPortfolioChangeWrapper = function(portfolio) {
+  this.consoleLog(`onPortfolioChangeWrapper:: Portfolio: ${ JSON.stringify(portfolio) }`);
+  return this.onPortfolioChange(portfolio);
+}
+Base.prototype.onPortfolioValueChangeWrapper = function(portfolioValue) {
+  return this.onPortfolioValueChange(portfolioValue);
+}
+Base.prototype.onTriggerFiredWrapper = function(portfolioValue) {
+  this.consoleLog(`onTriggerFiredWrapper:: portfolioValue: ${ JSON.stringify(portfolioValue) }`);
+
+  this.notify({
+    type: 'sell advice',
+    reason: 'trailing stop trigger fired',
+  });
+  this.tradeInitiated = false;
+  //todo:
+  /*this.buyPrice = trade.price;
+  if(trade.margin && trade.margin.type === 'short') {
+    this.advisedShort = false;
+  } else {
+    this.advised = false;
+  }*/
+  return this.onTriggerFired(portfolioValue);
+}
+Base.prototype.onCommandWrapper = function(command) {
+  this.consoleLog(`onCommandWrapper:: command: ${ JSON.stringify(command) }`);
+  return this.onCommand(command);
+}
+Base.prototype.endWrapper = function() {
+  this.consoleLog(`endWrapper::`);
+  return this.end();
+}
+
+Base.prototype.consoleLog = function(msg = '') {
+  this.currentCandle = this.currentCandle || {}
+  const prefix = `${ config && config.gekkoId }, ${ JSON.stringify(this.currentCandle.start) || JSON.stringify(moment()) } -- `;
+  console.log(prefix, msg);
+}
+
 // api-specific (enabling multiple tradebots to trade with a single API Exchange):
 Base.prototype.setApiTrade = async function() {
   if(IsValidConfigForApi(config)) {
