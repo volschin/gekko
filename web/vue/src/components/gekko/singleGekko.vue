@@ -115,7 +115,7 @@
               em This gekko gets market data from &nbsp
                 router-link(:to='"/live-gekkos/" + watcher.id') this market watcher
               | .
-          .grd-row-col-3-6(v-if='!isLoading && !warmupRemaining && !isArchived && isAuthorized && isAdmin')
+          .grd-row-col-3-6(v-if='isStratrunner && !isLoading && !warmupRemaining && !isArchived && isAuthorized && isAdmin')
             p(v-if='true')
               a(v-on:click='forceBuy', class='w100--s my1 btn--red') Force-buy
             p(v-if='true')
