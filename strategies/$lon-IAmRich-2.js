@@ -1,8 +1,5 @@
 // IAmRich strategy
-// v-1
-const moment = require('moment');
-let _ = require('lodash');
-let log = require('../core/log.js');
+// v-2
 
 let bb = require('./indicators/BB.js');
 let rsi = require('./indicators/RSI.js');
@@ -17,28 +14,16 @@ let MA = SMA;
 
 strat.init = function() {
 
-  const config = require ('../core/util').getConfig() || {};
+  let aaatLengh, aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal, longCandle, isMarketLostForThisTrend = false;
+  let totalUptrends = 0, totalDntrends = 0, totalBought = 0, totalSold = 0, totalBoughtAttempts = 0, totalSoldAttempts = 0,
+    totalTradesSuccess = 0, totalTradesLongCandleBelowAaat = 0, totalTradesAaatStopLoss = 0, totalHighVolumeCandles = 0;
+  let greenPrev = 0, redPrev = 0;
 
-  let currentCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, tradeInitiated = false, buyTs, candlesArr = Array(10).fill({
-      open: -1,
-      close: -1,
-      high: -1,
-      low: -1
-    }),
-    aaatLengh;
-
-  consoleLog(`strat init, gekkoId: ${ config.gekkoId }, type: ${ config.type }`)
-
+  this.name = '$lon-IAmRich-2';
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
-  this.debug = false;
-
-  // performance
-  config.backtest.batchSize = 1000; // increase performance
-  config.silent = false;
-  config.debug = true;
-
-  this.name = '$lon-IAmRich-1';
-
+  this.config.silent = false;
+  this.config.debug = true;
+  this.debug = true;
   this.requiredHistory = this.tradingAdvisor.historySize;
 
   // define the indicators we need
@@ -48,7 +33,6 @@ strat.init = function() {
   let shortMA15 = new MA(21);
   let middleMA15 = new MA(100);
   let longMA15 = new MA(200);
-
   let shortMA60 = new MA(21);
   let middleMA60 = new MA(100);
   let longMA60 = new MA(200);
@@ -67,7 +51,7 @@ strat.init = function() {
 
   this.updateAaat = function(candle) {
     if(this.debug) {
-      consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
+      this.consoleLog(`strat updateAaat:: candle: ${JSON.stringify(candle)}`);
     }
     aaatInd.update(candle);
 
@@ -80,14 +64,6 @@ strat.init = function() {
   batcherAaat.on('candle', this.updateAaat);
 
   this.update = function(candle) {
-    if(this.debug) {
-      // consoleLog(`strat update:: advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
-    }
-
-    currentPrice = candle.close;
-    currentCandle = candle;
-    candlesArr.pop();
-    candlesArr.unshift(candle);
 
     batcherAaat.write([candle]);
     batcherAaat.flush();
@@ -102,39 +78,10 @@ strat.init = function() {
     middleMA15.update(candle.close);
     longMA15.update(candle.close);
   }
-  this.onStratWarmupCompleted = function(a,b,c) {
-    consoleLog('onStratWarmupCompleted');
-  }
-  this.stratWarmupCompleted = function(a,b,c) {
-    consoleLog('stratWarmupCompleted');
-  }
-  this.processStratWarmupCompleted = function(a,b,c) {
-    consoleLog('processStratWarmupCompleted');
-  }
-  let aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal, longCandle, isMarketLostForThisTrend = false;
 
-  let totalUptrends = 0, totalDntrends = 0, totalBought = 0, totalSold = 0, totalBoughtAttempts = 0, totalSoldAttempts = 0,
-    totalTradesSuccess = 0, totalTradesLongCandleBelowAaat = 0, totalTradesAaatStopLoss = 0, totalHighVolumeCandles = 0;
-  this.end = function(a, b, c) {
-    consoleLog('gekko end')
-    console.error('gekko end, here is some statistics for you Sir:')
-    console.error(`totalUptrends: ${ totalUptrends }, totalDntrends: ${ totalDntrends }, totalBought: ${ totalBought } (out of ${ totalBoughtAttempts
-      } attempts), totalSold: ${ totalSold
-      } (out of ${ totalSoldAttempts
-      } attempts), statsTotalTradesSuccess: ${ totalTradesSuccess
-      }, totalTradesLongCandleBelowAaat: ${ totalTradesLongCandleBelowAaat
-      }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss
-      // }, totalHighVolumeCandles: ${ totalHighVolumeCandles
-    }`);
-
-  };
-  let greenPrev = 0, redPrev = 0;
   this.check = function(candle) {
-
-    //aaat: {"trend":-1,"stop":8138.549080000001,"trendChange":0}
-    let candlePrev = candlesArr[1];
     if(this.debug) {
-      consoleLog(`strat check:: ${ ''
+      this.consoleLog(`strat check:: ${ ''
         } candle.close: ${ candle.close }, candle.volume: ${ candle.volume
         } longCandle.start: ${ JSON.stringify(longCandle && longCandle.start) }, longCandle.close: ${ longCandle && longCandle.close }, longCandle.volume: ${longCandle && longCandle.volume
         } aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp
@@ -144,18 +91,17 @@ strat.init = function() {
       }`);
     }
     // цена пересекла зеленую
-    if(!advised && aaatTrendUp && (candle.low < aaatStop) && !isMarketLostForThisTrend) {
-      // this.limit = aaatStop;
+    if(!this.advised && aaatTrendUp && (candle.low < aaatStop) && (candle.close > aaatStop) && !isMarketLostForThisTrend) {
       hadTrade = true;
 
-      this.buy(`цена пересекла зеленую: aaaStop: ${ JSON.stringify( aaatStop )}, longCandle: ${ JSON.stringify( longCandle )}`, aaatStop);
+      this.buy(`цена пересекла зеленую: aaaStop: ${ JSON.stringify( aaatStop )}, longCandle: ${ JSON.stringify( longCandle )}`, { limit: aaatStop });
     }
-    if (advised) {
+    if (this.advised) {
       if(EXIT_ON_AAAT_CHANGE && aaatTrendUpPrev === true && aaatTrendUp === false) {
         this.sell(`SELL!!: EXIT - зеленая сменилась на красную!`);
       }
-      if (candle.close >= buyPrice * this.settings.takeProfit) {
-        this.sell(`SELL!!: TAKE PROFIT, buy: ${buyPrice}, sell: ${candle.close}`);
+      if (candle.close >= this.buyPrice * this.settings.takeProfit) {
+        this.sell(`SELL!!: TAKE PROFIT, buy: ${ this.buyPrice }, sell: ${candle.close}`);
       } else if(longCandle.close < aaatStop) {
       // } else if (candle.close < aaatStop) {
         // stop loss, urgent sell!
@@ -164,10 +110,10 @@ strat.init = function() {
         if(USE_MARKET_LOST_FOR_TREND) {
           isMarketLostForThisTrend = true;
         }
-      } else if (candle.close <= buyPrice * this.settings.stopLoss) {
+      } else if (candle.close <= this.buyPrice * this.settings.stopLoss) {
         // if (candle.close < aaatStop) {
         // stop loss, urgent sell!
-        // this.sell(`stop loss: below ${ this.settings.stopLoss }%`);
+        this.sell(`stop loss: below ${ this.settings.stopLoss }%`);
         totalTradesAaatStopLoss++;
         if(USE_MARKET_LOST_FOR_TREND) {
           isMarketLostForThisTrend = true;
@@ -193,89 +139,21 @@ strat.init = function() {
     aaatTrendUpPrev = aaatTrendUp;
   }
 
-  this.sell = function(reason) {
-    consoleLog(`strat.sell:: attempting, tradeInitiated=${ tradeInitiated }`);
-    totalSoldAttempts ++;
-    if (!tradeInitiated) { // Add logic to use other indicators
-      consoleLog(`strat.sell:: called, reason: ${ reason }`);
-      this.notify({
-        type: 'sell advice',
-        reason: reason,
-      });
-      this.advice('short');
-      advised = false;
-      if(currentPrice > buyPrice * 1.002) {
-        totalTradesSuccess++;
-      }
-      buyPrice = 0;
-      totalSold ++;
-    }
-  }
-
-  this.buy = function(reason, fixedPrice) {
-    consoleLog(`strat.buy:: attempting, tradeInitiated=${ tradeInitiated }`);
-    totalBoughtAttempts++;
-    advised = true;
-    // If there are no active trades, send signal
-    if (!tradeInitiated) { // Add logic to use other indicators
-      consoleLog(`strat.buy:: called, reason: ${ reason }`);
-      this.notify({
-        type: 'buy advice',
-        reason: reason,
-      });
-      // this.limit = fixedPrice;
-      this.advice('long');
-      buyTs = this.candle.start;
-      buyPrice = currentPrice;
-      tradeInitiated = true;
-      totalBought++;
-    }
-  }
-  this.onPendingTrade = function(pendingTrade = {}) {
-    tradeInitiated = true;
-    consoleLog('onPendingTrade (tradeInitiated = true)');
-  }
-
-  this.onTrade = function(trade = {}) {
-    tradeInitiated = false;
-    buyPrice = trade.price;
-    consoleLog(`onTrade:: trade: ${ JSON.stringify(trade) }`);
-  }
-
-  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
-  this.onTerminatedTrades = function(terminatedTrades = {}) {
-    tradeInitiated = false;
-    consoleLog('onTerminatedTrades:: Trade failed. Reason: ' + terminatedTrades.reason);
-  }
-
-  this.onPortfolioChange = function(portfolio) {
-    // consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
-  }
-  this.onPortfolioValueChange = function(portfolio) {
-    // consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
-  }
-  this.onTriggerFired = function(data) {
-    // consoleLog(`onTriggerFired, caused by trailing stop, data: ${ JSON.stringify(data) }`);
-  }
-
-  function consoleLog(msg){
-    if(config){
-      msg = msg || '';
-      currentCandle = currentCandle || {}
-      const prefix = `${ config.gekkoId }, ${ JSON.stringify(currentCandle.start) || JSON.stringify(moment()) } -- `;
-      console.log(prefix, msg);
-      log.debug(prefix, msg);
-    }
-  }
-  const printCandle = function(candle) {
-    consoleLog(`strat check:: candle.close: ${ candle.close }, candle.volume: ${ candle.volume }, rsiVal: ${ rsiVal }, aaatStop: ${ aaatStop }, aaatTrendUp: ${ aaatTrendUp }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated }`);
-  }
+  this.end = function(a, b, c) {
+    console.error('Here is some statistics for you Sir:')
+    console.error(`totalUptrends: ${ totalUptrends }, totalDntrends: ${ totalDntrends }, totalBought: ${ totalBought } (out of ${ totalBoughtAttempts
+    } attempts), totalSold: ${ totalSold
+    } (out of ${ totalSoldAttempts
+    } attempts), statsTotalTradesSuccess: ${ totalTradesSuccess
+    }, totalTradesLongCandleBelowAaat: ${ totalTradesLongCandleBelowAaat
+    }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss
+      // }, totalHighVolumeCandles: ${ totalHighVolumeCandles
+    }`);
+  };
 }
+strat.check = function() {
 
-strat.check = function(){
-  // gekko stub
 }
-
 module.exports = strat;
 
 
