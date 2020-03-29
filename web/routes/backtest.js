@@ -28,7 +28,7 @@ module.exports = async function (ctx, next) {
   var req = ctx.request.body;
 
   _.merge(config, base, req);
-
+  config.mode = mode;
   /*if(!dependenciesManager){
     dependenciesManager = require('./cache').get('dependencies'); // circular reference problem
   }*/
