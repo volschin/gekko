@@ -198,7 +198,7 @@ if(isUserManagerPluginEnabled) {
   app
     .use(cors({
       // origin: '*',
-      origin: 'http://127.0.0.1:4000',
+      origin: `${ config.ui.ssl ? 'https' : 'http' }://${ process.env['HOST'] || config.api.host }:${ process.env['PORT'] || config.api.port }`,
       allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
       // allowHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
       credentials: 'true'
