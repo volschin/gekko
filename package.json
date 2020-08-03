@@ -33,7 +33,6 @@
     "co-fs": "^1.2.0",
     "commander": "^2.13.0",
     "convnetjs": "^0.3.0",
-    "fs": "0.0.1-security",
     "gekko": "0.0.9",
     "humanize-duration": "^3.10.0",
     "jsonwebtoken": "^8.5.1",
