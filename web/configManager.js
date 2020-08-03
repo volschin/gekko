@@ -1,5 +1,3 @@
-const fs = require('fs');
-const _ = require('lodash');
 const cache = require('./state/cache');
 const gekkosPersistent = cache.get('gekkosPersistent');
 
