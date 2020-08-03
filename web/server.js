@@ -119,6 +119,17 @@ try {
   console.error(e);
   console.error('Note: if you enable "gekkosPersistent" plugin in baseConfig.js, you need to have it installed to plugins folder!');
 }
+try {
+  if(baseConfig.accountsPerformanceAnalyzer && baseConfig.accountsPerformanceAnalyzer.enabled === true){
+    const AccountsPerformanceAnalyzer = require('../plugins/accountsPerformanceAnalyzer/web');
+    const accountsPerformanceAnalyzer = new AccountsPerformanceAnalyzer();
+    // cache.set('performanceAnalyzerMultiGekko', new GekkosPersistent());
+  }
+} catch (e) {
+  console.error(e);
+  console.error('Note: if you enable "accountsPerformanceAnalyzer" plugin in baseConfig.js, you need to have it installed to plugins folder!');
+}
+// END -=load server plugins=-
 
 // setup API routes
 

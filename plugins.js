@@ -273,6 +273,15 @@ var plugins = [
     path: config => 'gekkosPersistent/index.js',
   },
   {
+    name: 'Accounts Performance Analyser',
+    description: 'Ability to run Performance Analyser on multiple running gekkos that share same Api Key',
+    slug: 'accountsPerformanceAnalyzer',
+    async: true,
+    modes: ['realtime', 'backtest'],
+    emits: true,
+    path: config => 'accountsPerformanceAnalyzer/index.js',
+  },
+  {
     name: 'Dependency Manager Async',
     description: 'Ability to have dependant gekkos (e.g. for different timeframe indicators) - UI version',
     slug: 'dependencyManagerAsync',
