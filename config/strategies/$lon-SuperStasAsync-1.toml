@@ -1,0 +1,8 @@
+#1hr, btc/usdt setup:
+extremumRange = 50
+maxCandlesBetweenImpulseAndVolchok = 3
+extremumCandlesAmount = 10
+tpFibLevel = 0.382
+
+#NB: other setups don't work!! ZASAZHIVAYET
+#    other pairs either - no trades

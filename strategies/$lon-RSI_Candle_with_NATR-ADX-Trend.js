@@ -23,7 +23,7 @@ const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
 const NATR = require('../strategies/indicators/NATR.js');
-const DependenciesManager = require('../web/state/dependencyManager');
+// const DependenciesManager = require('../web/state/dependencyManager');
 
 let rsiArr = [];
 // Let's create our own strat
@@ -60,9 +60,11 @@ const TAKE_PROFIT_COEF = 1.01;
 let THRESHOLDS = {}, strategyIsEnabled = false;
 // Prepare everything our method needs
 strat.init = function() {
+/*
   if (!config.dependencyResults.results) {
     throw 'This strategy must run with dependency "ATR-ADX-Trend-Dep"';
   }
+*/
 
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
   this.debug = false;
@@ -137,17 +139,17 @@ strat.update = function(candle) {
     log.debug('Wait: ', wait);
   }
   let res;
-  if(config.dependencyResults) {
+/*  if(config.dependencyResults) {
     res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults.results);
-  }
+  }*/
   aaat2 = res;
   isBullTrendCur = res && (res.trend !== -1);
 
-  if(config.dependencyResults) {
+/*  if(config.dependencyResults) {
     if (new Date(candle.start).getTime() > new Date(config.dependencyResults.warmupCompletedDate).getTime()) {
       strategyIsEnabled = true;
     }
-  }
+  }*/
 
   // console.error('!! RES:' , res, isBullTrendCur, advised, candle.start.toString());
 }

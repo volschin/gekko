@@ -12,7 +12,7 @@ let MA = SMA;
 strat.init = function() {
 
   let aaatLengh, aaatTrendUp, aaatTrendUpPrev, aaatStop, bb, rsi, rsiVal, longCandle, isMarketLostForThisTrend = false;
-  let totalUptrends = 0, totalDntrends = 0, totalBought = 0, totalSold = 0, totalBoughtAttempts = 0, totalSoldAttempts = 0,
+  let totalUptrends = 0, totalDntrends = 0,
     totalTradesSuccess = 0, totalTradesLongCandleBelowAaat = 0, totalTradesAaatStopLoss = 0, totalHighVolumeCandles = 0;
   let greenPrev = 0, redPrev = 0;
 
@@ -162,8 +162,7 @@ strat.init = function() {
 
   this.end = function(a, b, c) {
     console.error('Here is some statistics for you Sir:')
-    console.error(`totalUptrends: ${ totalUptrends }, totalBought: ${ totalBought } (out of ${ totalBoughtAttempts } attempts), totalSold: ${ totalSold
-      } (out of ${ totalSoldAttempts } attempts), statsTotalTradesSuccess: ${ totalTradesSuccess }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss
+    console.error(`totalUptrends: ${ totalUptrends }, statsTotalTradesSuccess: ${ totalTradesSuccess }, totalTradesAaatStopLoss: ${ totalTradesAaatStopLoss
     }, totalHighVolumeCandles: ${ totalHighVolumeCandles }`);
 
   }

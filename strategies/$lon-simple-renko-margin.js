@@ -78,7 +78,7 @@ strat.init = function(options = {}) {
     // shorts:
     if(this.settings.margin && this.settings.margin.useShort) {
       if (curRenko.isChanged && curRenko.direction === 'dn' && !advisedShort) {
-        this.buy('renko direction change to UP', { limitPrice: curRenko.renkoClose, margin: { type: 'short', limit: 1 } })
+        this.buy('renko direction change to DN', { limitPrice: curRenko.renkoClose, margin: { type: 'short', limit: 1 } })
       }
       if (advisedShort) {
         /*if (curRenko.isChanged && curRenko.direction === 'up') {
@@ -86,7 +86,7 @@ strat.init = function(options = {}) {
         }*/
         // if(prevRenko.isChanged && prevRenko.direction === 'dn' && curRenko.direction === 'dn' && advised) {
         if (curRenko.isChanged && curRenko.direction === 'up') {
-          this.sell('renko direction change to DN', { limitPrice: curRenko.renkoClose, margin: { type: 'short', limit: 1 } })
+          this.sell('renko direction change to UP', { limitPrice: curRenko.renkoClose, margin: { type: 'short', limit: 1 } })
         }
       }
     }
@@ -103,10 +103,10 @@ strat.init = function(options = {}) {
       limit: options.limitPrice,
       direction: 'long',
       margin: options.margin,
-      trigger: {
+      /*trigger: {
         type: 'trailingStop',
         trailPercentage: TRAILING_STOP
-      }
+      }*/
     });
 
     buyTs = this.candle.start;

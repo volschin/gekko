@@ -87,10 +87,10 @@ strat.init = function(options = {}) {
     this.advice({
       limit: options.limitPrice,
       direction: 'long',
-      trigger: {
+      /*trigger: {
         type: 'trailingStop',
         trailPercentage: TRAILING_STOP
-      }
+      }*/
     });
 
     buyTs = this.candle.start;
