@@ -13,6 +13,9 @@ const marketData = require('./coinbase-markets.json');
 const Trader = function(config) {
   this.post_only = false;
   this.use_sandbox = false;
+  // uncomment lines to run on gdax sandbox (testing only)
+  //this.use_sandbox = true;
+  //config.sandbox = true;
   this.name = 'GDAX';
   this.scanback = false;
   this.scanbackTid = 0;
