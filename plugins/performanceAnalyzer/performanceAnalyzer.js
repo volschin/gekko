@@ -163,7 +163,8 @@ PerformanceAnalyzer.prototype.handleCompletedRoundtrip = function() {
     exitPrice: this.roundTrip.exit.price,
     exitBalance: this.roundTrip.exit.total,
 
-    duration: this.roundTrip.exit.date.diff(this.roundTrip.entry.date)
+    duration: this.roundTrip.exit.date.diff(this.roundTrip.entry.date),
+    isMargin: this.roundTrip.exit.margin.type === 'short'
   }
   if(this.roundTrip.exit.margin.type !== 'short') {
     // todo: check if margin.leverage !== 1 (multiply profit for long)

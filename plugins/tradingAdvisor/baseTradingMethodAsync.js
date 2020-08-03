@@ -123,7 +123,7 @@ Base.prototype.initWrapper = function() {
   this.buysAmount = 0;
   this.currentCandle = null;
   this.prevCandle = null;
-  this.candlesArr = Array(10).fill({ open: -1, close: -1, high: -1, low: -1 });
+  this.candlesArr = Array(config.candlesArrLength || 10).fill({ open: -1, close: -1, high: -1, low: -1 });
   this.tradesArr = [];
   this.tradesCount = 0;
   this.config.backtest.batchSize = 1000; // increase performance
@@ -131,6 +131,7 @@ Base.prototype.initWrapper = function() {
   this.totalBuyAttempts = 0;
   this.totalBought = 0;
   this.totalSold = 0;
+  this.tradesArr = [];
 
   this.consoleLog(`initWrapper:: gekkoId: ${ config.gekkoId }, type: ${ config.type }`);
   return this.init();
@@ -155,17 +156,16 @@ Base.prototype.updateWrapper = function(candle, done) {
   return this.update(candle, done);
 }
 
-Base.prototype.buy = async function(reason, options = {}) {
-  let api = await this.getApi();
+Base.prototype.buyCore = async function(reason, options = {}, api) {
   this.totalBuyAttempts++;
 
   this.consoleLog(`buy:: advice: long, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}, tradeInitiated=${ this.tradeInitiated }`);
 
 
   if(!IsValidConfigForApi(config) || api && !api.tradeGekkoId) {
-    this.consoleLog(`strat.buy:: adviced, reason: ${ reason }`);
+    this.consoleLog(`strat.buy:: executing, reason: ${ reason }`);
 
-    await this.setApiTrade();
+    this.setApiTrade();
 
     this.notify({
       type: 'buy advice',
@@ -188,15 +188,25 @@ Base.prototype.buy = async function(reason, options = {}) {
       this.hadDeal = true; // only set once: strange startAt.unix() bug
     }
     this.totalBought++;
-
   }
 }
-Base.prototype.sell = async function(reason, options = {}) {
-  let api = await this.getApi();
+Base.prototype.buy = function(reason, options = {}) {
+  const that = this;
+  if(this.config.mode !== 'backtest') {
+    (async function() {
+      let api = await that.getApi();
+      that.buyCore(reason, options, api);
+    })();
+  } else {
+    that.buyCore(reason, options);
+  }
+}
+Base.prototype.sellCore = async function(reason, options = {}, api) {
   this.totalSellAttempts ++;
 
   this.consoleLog(`sell:: (attempting) advice: short, margin: ${!!options.margin}, tradeGekkoId: ${ api && api.tradeGekkoId}`);
   if(!IsValidConfigForApi(config) || api && api.tradeGekkoId === config.gekkoId) {
+    this.consoleLog(`strat.sell:: executing, reason: ${ reason }`);
 
     this.notify({
       type: 'sell advice',
@@ -214,6 +224,17 @@ Base.prototype.sell = async function(reason, options = {}) {
     }
     this.totalSold++;
     this.buyPrice = 0;
+  }
+}
+Base.prototype.sell = function(reason, options = {}) {
+  const that = this;
+  if(this.config.mode !== 'backtest') {
+    (async function() {
+      let api = await that.getApi();
+      that.sellCore(reason, options, api);
+    })();
+  } else {
+    that.sellCore(reason, options);
   }
 }
 Base.prototype.onPendingTradeWrapper = function(pendingTrade) {
@@ -234,7 +255,7 @@ Base.prototype.onTradeWrapper = function(trade) {   // see https://www.youtube.c
   }
   this.tradeInitiated = false;
   this.buyPrice = trade.price;
-
+  this.tradesArr.push(trade);
   return this.onTrade(trade);
 }
 Base.prototype.onTerminatedTradesWrapper = function(terminatedTrades = {}) {  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
@@ -272,8 +293,34 @@ Base.prototype.onCommandWrapper = function(command) {
   return this.onCommand(command);
 }
 Base.prototype.endWrapper = function() {
-  this.consoleLog(`endWrapper::`);
+  this.consoleLog(`endWrapper:: total trades: ${ this.tradesArr.length
+  }, totalBought: ${ this.totalBought } (out of ${ this.totalBuyAttempts
+  } attempts), totalSold: ${ this.totalSold
+  } (out of ${ this.totalSellAttempts } attempts), `);
   return this.end();
+}
+
+Base.prototype.isInProfit = function(candle) {
+  let ret = false;
+  const fee = this.getFee();
+  candle = candle || this.candle;
+  if(candle) {
+    ret = (candle.close * (1 - fee) - this.buyPrice * (1 + fee)) > 0;
+  }
+  return ret;
+}
+Base.prototype.isInProfitShort = function(candle) {
+  let ret = false;
+  const fee = this.getFee();
+  candle = candle || this.candle;
+  if(candle) {
+    ret = (this.buyPrice * (1 - fee) - candle.close * (1 + fee)) > 0;
+  }
+  return ret;
+}
+Base.prototype.getFee = function(candle) {
+  let feeOrig = this.config.paperTrader && (this.config.paperTrader.feeUsing === 'taker' ?  this.config.paperTrader.feeTaker: this.config.paperTrader.feeMaker);
+  return 0.01 * (feeOrig || 0.1);
 }
 
 Base.prototype.consoleLog = function(msg = '') {
