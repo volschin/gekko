@@ -35,6 +35,9 @@ config.childToParent = {
   enabled: false,
 }
 
+// ASYNC STRATEGIES:
+config.asyncStrategies = [ '$lon-DEVELOP', '$lon-IAmRich-1', '$lon-IAmRich-2', '$lon-IAmRich-21',
+  '$lon-krown-cave', '$lon-krown-cave-1.1', '$lon-krown-cave-1.2', '$lon-SuperStasAsync-1', '$lon-backfire-vial']; // TEMP! todo: move to config.js, when tested.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //                       CONFIGURING ADAPTER
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,8 +60,9 @@ config.sqlite = {
 config.postgresql = {
   path: 'plugins/postgresql',
   version: 0.1,
-  connectionString: 'postgres://postgres:xxx@localhost:5434', // if default port
-  database: 'gekko', // if set, we'll put all tables into a single database.
+  // connectionString: 'postgres://postgres:Slon48@postgresql:5432', // docker version, database - gekko
+  connectionString: 'postgres://postgres:Slon48@localhost:5434', // local version, database - gekko2
+  database: 'gekko2', // if set, we'll put all tables into a single database.
   schema: 'public',
   dependencies: [{
     module: 'pg',
@@ -83,13 +87,33 @@ config.telegrambotAsync = {
   botName: 'xxx'
 };
 
+// Ash's plugins
 config.slackAsync = {
-  enabled: true,
-  token: 'xxx',
+  enabled: false,
+  token: 'xoxp-7817417825-700506522018-705610649841-19a206598aae9474b833c43c57c34bb6',
   sendMessageOnStart: true,
   muteSoft: true,
-  channel: 'xxx'
+  channel: 'GSHEYLVA4'
 }
+config.userManager = {
+  enabled: true,
+}
+config.gekkosManagerAsync = {
+  enabled: true,
+}
+config.dependencyManager = {
+  enabled: false
+}
+config.gekkosPersistent = {
+  enabled: true
+}
+config.accountsPerformanceAnalyzer = {
+  enabled: false,
+  dependencies: ['gekkosPersistent'] // it's just a note, no real code behind
+}
+config.apiKeyNameForBacktest = 'backtest1';
+config.bundleIdForBacktest = '9f9c1188-855c-49d4-8da2-117473172f57';
+// end Ash's plugins
 
 config.adviceWriter = {
   enabled: false,
