@@ -1,27 +1,25 @@
 <template lang='pug'>
   div
-    div.contain
-      router-link.btn--primary(to='/backtest/batch') Batch Backtest
-    h2.contain Backtest
-
+    h2.contain Batch Backtest
     h3.contain(v-if='configCurrent && configCurrent.options && configCurrent.options.name') {{ configCurrent.options.name }}
     p.contain(v-if='configCurrent && configCurrent.options && configCurrent.options.description')
       pre {{ configCurrent.options.description }}
     .hr
-    config-builder(v-on:config='check' :configCurrent="configCurrent")
+    config-builder(v-on:config='check' :configCurrent="configCurrent" :isBatch='true')
 
-    result(v-if='backtestResult && backtestState === "fetched"', :result='backtestResult', v-bind:config={  })
+    result(v-if='backtestResult && backtestState === "fetched"', :result='backtestResult', v-bind:config={  }, :isBatch='true')
 
     div.tradingviewContainer(v-bind:style="{ display: tradingviewDisplay }")
       tradingviewChart(:height='500', v-bind:config="config", v-bind:backtestResult="backtestResult" :configCurrent="configCurrent")
     div(v-if='backtestable')
       .txt--center
         a.button--save.w100--s.my1.btn--primary.btn--empty(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='saveConfig') Save
-        a.button--backtest.w100--s.my1.btn--primary(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='run') Backtest
+        a.button--backtest.w100--s.my1.btn--primary(href='#', v-if='backtestState !== "fetching"', v-on:click.prevent='run') Backtest Batch
         router-link.button--backtest.w100--s.my1.btn--red(:to='`live-gekkos/new?configId=${ savedConfigId }`', v-if='backtestState !== "fetching" && savedConfigId', v-on:click.prevent='run') Start Gekko
         div(v-if='backtestState === "fetching"').scan-btn
           p Running backtest..
           spinner
+
 </template>
 
 <script>
@@ -38,6 +36,7 @@ export default {
       backtestable: false,
       backtestState: 'idle',
       backtestResult: false,
+      backtestResults: false,
       config: false,
       tradingviewDisplay: 'none',
       savedConfigId: null
@@ -130,8 +129,9 @@ export default {
       const that = this;
       this.backtestState = 'fetching';
 
-      post('backtest', this.config, (error, response) => {
+      post('batchBacktest', this.config, (error, response) => {
         this.backtestState = 'fetched';
+
         if (error || !response || response.error) {
           console.log('post->batchBacktest:: error: ', error);
           that.$toast({
@@ -140,7 +140,8 @@ export default {
             icon: 'error',
           });
         } else {
-          this.backtestResult = response;
+          this.backtestResults = response;
+          this.backtestResult = getResultFromBatch(response.backtests, response.performanceReport);
         }
       });
     },
@@ -160,4 +161,27 @@ export default {
     tradingviewChart,
   }
 }
+
+function getResultFromBatch(backtests = [], performanceReport = {}) {
+  let ret;
+  const first = backtests[0];
+  if (first) {
+    ret = backtests.reduce((res, cur) => {
+      return {
+        roundtrips: res.roundtrips && res.roundtrips.concat(cur.roundtrips),
+        stratCandles: res.stratCandles && res.stratCandles.concat(cur.stratCandles),
+        trades: res.trades && res.trades.concat(cur.trades),
+      }
+    })
+    ret = Object.assign(ret, {
+      market: first.market,
+      strategyParameters: first.strategyParameters,
+      tradingAdvisor: first.tradingAdvisor,
+      performanceReport: performanceReport,
+    });
+  }
+
+  return ret;
+}
+
 </script>

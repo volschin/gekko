@@ -20,6 +20,7 @@ global.vue = Vue;
 import store from './store'
 
 import backtester from './components/backtester/backtester.vue'
+import batchBacktester from './components/backtester/batchBacktester.vue'
 import home from './components/layout/home.vue'
 
 import data from './components/data/data.vue'
@@ -48,6 +49,7 @@ const router = new VueRouter({
     { path: '/', redirect: '/home' },
     { path: '/home', component: home },
     { path: '/backtest', component: backtester, meta: { roles: '!guest' }  },
+    { path: '/backtest/batch', component: batchBacktester, meta: { roles: '!guest,!user' }  },
     { path: '/config', component: config, meta: { roles: '!guest' } },
     { path: '/data', component: data, meta: { roles: '!guest,!user' } },
     { path: '/data/importer', component: importer, meta: { roles: '!guest' } },

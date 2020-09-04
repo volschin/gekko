@@ -3,9 +3,10 @@
     .hr.contain
     div.contain
       h3
-        a(v-on:click.prevent='switchToggle') Backtest result
+        a(v-if='isBatch' v-on:click.prevent='switchToggle') Batch backtest result
+        a(v-if='!isBatch' v-on:click.prevent='switchToggle') Backtest result
     template(v-if='toggle === "open"')
-      result-summary(:report='result.performanceReport')
+      result-summary(:report='result.performanceReport', :isBatch='isBatch')
       .hr.contain
       chart(:data='candles', height='500')
       //.hr.contain
@@ -22,7 +23,7 @@ import chart from './chartWrapper.vue'
 import roundtripTable from './roundtripTable.vue'
 
 export default {
-  props: ['result'],
+  props: ['result', 'isBatch'],
   data: () => {
     // config.watch.asset = "ltc"
     // config.watch.currency = "btc"

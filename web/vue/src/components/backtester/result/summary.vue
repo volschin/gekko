@@ -23,7 +23,7 @@ div.contain
           th market
           td {{ round(report.market) }}%
 
-    paperTradeSummary(:report='report')
+    paperTradeSummary(:report='report', :isBatch='isBatch')
 
 </template>
 
@@ -32,7 +32,7 @@ div.contain
 import paperTradeSummary from '../../global/paperTradeSummary.vue'
 
 export default {
-  props: ['report'],
+  props: ['report', 'isBatch'],
   components: {
     paperTradeSummary
   },

@@ -5,6 +5,12 @@
     //tradingviewChart(:height='500', config={asdf: "a"})
     .hr
     strat-picker.my2(v-on:stratConfig='updateStrat' :configCurrent="configCurrent" :isBacktest='true').contain
+    div.grd.my2.contain(v-if='isBatch')
+      .hr
+      label.wrapper Batch Size:
+      .custom-select.button
+        select(v-model='selectedBatchSize' v-on:selectedBatchSize='config')
+          option(v-for='(batch) in batchSizes') {{ batch }}
     .hr
     div.my2.contain
       .grd-row
@@ -27,7 +33,7 @@ import toml from 'toml-js';
 // import tradingviewChart from '../tradingview/tradingviewChartContainer.vue'
 
 export default {
-  props: ['configCurrent'],
+  props: ['configCurrent', 'isBatch'],
   created: function() {
     get('configPart/performanceAnalyzer', (error, response) => {
       this.performanceAnalyzer = toml.parse(response.part);
@@ -43,6 +49,8 @@ export default {
       paperTrader: {},
       performanceAnalyzer: {},
       dependencyPicker: [],
+      selectedBatchSize: 'month',
+      batchSizes: [ '15 minutes', 'hour', 'day', 'week', 'month']
     }
   },
   components: {
@@ -100,6 +108,10 @@ export default {
         { performanceAnalyzer: this.performanceAnalyzer },
       );
 
+      if (this.isBatch) {
+        config.batchBacktest = { batchSize: this.selectedBatchSize };
+      }
+
       config.valid = this.validConfig(config);
       config.backtestResultExporter.enabled = true;
       return config;
@@ -129,7 +141,7 @@ export default {
       if(config.tradingAdvisor) {
         if(_.isNaN(config.tradingAdvisor.candleSize))
           return false;
-        else if(config.tradingAdvisor.candleSize == 0)
+        else if(config.tradingAdvisor.candleSize === 0)
           return false;
       }
 

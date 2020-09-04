@@ -4,7 +4,7 @@ import { restPath } from './api.js'
 
 export const processResponse = next => (err, res) => {
   if(err)
-    return next(err);
+    return next(err, res);
 
   if(!res.text)
     return next('no data');
