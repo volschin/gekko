@@ -36,5 +36,8 @@ module.exports = async function (ctx, next) {
   if(dependenciesManager && config.dependencies && config.dependencies.length > 0){
     await dependenciesManager.getDependencyResultsAsync(config);
   }
+  const ts1 = Date.now();
   ctx.body = await pipelineRunner(mode, config);
+  const ts2 = Date.now();
+  console.log(`backtest route:: exec time: ${ ts2 - ts1 }`);
 }

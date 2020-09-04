@@ -143,6 +143,7 @@ router.post('/api/removeApiKey', ensureAuthenticated(), apiKeys.remove);
 router.post('/api/scan', ensureAuthenticated(), require(ROUTE('scanDateRange')));
 router.post('/api/scansets', ensureAuthenticated(), require(ROUTE('scanDatasets')));
 router.post('/api/backtest', ensureAuthenticated(), require(ROUTE('backtest')));
+router.post('/api/batchBacktest', ensureAuthenticated(), require(ROUTE('batchBacktest')));
 router.post('/api/import', ensureAuthenticated('admin'), require(ROUTE('import')));
 router.post('/api/getCandles', ensureAuthenticated(), require(ROUTE('getCandles')));
 
