@@ -49,7 +49,7 @@ export default {
       paperTrader: {},
       performanceAnalyzer: {},
       dependencyPicker: [],
-      selectedBatchSize: 'month',
+      selectedBatchSize: '1 month',
       batchSizes: [ '15 minutes', '1 hour', '1 day', '1 week', '1 month']
     }
   },
