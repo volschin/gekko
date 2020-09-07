@@ -265,9 +265,6 @@ PerformanceAnalyzer.prototype.calculateReportStatistics = function(isFinalReport
 }
 
 PerformanceAnalyzer.prototype.finalize = function(done) {
-  if(!this.trades) {
-    return done();
-  }
 
   const report = this.calculateReportStatistics(true);
   if(report) {
