@@ -50,7 +50,7 @@ export default {
       performanceAnalyzer: {},
       dependencyPicker: [],
       selectedBatchSize: 'month',
-      batchSizes: [ '15 minutes', 'hour', 'day', 'week', 'month']
+      batchSizes: [ '15 minutes', '1 hour', '1 day', '1 week', '1 month']
     }
   },
   components: {
