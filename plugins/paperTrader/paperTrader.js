@@ -80,6 +80,7 @@ PaperTrader.prototype.updatePosition = function(what) {
 
   let cost;
   let amount;
+  this.isLastTradeMargin = !!what.margin;
 
   // virtually trade all {currency} to {asset}
   // at the current price (minus fees)
@@ -144,7 +145,11 @@ PaperTrader.prototype.updatePosition = function(what) {
 }
 
 PaperTrader.prototype.getBalance = function() {
-  return this.portfolio.currency + this.price * this.portfolio.asset;
+  if (this.isLastTradeMargin && this.exposed) {
+    return (this.portfolio.currencyMargin * 2) - this.portfolio.asset * this.price;
+  } else {
+    return this.portfolio.currency + this.price * this.portfolio.asset;
+  }
 }
 
 PaperTrader.prototype.now = function() {
