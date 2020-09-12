@@ -9,7 +9,7 @@ const CONFIG = {
   api: {
     host: '127.0.0.1',
     port: 3000,
-    timeout: 120000 // 2 minutes
+    timeout: 360000 // 6 minutes
   },
   ui: {
     ssl: false,
