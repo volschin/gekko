@@ -14,7 +14,7 @@ Gekko is a Bitcoin TA trading and backtesting platform that connects to popular 
  
  ## Added
  - Gekko strategies
- - gekkoga
+ - gekkoga + Ui
  - backtestTool
 
 Somes dependency were added to initial script from b16b00b5.
@@ -41,13 +41,16 @@ Ajust MEMORYNODE for max memory size under the limit of memory of container -10%
 If you change Ip: localhost to another and start container and it be wrong IP. change manualy IP on
 nano /usr/src/app/web/vue/dist/UIconfig.js or delete container and rebuild
 
+### To work with UI of gekkoga 
+read DustinJSilk/gekkoga-plus-ui git repos
+
 
 
 ## TODO
 - Clean dependency and somes strategies who doesnt work.
 
 ## Go to these GITHUB to add some new fonction for all
-https://github.com/viking76/gekko.git
+https://github.com/viking76/gekko-archive.git
 
 ## Community & Support
 
