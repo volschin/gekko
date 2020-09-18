@@ -69,8 +69,9 @@ RUN cp *.* ..
 WORKDIR ../
 RUN rm -R ./Gekko-BacktestTool
 
-# Install Genetic Algorithm for solving optimization of trading strategies using Gekko
-RUN git clone https://github.com/gekkowarez/gekkoga.git
+# Install Genetic Algorithm for solving optimization of trading strategies using Gekko upgraded with UI
+RUN git clone https://github.com/DustinJSilk/gekkoga-plus-ui
+RUN mv /usr/src/app/gekkoga-plus-ui /usr/src/app/gekkoga
 WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
