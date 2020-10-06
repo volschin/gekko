@@ -9,7 +9,7 @@ VOLUME CONFIG "/home/users/config.js:./config.js:/usr/src/app/config.js"
 
 # Add some extra tool
 RUN apt-get update && \
-    apt-get install nano
+    apt-get install nano tmux
     # Clean
 RUN apt-get clean && \
     apt-get autoclean
@@ -70,8 +70,7 @@ WORKDIR ../
 RUN rm -R ./Gekko-BacktestTool
 
 # Install Genetic Algorithm for solving optimization of trading strategies using Gekko upgraded with UI
-RUN git clone https://github.com/DustinJSilk/gekkoga-plus-ui
-RUN mv /usr/src/app/gekkoga-plus-ui /usr/src/app/gekkoga
+RUN git clone https://github.com/gekkowarez/gekkoga.git
 WORKDIR ./gekkoga
     RUN npm install 
 WORKDIR ../
