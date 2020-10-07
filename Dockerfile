@@ -9,7 +9,7 @@ VOLUME CONFIG "/home/users/config.js:./config.js:/usr/src/app/config.js"
 
 # Add some extra tool
 RUN apt-get update && \
-    apt-get upgrade && \
+    apt-get upgrade -y && \
     apt-get install -y tmux nano
 # Clean
 RUN apt-get clean && \
