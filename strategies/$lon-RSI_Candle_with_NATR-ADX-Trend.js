@@ -23,7 +23,7 @@ const CandleBatcher = require('../core/candleBatcher');
 const RSI = require('../strategies/indicators/RSI.js');
 const SMA = require('../strategies/indicators/SMA.js');
 const NATR = require('../strategies/indicators/NATR.js');
-const DependenciesManager = require('../web/state/dependencyManager');
+//const DependenciesManager = require('../web/state/dependencyManager');
 
 let rsiArr = [];
 // Let's create our own strat
@@ -138,7 +138,7 @@ strat.update = function(candle) {
   }
   let res;
   if(config.dependencyResults) {
-    res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults.results);
+    //res = DependenciesManager.getClosestResult(candle.start, config.dependencyResults.results);
   }
   aaat2 = res;
   isBullTrendCur = res && (res.trend !== -1);
