@@ -1,24 +1,33 @@
 // Directional Movement Indicator;
 // for use on gekko trading bot. Same license as gekko.
 // Ported from ADX and DI inidicator by MasaNakamura on TradingView
-// https://www.tradingview.com/script/VTPMMOrx-ADX-and-DI/ 
+// https://www.tradingview.com/script/VTPMMOrx-ADX-and-DI/
 // by crypto49er
 
 
-var Indicator = function (period)
-{
+var Indicator = function (period, existing) {
 
     this.input='candle';
-
-    this.lastcandle = false;
     this.requiredHistory = period;
     this.period = period;
 
-    this.age = 0;
-    this.result = false;
-    this.periodWeight = (period-1)/period;
-    this.dm_up = 0;
-    this.dm_down = 0;
+    if (existing) {
+      this.lastcandle = existing.lastcandle || false;
+      this.age = existing.age || 0;
+      this.result = existing.age || false;
+      this.periodWeight = existing.periodWeight || (period - 1) / period;
+      this.dm_up = existing.dm_up || 0;
+      this.dm_down = existing.dm_down || 0;
+
+      Object.assign(this, existing);
+    } else {
+      this.lastcandle = false;
+      this.age = 0;
+      this.result = false;
+      this.periodWeight = (period - 1) / period;
+      this.dm_up = 0;
+      this.dm_down = 0;
+    }
 }
 
 

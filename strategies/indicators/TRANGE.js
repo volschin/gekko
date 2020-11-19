@@ -2,17 +2,21 @@
 // compatible with Gekko Trading Bot. ported from tulip.
 // Gab0 - 2018
 
-var Indicator = function()
+var Indicator = function(existing)
 {
-
 
   this.input = 'candle'
   this.indicates = 'volatility';
-
-  this.age = 0;
-  this.result = 0;
-
-  this.lastcandle = false;
+  if (existing) {
+    this.age = existing.age || 0;
+    this.result = existing.result || 0;
+    this.lastcandle = existing.lastcandle || false;
+    Object.assign(this, existing);
+  } else {
+    this.age = 0;
+    this.result = 0;
+    this.lastcandle = false;
+  }
 }
 
 Indicator.prototype.update = function(candle) {
@@ -21,8 +25,7 @@ Indicator.prototype.update = function(candle) {
 
   this.age++;
 
-  if (this.lastcandle)
-  {
+  if (this.lastcandle) {
 
     var TR_A = candle.high - candle.low;
     var TR_B = candle.high - this.lastcandle.close;

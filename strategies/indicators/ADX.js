@@ -5,18 +5,22 @@
 
 var DX = require('./DX.js');
 
-var Indicator = function (period)
+var Indicator = function (period, existing)
 {
   this.input = 'candle';
   this.indicates = 'trend_strength';
-
-  this.dx = new DX(period);
 
   this.result = 0;
   this.periodRatio = (period - 1)/period;
   this.initadx = 0;
   this.initialized = 1;
   this.period = period;
+
+  if (existing) {
+    Object.assign(this, existing);
+  }
+
+  this.dx = new DX(period, existing && existing.dx);
 }
 
 Indicator.prototype.update = function (candle)

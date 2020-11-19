@@ -5,16 +5,22 @@
 var TRANGE = require('./TRANGE.js');
 var SMMA = require('./SMMA.js');
 
-var Indicator = function(period) {
+var Indicator = function(period, existing) {
   this.input = 'candle';
 
   this.indicates = 'volatility'; //info purpose
 
-  this.result = false;
-  this.age = 0;
+  if (existing) {
+    this.result = existing.result || false;
+    this.age = existing.age || 0;
+    Object.assign(this, existing);
+  } else {
+    this.result = false;
+    this.age = 0;
+  }
 
-  this.trange = new TRANGE();
-  this.smooth = new SMMA(period);
+  this.trange = new TRANGE(existing && existing.trange);
+  this.smooth = new SMMA(period, existing && existing.smooth);
 }
 
 Indicator.prototype.update = function(candle) {

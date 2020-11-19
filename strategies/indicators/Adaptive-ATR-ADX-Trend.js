@@ -38,7 +38,52 @@ const aboveThresh = true; //true, title = "ADX Above Threshold uses ATR Falling 
 const block = 0.000010; // BIG QUESTION!! taken from TV
 
 
-const Indicator = function(settings) {
+const Indicator = function(settings, existing) {
+  this.loadParamsFromExisting = function() {
+    res = existing.res || res;
+    DXArr = existing.DXArr || DXArr;
+    previousCandle = existing.previousCandle || { //Initialise previousCandle with 0
+      "open": null,
+      "close": null,
+      "high": null,
+      "low": null
+    }
+
+    sTRPrev = existing.sTRPrev;
+    sDMPosPrev = existing.sDMPosPrev;
+    sDMNegPrev = existing.sDMNegPrev;
+    adxPrev = existing.adxPrev;
+    mPrev = existing.mPrev;
+    cPrev = existing.cPrev;
+    TUpPrev = existing.TUpPrev;
+    TDownPrev = existing.TDownPrev;
+    src_Prev = existing.src_Prev;
+    trendPrev = existing.trendPrev;
+    xClosePrev = existing.xClosePrev;
+    xOpenPrev = existing.xOpenPrev;
+
+    this.result = existing.result || this.result;
+  }
+
+  this.updateSelfParamsForExisting = function() {
+    this.previousCandle = previousCandle;
+    this.res = res;
+    this.DXArr = DXArr;
+
+    this.sTRPrev = sTR;
+    this.sDMPosPrev = sDMPos;
+    this.sDMNegPrev = sDMNeg;
+    this.adxPrev = adx;
+    this.mPrev = m;
+    this.cPrev = c;
+    this.TUpPrev = TUp;
+    this.TDownPrev = TDown;
+    this.src_Prev = src_;
+    this.trendPrev = trend;
+    this.xClosePrev = xClose;
+    this.xOpenPrev = xOpen;
+  }
+
   let counter = 0, high, low, close, open, highPrev, lowPrev, closePrev, hR, lR, dmPos, dmNeg, tr, sTR, sTRPrev, sDMPos, sDMPosPrev, sDMNeg, sDMNegPrev,
     DIP, DIN, DX, DXArr, adx, adxPrev,
     xOpen, xOpenPrev, xClose, xClosePrev, xHigh, xLow, v1, v2, v3, trueRange,     //Heineken stuff
@@ -46,30 +91,37 @@ const Indicator = function(settings) {
 
   let useHeiken = false; //(false, title = "Use Heiken-Ashi Bars (Source will be ohlc4)")
   let isDebug = false;
-  let previousCandle = { //Initialise previousCandle with 0
-    "open": null,
-    "close": null,
-    "high": null,
-    "low": null
-  };
+
+  let previousCandle;
+
   let res = 0;
-
-
   this.settings = settings || {}; // not used now
   this.input = 'candle';
 
-  this.sma = new SMA(adxLen);
-  this.atr = new ATR(atrLen);
-  isDebug = this.settings.debug || isDebug;
-  if(this.settings.useHeiken){
-    useHeiken = this.settings.useHeiken
-  }
   DXArr = new Array(adxLen).fill(0);
   this.result = {
     trend, stop, trendChange,
     //adx,atr, m, src_, TUp, TDown // debug
   }
 
+  if (!existing) {
+    previousCandle = { //Initialise previousCandle with 0
+      "open": null,
+      "close": null,
+      "high": null,
+      "low": null
+    }
+  } else {
+    this.loadParamsFromExisting();
+    Object.assign(this, existing);
+  }
+
+  this.sma = new SMA(adxLen, existing && existing.sma);
+  this.atr = new ATR(atrLen, existing && existing.atr);
+
+  if(this.settings.useHeiken){
+    useHeiken = this.settings.useHeiken
+  }
 
   this.update = function(candle) {
     counter++;
@@ -84,6 +136,9 @@ const Indicator = function(settings) {
     this.result = res;
 
     previousCandle = candle; //for HA calculation
+
+    // for existing
+    this.updateSelfParamsForExisting();
 
     return this.result;
   }
@@ -212,12 +267,13 @@ const Indicator = function(settings) {
     xClosePrev = xClose;
     xOpenPrev = xOpen;
 
+
+
     return {
       trend, stop, trendChange,
       //adx,atr, m, src_, TUp, TDown // debug
     }
   }
-
 
 }
 
