@@ -13,11 +13,15 @@ let strat = {};
 // seal everything into init to have the ability to use local variables unique for each strat instance
 // , instead of using 'this.someVar', to optimize performance:
 strat.init = function(options = {}) {
+  this.debug = false;
+
   // performance
   this.config.backtest.batchSize = 1000; // increase performance
   this.config.silent = false;
   this.config.debug = true;
 
+  // let aaatIndLow = new AAAT();
+  this.addIndicator('aaatIndLow', 'Adaptive-ATR-ADX-Trend', { debug: false, useHeiken: this.settings.aaat.USE_HEIKEN });
 
   if (this.config.tradingAdvisor.candleSize !== 60) {
     /*throw {
@@ -26,13 +30,14 @@ strat.init = function(options = {}) {
   }
 
   this.update = function(candle = {}) {
-    if(this.debug && false) {
+    this.consoleLog(this.indicators.aaatIndLow.result);
+    if(this.debug) {
       this.consoleLog(`strat update:: candle.start: ${ JSON.stringify(candle.start) }, advised: ${ this.advised }, tradeInitiated: ${ this.tradeInitiated }`);
     }
   };
 
   this.check = function(candle) {
-    if (this.debug && false) {
+    if (this.debug) {
       this.consoleLog(`strat check:: ${''
       } candle.close: ${candle.close
       }`);
