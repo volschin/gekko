@@ -219,6 +219,17 @@
     },
     {
       "pair": [
+        "USDT",
+        "LINK"
+      ],
+      "minimalOrder": {
+        "amount": 1,
+        "price": 1e-8,
+        "order": 0.001
+      }
+    },
+    {
+      "pair": [
         "BTC",
         "LINK"
       ],
@@ -1458,6 +1469,17 @@
         "amount": 1,
         "price": 1e-8,
         "order": 0.01
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "DASH"
+      ],
+      "minimalOrder": {
+        "amount": 0.01,
+        "price": 0.0001,
+        "order": 10
       }
     },
     {

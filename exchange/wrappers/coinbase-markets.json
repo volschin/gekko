@@ -5,13 +5,16 @@
     "BCH",
     "ETH",
     "LTC",
-    "ZRX"
+    "ZRX",
+    "LINK",
+    "BAT"
   ],
   "currencies": [
     "EUR",
     "USD",
     "BTC",
-    "GBP"
+    "GBP",
+    "ETH"
   ],
   "markets": [
     {
@@ -231,6 +234,26 @@
       ],
       "minimalOrder": {
         "amount": "0.01000000",
+        "unit": "asset"
+      }
+    },
+    {
+      "pair": [
+        "ETH",
+        "LINK"
+      ],
+      "minimalOrder": {
+        "amount": "0.10000000",
+        "unit": "asset"
+      }
+    },
+    {
+      "pair": [
+        "ETH",
+        "BAT"
+      ],
+      "minimalOrder": {
+        "amount": "0.10000000",
         "unit": "asset"
       }
     }
