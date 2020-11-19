@@ -1,8 +1,7 @@
-// see https://raw.githubusercontent.com/timchepeleff/turtles
+// see https://github.com/timchepeleff/turtles
 
 var _ = require('lodash');
 var log = require('../core/log');
-const ATR = require('./indicators/ATR');
 var strat = {};
 let currentCandle ;
 
@@ -34,13 +33,12 @@ strat.init = function() {
   this.maxCandlesLength = this.settings.enterSlow + 1;
   this.stop = 0
 
-  this.atr = new ATR(this.atrPeriod);
-  // this.addTalibIndicator('atr', 'atr', { optInTimePeriod: this.atrPeriod });
+  this.addIndicator('atr', 'ATR', this.atrPeriod, this.settings.isPersistent);
 }
 
 // What happens on every new candle?
 strat.update = function(candle) {
-  this.atr.update(candle);
+  this.indicators.atr.update(candle);
   manageTrailingStopLoss(candle, this);
 
   this.candles.push(candle);
@@ -55,7 +53,8 @@ strat.log = function() {
 }
 
 const shouldEnterLong = function(candle, currentFrame, isShort = false) {
-  return checkEnterFastLong(candle, currentFrame, isShort) ? checkEnterFastLong(candle, currentFrame, isShort) : checkEnterSlowLong(candle, currentFrame, isShort)
+  return checkEnterFastLong(candle, currentFrame, isShort) ? checkEnterFastLong(candle, currentFrame, isShort)
+    : checkEnterSlowLong(candle, currentFrame, isShort)
 }
 
 const checkEnterFastLong = function(candle, currentFrame, isShort = false) {
@@ -143,10 +142,10 @@ const highest = function(numberOfCandlesBack, currentFrame) {
 const manageStopLoss = function(candle, currentFrame, isShort = false) {
   if (currentFrame.useAtrStop) {
     if(!isShort) {
-      let atr = currentFrame.atr.result;
+      let atr = currentFrame.indicators.atr.result;
       currentFrame.stop = (candle.close - (atr * currentFrame.atrStop))
     } else {
-      let atr = currentFrame.atr.result;
+      let atr = currentFrame.indicators.atr.result;
       currentFrame.stop = (candle.close - (atr * currentFrame.atrStop))
     }
 
@@ -155,7 +154,7 @@ const manageStopLoss = function(candle, currentFrame, isShort = false) {
 
 const manageTrailingStopLoss = function(candle, currentFrame) {
   if (currentFrame.useTrailingAtrStop) {
-    let atr = currentFrame.atr.result;
+    let atr = currentFrame.indicators.atr.result;
 
     // Update the stop loss if the newly suggest stop loss is higher than previous value
     if (currentFrame.stop < (candle.close - (atr * currentFrame.atrStop))) {
@@ -170,13 +169,7 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
       if (shouldExitLong(candle, currentFrame)) {
         currentFrame.currentTrend = 'short';
         currentFrame.stop = 0;
-        consoleLog('short, long', candle);
-        currentFrame.advice('short');
-        // TODO! check why following doesn't work:
-        /*currentFrame.advice({
-          direction: 'short',
-          margin: { type: 'long', limit: 1 }
-        });*/
+        currentFrame.sell(`exit signal for long trade, currentTrend: ${ currentFrame.currentTrend }`);
       }
     }
   } else {
@@ -185,10 +178,9 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
         consoleLog('short, short', candle);
         currentFrame.currentTrend = 'short';
         currentFrame.stop = 0;
-        currentFrame.advice({
-          direction: 'short',
-          margin: { type: 'short', limit: 1 }
-        });
+
+        currentFrame.sell(`exit signal for short trade, currentTrend: ${ currentFrame.currentTrend }`
+          , { margin: { type: 'short', limit: 1 } });
       }
     }
   }
@@ -201,14 +193,7 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
         manageStopLoss(candle, currentFrame)
 
         if(!currentFrame.settings.trailingStopLoss) {
-          consoleLog('long, long', candle);
-          currentFrame.advice('long');
-          // TODO! check why following doesn't work:
-
-          /*currentFrame.advice({
-            direction: 'long',
-            margin: { type: 'long', limit: 1 }
-          });*/
+          currentFrame.buy(`buy signal for long trade, currentTrend: ${ currentFrame.currentTrend }`);
         } else {
           /*currentFrame.advice({
             direction: 'long',
@@ -224,11 +209,8 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
     if(currentFrame.currentTrend === 'short') {
       if (shouldEnterLong(candle, currentFrame, true)) {
         manageStopLoss(candle, currentFrame, true);
-        consoleLog('long, short', candle);
-        currentFrame.advice({
-          direction: 'long',
-          margin: { type: 'short', limit: 1 }
-        });
+        currentFrame.buy(`buy signal for short trade, currentTrend: ${ currentFrame.currentTrend }`
+        , { margin: { type: 'short', limit: 1 } });
       }
     }
   }
