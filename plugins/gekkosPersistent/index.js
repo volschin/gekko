@@ -33,6 +33,11 @@ function setupActor() {
 
   };
 
+  Actor.prototype.processStratUpdate = function({ indicators }, done) {
+    db.updateIndicators(config.gekkoId, indicators);
+    done && done();
+  };
+
   Actor.prototype.processAdvice = function(advice, done) {
     // consoleLog('gekkosPersistent: processAdvice');
     // consoleLog(JSON.stringify(advice));

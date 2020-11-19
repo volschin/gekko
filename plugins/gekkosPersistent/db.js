@@ -149,6 +149,25 @@ Db.prototype.updateJsonGekko = async function(id, gekko){
   }
   return result;
 }
+
+Db.prototype.updateIndicators = async function(id, indicators) {
+  let result;
+  try {
+    if(id) {
+      result = await GekkosTable.update({
+        indicators,
+      }, {
+        where: {
+          gekkoId: id
+        }
+      });
+    }
+  } catch (err1) {
+    consoleError(err1);
+  }
+  return result;
+}
+
 Db.prototype.archiveGekko = async function(id){
   let result;
   const gekkoDb = await GekkosTable.findOne({

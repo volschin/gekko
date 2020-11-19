@@ -107,6 +107,7 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
+
   wss.on('gekko_error', ({ id }) => {
     try {
       if(id) {
@@ -117,6 +118,7 @@ const GekkosPersistent = function(){
       consoleError(handleErr);
     }
   });
+
   wss.on('gekko_event', ({ id, event }) => {
     try {
       const WHITE_LISTED_EVENTS = [
@@ -333,7 +335,7 @@ startGekkoAsync = async function(gConfig, gekko) {
     );
   }
 
-  let state = gekkoManager.add({ config, mode, gekko: gekko.jsonGekko });
+  let state = gekkoManager.add({ config, mode, gekko: gekko.jsonGekko, indicators: gekko.indicators });
 
   return state;
 };

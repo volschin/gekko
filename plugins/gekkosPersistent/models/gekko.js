@@ -33,6 +33,7 @@ module.exports = function(sequelize, DataTypes) {
     type: Sequelize.STRING(20),
     mode: Sequelize.STRING(20),
     jsonGekko: Sequelize.JSON,
+    indicators: Sequelize.JSON,
 
     exchange: Sequelize.STRING(30),
     currency: Sequelize.STRING(10),
