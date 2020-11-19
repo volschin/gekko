@@ -15,18 +15,10 @@ let strat = {};
 // seal everything into init to have the ability to use local variables unique for each strat instance
 // , instead of using 'this.someVar', to optimize performance:
 strat.init = function(options = {}) {
-  let startPrice, currentCandle, prevCandle, currentPrice = 0.0, buyPrice = 0.0, advised = false, advisedShort = false, tradeInitiated = false, buyTs
-    , tradesCount = 0, tradesMaxCount = 0
-    , candlesArr = Array(10).fill({
-    open: -1,
-    close: -1,
-    high: -1,
-    low: -1
-  });
-  let tradesArr = [];
   let TAKE_PROFIT = this.settings.TAKE_PROFIT || 1.05
     , TIMEOUT_MINUTES = this.settings.TIMEOUT_MINUTES || 1440
     , TRAILING_STOP = this.settings.trailingStop || 5;
+  const that = this;
 
   const config = require ('../core/util').getConfig() || {};
   // debug? set to false to disable all logging/messages/stats (improves performance in backtests)
@@ -35,9 +27,8 @@ strat.init = function(options = {}) {
   // performance
   config.backtest.batchSize = 1000; // increase performance
   config.silent = false;
-  config.debug = true;
+  config.debug = false;
 
-  let hadDeal = false;
   if (config.tradingAdvisor.candleSize !== 60) {
     /*throw {
       error: "This strategy must run with candleSize=60"
@@ -45,7 +36,7 @@ strat.init = function(options = {}) {
   }
 
   // AAAT:
-  let AAAT = require('./indicators/Adaptive-ATR-ADX-Trend');
+  // let AAAT = require('./indicators/Adaptive-ATR-ADX-Trend');
   let aaatLenghLow = 1;
   let aaatLenghMedium = 2;
   let aaatLenghHigh = 4;
@@ -54,24 +45,30 @@ strat.init = function(options = {}) {
   let batcherAaatMedium = new CandleBatcher(aaatLenghMedium);
   let batcherAaatHigh = new CandleBatcher(aaatLenghHigh);
   // let aaatLengh = this.settings.aaat.lengthMultiplyer || 24;
-  let aaatIndLow = new AAAT({ debug: false, useHeiken: this.settings.aaat.USE_HEIKEN });
-  let aaatIndMedium = new AAAT({ debug: false, useHeiken: this.settings.aaat.USE_HEIKEN });
-  let aaatIndHigh = new AAAT({ debug: false, useHeiken: this.settings.aaat.USE_HEIKEN });
+
+  this.addIndicator('aaatIndLow', 'Adaptive-ATR-ADX-Trend',
+    { debug: false, useHeiken: this.settings.aaat.USE_HEIKEN }, this.settings.isPersistent);
+  this.addIndicator('aaatIndMedium', 'Adaptive-ATR-ADX-Trend',
+    { debug: false, useHeiken: this.settings.aaat.USE_HEIKEN }, this.settings.isPersistent);
+  this.addIndicator('aaatIndHigh', 'Adaptive-ATR-ADX-Trend',
+    { debug: false, useHeiken: this.settings.aaat.USE_HEIKEN }, this.settings.isPersistent);
+
   let candle60, candle120, candle240;
   this.updateAaatLow = function(candle = {}) {
-    aaatIndLow.update(candle);
+    that.indicators.aaatIndLow.update(candle);
     candle60 = candle;
   };
-  this.updateAaatMedium = function(candle = {}) {
-    aaatIndMedium.update(candle);
 
+  this.updateAaatMedium = function(candle = {}) {
+    that.indicators.aaatIndMedium.update(candle);
     candle120 = candle;
   };
-  this.updateAaatHigh = function(candle = {}) {
-    aaatIndHigh.update(candle);
 
+  this.updateAaatHigh = function(candle = {}) {
+    that.indicators.aaatIndHigh.update(candle);
     candle240 = candle;
   };
+
   batcherAaatLow.on('candle', this.updateAaatLow);
   batcherAaatMedium.on('candle', this.updateAaatMedium);
   batcherAaatHigh.on('candle', this.updateAaatHigh);
@@ -79,23 +76,12 @@ strat.init = function(options = {}) {
 
   let aaatResultLow, aaatResultMedium, aaatResultHigh;
   this.update = function(candle = {}) {
-    currentCandle = candle;
-    currentPrice = candle.close;
-    candlesArr.pop();
-    candlesArr.unshift(candle);
-
     batcherAaatLow.write([candle]); batcherAaatLow.flush();
     batcherAaatMedium.write([candle]); batcherAaatMedium.flush();
     batcherAaatHigh.write([candle]); batcherAaatHigh.flush();
-    aaatResultLow = aaatIndLow.result.stop;
-    aaatResultMedium = aaatIndMedium.result.stop;
-    aaatResultHigh = aaatIndHigh.result.stop;
-
-    if(this.debug && false) {
-      consoleLog(`strat update:: candle.start: ${ JSON.stringify(candle.start) }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated
-      }, low: ${ aaatResultLow }, medium: ${ aaatResultMedium }, high: ${ aaatResultHigh }`);
-    }
-
+    aaatResultLow = this.indicators.aaatIndLow.result.stop;
+    aaatResultMedium = this.indicators.aaatIndMedium.result.stop;
+    aaatResultHigh = this.indicators.aaatIndHigh.result.stop;
   };
 
   let aaatTrendUp, aaatTrendUpPrev;
@@ -103,53 +89,54 @@ strat.init = function(options = {}) {
     totalTradesSuccess = 0, totalTradesLongCandleBelowAaat = 0, totalTradesHighAboveAaatDnTrendRedMedium = 0, totalTradesHighAboveAaatDnTrendRedHigh = 0,
     totalTradesAaatStopLoss = 0, totalHighVolumeCandles = 0;
   this.check = function(candle) {
-    if(this.debug && false) {
-      consoleLog(`strat check:: ${ ''
+    if(this.debug) {
+      this.consoleLog(`strat check:: ${ ''
       } candle.close: ${ candle.close
       // }, candle.volume: ${ candle.volume
       } candle240.start: ${ JSON.stringify(candle240 && candle240.start) }, candle240.close: ${ candle240 && candle240.close
-      } aaatResultLow: ${ aaatResultLow }, aaat240Trend: ${ aaatIndHigh.result.trend
-      } aaatResultMedium: ${ aaatResultMedium }, aaat240Trend: ${ aaatIndHigh.result.trend
-      } aaatResultHigh: ${ aaatResultHigh }, aaat240Trend: ${ aaatIndHigh.result.trend
+      } aaatResultLow: ${ aaatResultLow }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
+      } aaatResultMedium: ${ aaatResultMedium }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
+      } aaatResultHigh: ${ aaatResultHigh }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
         // }, ma.short: ${ shortMA60.result }, ma.middle: ${ middleMA60.result }, ma.long: ${ longMA60.result
         // }, rsiVal: ${ rsiVal }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle
         // }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated
       }`);
     }
 
-    let time = JSON.stringify(this.candle.start);
     // цена пересекла зеленую
-    if(!advised && aaatIndMedium.result.trend === 1 && (candle.low < aaatResultMedium && candle.close > aaatResultMedium)) {
+    if(!this.advised && !this.advisedShort && this.indicators.aaatIndMedium.result.trend === 1 && (candle.low < aaatResultMedium && candle.close > aaatResultMedium)) {
     // if(!advised && aaatTrendUp && (candle.low < aaatStop) && !isMarketLostForThisTrend) {
       totalBoughtAttempts++;
 
       this.buy(`цена пересекла зеленую 240 (${ JSON.stringify( aaatResultMedium )}), candle240: ${ JSON.stringify( candle240 )}`, { limitPrice: aaatResultMedium });
 
-      consoleLog(`strat check:: ${ ''
+      this.consoleLog(`strat check:: ${ ''
       } candle.close: ${ candle.close
         // }, candle.volume: ${ candle.volume
       } candle240.start: ${ JSON.stringify(candle240 && candle240.start) }, candle240.close: ${ candle240 && candle240.close
-      } aaatResultLow: ${ aaatResultLow }, aaat240Trend: ${ aaatIndHigh.result.trend
-      } aaatResultMedium: ${ aaatResultMedium }, aaat240Trend: ${ aaatIndHigh.result.trend
-      } aaatResultHigh: ${ aaatResultHigh }, aaat240Trend: ${ aaatIndHigh.result.trend
+      } aaatResultLow: ${ aaatResultLow }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
+      } aaatResultMedium: ${ aaatResultMedium }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
+      } aaatResultHigh: ${ aaatResultHigh }, aaat240Trend: ${ this.indicators.aaatIndHigh.result.trend
         // }, ma.short: ${ shortMA60.result }, ma.middle: ${ middleMA60.result }, ma.long: ${ longMA60.result
         // }, rsiVal: ${ rsiVal }, bb.lower: ${ bb.lower }, bb.upper: ${ bb.upper }, bb.middle: ${ bb.middle
         // }, advised: ${ advised }, tradeInitiated: ${ tradeInitiated
       }`);
     }
 
-    if (advised) {
-      if(this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === -1 && candle.high >= aaatResultMedium) { // this never happens (dunno why)
+    if (this.advised) {
+      if(this.settings.aaat.sellOnRedThresholdMedium && this.indicators.aaatIndMedium.result.trend === -1
+        && candle.high >= aaatResultMedium) { // this never happens (dunno why)
         totalTradesHighAboveAaatDnTrendRedMedium++;
-        this.sell(`SELL!!: crossed: aaatResultMedium(in dn trend): ${ aaatResultMedium }`, { limitPrice: aaatResultMedium });
+        this.sell(`SELL!!: crossed: aaatResultMedium(in dn trend): ${ aaatResultMedium }`,
+          { limitPrice: aaatResultMedium });
       }
-      if(this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === -1 && candle.high >= aaatResultHigh) {
+      if(this.settings.aaat.sellOnRedThresholdHigh && this.indicators.aaatIndHigh.result.trend === -1 && candle.high >= aaatResultHigh) {
         totalTradesHighAboveAaatDnTrendRedHigh++;
         this.sell(`SELL!!: crossed: aaatResultHigh(in dn trend): ${ aaatResultHigh }`, { limitPrice: aaatResultHigh });
       }
-      if (candle.close >= buyPrice * this.settings.takeProfit) {
+      if (candle.close >= this.buyPrice * this.settings.takeProfit) {
         totalSellTakeProfit++;
-        this.sell(`SELL!!: TAKE PROFIT, bought@ ${buyPrice}, sell: ${candle.close}`);
+        this.sell(`SELL!!: TAKE PROFIT, bought@ ${ this.buyPrice }, sell: ${ candle.close }`);
       // } else if(candle120.close < aaatResultHigh) {
       // } else if(candle240.close < aaatResultHigh) {
         } else if (candle.close < aaatResultMedium) {
@@ -168,26 +155,29 @@ strat.init = function(options = {}) {
     }
     // shorts cases:
     if(this.settings.margin && this.settings.margin.useShort) {
-      if (!advisedShort && aaatIndMedium.result.trend === -1 && (candle.high > aaatResultMedium && candle.close < aaatResultMedium)) {
+      if (!this.advised && !this.advisedShort && this.indicators.aaatIndMedium.result.trend === -1
+        && (candle.high > aaatResultMedium && candle.close < aaatResultMedium)) {
         // totalBoughtAttempts++;
         this.buy(`цена пересекла красную 240 (${JSON.stringify(aaatResultMedium)}), candle240: ${JSON.stringify(candle240)}`
           , { limitPrice: aaatResultMedium, margin: { type: 'short', limit: 1 } });
       }
 
-      if (advisedShort) {
-        if (this.settings.aaat.sellOnRedThresholdMedium && aaatIndMedium.result.trend === 1 && candle.high <= aaatResultMedium) {// this never happens (dunno why)
+      if (this.advisedShort) {
+        if (this.settings.aaat.sellOnRedThresholdMedium && this.indicators.aaatIndMedium.result.trend === 1
+          && candle.high <= aaatResultMedium) {// this never happens (dunno why)
           // totalTradesHighAboveAaatDnTrendRedMedium++;
           this.sell(`SELL SHORT!!: crossed: aaatResultMedium(in UP trend): ${aaatResultMedium}`
             , { limitPrice: aaatResultMedium, margin: { type: 'short', limit: 1 } });
         }
-        if (this.settings.aaat.sellOnRedThresholdHigh && aaatIndHigh.result.trend === 1 && candle.high <= aaatResultHigh) { // <- should be candle.low, but works better =)
+        if (this.settings.aaat.sellOnRedThresholdHigh && this.indicators.aaatIndHigh.result.trend === 1
+          && candle.high <= aaatResultHigh) { // <- should be candle.low, but works better =)
           // totalTradesHighAboveAaatDnTrendRedHigh++;
           this.sell(`SELL SHORT!!: crossed: aaatResultHigh(in UP trend): ${aaatResultHigh}`
             , { limitPrice: aaatResultHigh, margin: { type: 'short', limit: 1 } });
         }
-        if (candle.close <= buyPrice * (2 - this.settings.takeProfit)) {
+        if (candle.close <= this.buyPrice * (2 - this.settings.takeProfit)) {
           // totalSellTakeProfit++;
-          this.sell(`SELL!!: TAKE PROFIT, bought@ ${buyPrice}, sell: ${candle.close}`
+          this.sell(`SELL!!: TAKE PROFIT, bought@ ${this.buyPrice}, sell: ${ candle.close }`
             , { margin: { type: 'short', limit: 1 } });
         } else if (candle.close > aaatResultMedium) {
           // totalTradesLongCandleBelowAaat++;
@@ -197,20 +187,16 @@ strat.init = function(options = {}) {
     }
   };
 
-  this.buy = function(reason, options = {}) {
-    this.notify({
-      type: 'buy advice',
-      reason: reason,
-    });
-    consoleLog(`buy:: advice: long, margin: ${ !!options.margin }`);
+  /*this.buy = function(reason, options = {}) {
+    // consoleLog(`buy:: advice: long, margin: ${ !!options.margin }`);
     this.advice({
       limit: options.limitPrice,
       direction: 'long',
       margin: options.margin
-      /*trigger: {
+      /!*trigger: {
         type: 'trailingStop',
         trailPercentage: TRAILING_STOP
-      }*/
+      }*!/
     });
 
     buyTs = this.candle.start;
@@ -225,15 +211,12 @@ strat.init = function(options = {}) {
     }
   }
   this.sell = function(reason, options = {}) {
-    this.notify({
-      type: 'sell advice',
-      reason: reason,
-    });
     consoleLog(`sell:: advice: short, margin: ${ !!options.margin }`);
     this.advice({
       direction: 'short',
       limit: options.limitPrice,
-      margin: options.margin
+      margin: options.margin,
+      reason
     });
     if(options.margin && options.margin.type === 'short') {
       advisedShort = false;
@@ -241,53 +224,14 @@ strat.init = function(options = {}) {
       advised = false;
     }
   }
-
-  this.onPendingTrade = function(pendingTrade) {
-    tradeInitiated = true;
-  }
-
-  //
-  // see https://www.youtube.com/watch?v=lc21W9_zdME
-  this.onTrade = function(trade = {}) {
-    consoleLog('onTrade:: trade: ' + JSON.stringify(trade.action));
-    if(trade.action === 'sell') {
-      if(trade.margin && trade.margin.type === 'short') {
-        advisedShort = false;
-      } else {
-        advised = false;
-      }
-    }
-    tradeInitiated = false;
-  }
-  // Trades tht didn't complete with a buy/sell (see processTradeErrored in tradingAdvisor)
-  this.onTerminatedTrades = function(terminatedTrades = {}) {
-    tradeInitiated = false;
-    consoleLog('onTerminatedTrades:: Trade failed. Reason: ' + terminatedTrades.reason);
-  }
-
-  this.onPortfolioChange = function(portfolio) {
-    // consoleLog(`onPortfolioChange, portfolio: ${ JSON.stringify(portfolio) }`);
-  }
-  this.onPortfolioValueChange = function(portfolio) {
-    // consoleLog(`onPortfolioValueChange, portfolio: ${ JSON.stringify(portfolio) }`);
-  }
-  this.onTriggerFired = function(data) {
-    // tradeInitiated = false;
-    this.notify({
-      type: 'sell advice',
-      reason: 'trailing stop trigger fired',
-    });
-    consoleLog(`onTriggerFired, data: ${ JSON.stringify(data) }`);
-  }
+*/
 
   this.end = function(a, b, c) {
-    consoleLog(`gekko end, trades: ${ JSON.stringify(tradesArr) }`);
-    consoleLog(`           total trades: ${ tradesArr.length }`);
-    consoleLog(`totalBought: ${ totalBoughtAttempts }`);
-    consoleLog(`totalSellTakeProfit: ${ totalSellTakeProfit }`);
-    consoleLog(`totalTradesLongCandleBelowAaat: ${ totalTradesLongCandleBelowAaat }`);
-    consoleLog(`totalTradesHighAboveAaatDnTrendRedMedium: ${ totalTradesHighAboveAaatDnTrendRedMedium }`);
-    consoleLog(`totalTradesHighAboveAaatDnTrendRedHigh: ${ totalTradesHighAboveAaatDnTrendRedHigh }`);
+    console.error('Here is some statistics for you Sir:')
+    console.error(`totalSellTakeProfit: ${ totalSellTakeProfit }`);
+    console.error(`totalTradesLongCandleBelowAaat: ${ totalTradesLongCandleBelowAaat }`);
+    console.error(`totalTradesHighAboveAaatDnTrendRedMedium: ${ totalTradesHighAboveAaatDnTrendRedMedium }`);
+    console.error(`totalTradesHighAboveAaatDnTrendRedHigh: ${ totalTradesHighAboveAaatDnTrendRedHigh }`);
     /*const profitTrades = tradesArr.filter(t=>t.status === 'sold');
     consoleLog(`           closed trades: ${ profitTrades.length }`);
     const openTrades = tradesArr.filter(t=>t.status !== 'sold');
@@ -302,14 +246,6 @@ strat.init = function(options = {}) {
 
     // consoleLog(`  profit: ${ profit }$, loss: ${ loss }$, result: ${ profit - loss }$, capital: ${ SINGLE_BET * tradesArr.length }, tradesMaxCount: ${ tradesMaxCount }`);
 
-  }
-  function consoleLog(msg = ''){
-    if(config){
-      currentCandle = currentCandle || {}
-      const prefix = `${ config.gekkoId }, ${ JSON.stringify(currentCandle.start) || JSON.stringify(moment()) } -- `;
-      console.log(prefix, msg);
-      //log.debug(prefix, msg);
-    }
   }
 }
 
