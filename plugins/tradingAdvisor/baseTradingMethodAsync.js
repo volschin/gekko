@@ -469,7 +469,7 @@ Base.prototype.propogateTick = function(candle) {
 
   this.emit('stratUpdate', {
     date: candle.start.clone(),
-    indicators
+    indicators: this.indicators
   });
 
   // are we totally finished?
@@ -528,14 +528,17 @@ Base.prototype.addTulipIndicator = function(name, type, parameters) {
   this.asyncIndicatorRunner.addTulipIndicator(name, type, parameters);
 }
 
-Base.prototype.addIndicator = function(name, type, parameters) {
+Base.prototype.addIndicator = function(name, type, parameters, isPersistent) {
+  let indicator;
   if(!_.contains(allowedIndicators, type))
     util.die('I do not know the indicator ' + type);
 
   if(this.setup)
     util.die('Can only add indicators in the init method!');
+  const existingIndicator = isPersistent && config.indicators && config.indicators[name];
+  indicator = new Indicators[type](parameters, existingIndicator);
 
-  return this.indicators[name] = new Indicators[type](parameters);
+  return this.indicators[name] = indicator;
 
   // some indicators need a price stream, others need full candles
 }
