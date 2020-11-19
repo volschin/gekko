@@ -11,6 +11,8 @@ sellOnRedThresholdHigh = true
 [margin]
 useShort = true
 
+isPersistent = false
+
 # good strategy for big swings, performs badly on sideways market
 # run with pair USDT/BTC, candle 1hr, Warmup 280
 # 2.5 yrs - 150%, '18 1yr - -23%

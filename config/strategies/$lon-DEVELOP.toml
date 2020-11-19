@@ -1,0 +1,12 @@
+takeProfit = 1.2 # 20%
+#stopLoss = 0.99 # 1%
+#USE_MARKET_LOST_FOR_TREND = true
+#EXIT_ON_AAAT_CHANGE = true # treat as Stop Loss
+
+[aaat]
+USE_HEIKEN = false
+sellOnRedThresholdMedium = true
+sellOnRedThresholdHigh = true
+
+[margin]
+useShort = true
