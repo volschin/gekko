@@ -535,7 +535,7 @@ Base.prototype.addIndicator = function(name, type, parameters, isPersistent) {
 
   if(this.setup)
     util.die('Can only add indicators in the init method!');
-  const existingIndicator = isPersistent && config.indicators && config.indicators[name];
+  const existingIndicator = config.mode !== 'backtest' && isPersistent && config.indicators && config.indicators[name];
   indicator = new Indicators[type](parameters, existingIndicator);
 
   return this.indicators[name] = indicator;
