@@ -366,7 +366,10 @@ Base.prototype.tick = function(candle, done) {
   this.age++;
 
   const afterAsync = () => {
-    this.calculateSyncIndicators(candle, done);
+    // let's turn off, it's causing a bug for indicators with bigger candles (using candleButchers)
+    // this.calculateSyncIndicators(candle, done);
+    this.propogateTick(candle);
+    done();
   }
 
   if(this.asyncTick) {
