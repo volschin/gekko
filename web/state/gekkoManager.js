@@ -18,7 +18,7 @@ const GekkoManager = function() {
   this.archivedGekkos = {};
 }
 
-GekkoManager.prototype.add = function({mode, config, gekko}) {
+GekkoManager.prototype.add = function({mode, config, gekko, indicators}) {
   // set type
   let type;
   if(mode === 'realtime') {
@@ -45,6 +45,8 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
   id = gekko && gekko.id || id;
 
   if(gekko && gekko.type !== 'watcher') {
+    // load indicators:
+    config.indicators = indicators || {};
     // restoring existing gekko from db:
     config.childToParent.enabled = true;
     state = {
@@ -81,7 +83,7 @@ GekkoManager.prototype.add = function({mode, config, gekko}) {
         initial: {},
         latest: {}
       },
-      start: moment()
+      start: moment(),
     }
 
   }
