@@ -20,15 +20,17 @@
 //     roundtrips: true,
 
 //    // batch-specific:
-//    batch:
+//    batchBacktest:
 //      synchronous: true/false - should the batch be executed sync/async? (async: +25-50% performance, sync - better logs)
 //      noBigData: turn off data like roundtrips, stratcandles etc. (commonly for being used as external API)
+//      batchSize: '1 month/1 day/ 1 week' etc.
 //   }
 // }
 
 const _ = require('lodash');
 const promisify = require('tiny-promisify');
 const pipelineRunner = promisify(require('../../core/workers/pipeline/parent'));
+const moment = require('moment');
 
 module.exports = async function (ctx, next) {
   var mode = 'backtest';
@@ -42,7 +44,7 @@ module.exports = async function (ctx, next) {
   _.merge(config, base, req);
 
   config.mode = mode;
-  const dateSpans = getDateSpansForYear(config)
+  const dateSpans = getDateMonthSpansForYear(config)
   let dateSpanCur, resultCur;
 
   if (config.batch && config.batch.noBigData) {
@@ -71,7 +73,8 @@ module.exports = async function (ctx, next) {
   const ret = {
     backtests,
     performanceReport: getTotalPerformanceReport(backtests),
-    batchReport: getBatchBacktestReport(backtests)
+    batchReport: getBatchBacktestReport(backtests),
+    fakeReport: getFakeReport(backtests.map(b => b.tradingAdvisor.stats))
   };
 
   const ts2 = Date.now();
@@ -84,25 +87,67 @@ module.exports = async function (ctx, next) {
  * @param config
  * @returns [ { from: 'yyyy-mm-ddThh:mm:ssZ', to 'yyyy-mm-ddThh:mm:ssZ' } ] - array of date spans
  */
-function getDateSpansForYear(config = {}) {
+function getDateMonthSpansForYear(config = {}) {
   const batchSize = config.batchBacktest && config.batchBacktest.batchSize;
-
+  let dateSpans;
   // const months = req.data.batchBacktest && req.data.batchBacktest. // todo
-  // temp stub:
-  const dateSpans = [
-    { from: '2019-08-19T00:00:00Z', to: '2019-09-21T00:00:00Z' },
-    { from: '2019-09-19T00:00:00Z', to: '2019-10-21T00:00:00Z' },
-    { from: '2019-10-19T00:00:00Z', to: '2019-11-21T00:00:00Z' },
-    { from: '2019-11-19T00:00:00Z', to: '2019-12-21T00:00:00Z' },
-    { from: '2019-12-19T00:00:00Z', to: '2020-01-21T00:00:00Z' },
-    { from: '2020-01-19T00:00:00Z', to: '2020-02-21T00:00:00Z' },
-    { from: '2020-02-19T00:00:00Z', to: '2020-03-21T00:00:00Z' },
-    { from: '2020-03-19T00:00:00Z', to: '2020-04-21T00:00:00Z' },
-    { from: '2020-04-19T00:00:00Z', to: '2020-05-21T00:00:00Z' },
-    { from: '2020-05-19T00:00:00Z', to: '2020-06-21T00:00:00Z' },
-    { from: '2020-06-19T00:00:00Z', to: '2020-07-21T00:00:00Z' },
-    { from: '2020-07-19T00:00:00Z', to: '2020-08-21T00:00:00Z' },
-  ];
+  const warmupMinutes = config.tradingAdvisor.historySize * config.tradingAdvisor.candleSize;
+  if (!batchSize || batchSize === '1 month') {
+    dateSpans = [
+      // 2017yr
+      /*{ from: '2017-08-18T00:00:00Z', to: '2017-09-21T00:00:00Z' },
+      { from: '2017-09-10T00:00:00Z', to: '2017-10-21T00:00:00Z' },
+      { from: '2017-10-10T00:00:00Z', to: '2017-11-21T00:00:00Z' },
+      { from: '2017-11-10T00:00:00Z', to: '2017-12-21T00:00:00Z' },
+      { from: '2017-12-10T00:00:00Z', to: '2018-01-21T00:00:00Z' },
+      { from: '2018-01-10T00:00:00Z', to: '2018-02-21T00:00:00Z' },
+      { from: '2018-02-10T00:00:00Z', to: '2018-03-21T00:00:00Z' },
+      { from: '2018-03-10T00:00:00Z', to: '2018-04-21T00:00:00Z' },
+      { from: '2018-04-10T00:00:00Z', to: '2018-05-21T00:00:00Z' },
+      { from: '2018-05-10T00:00:00Z', to: '2018-06-21T00:00:00Z' },
+      { from: '2018-06-10T00:00:00Z', to: '2018-07-21T00:00:00Z' },
+      { from: '2018-07-10T00:00:00Z', to: '2018-08-21T00:00:00Z' },*/
+      // 2018yr
+      { from: moment('2017-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-01-21T00:00:00Z' },
+      { from: moment('2018-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-02-21T00:00:00Z' },
+      { from: moment('2018-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-03-21T00:00:00Z' },
+      { from: moment('2018-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-04-21T00:00:00Z' },
+      { from: moment('2018-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-05-21T00:00:00Z' },
+      { from: moment('2018-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-06-21T00:00:00Z' },
+      { from: moment('2018-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-07-21T00:00:00Z' },
+      { from: moment('2018-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-08-21T00:00:00Z' },
+      { from: moment('2018-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-09-21T00:00:00Z' },
+      { from: moment('2018-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-10-21T00:00:00Z' },
+      { from: moment('2018-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-11-21T00:00:00Z' },
+      { from: moment('2018-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-12-21T00:00:00Z' },
+      //2019 yr
+      { from: moment('2018-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-01-21T00:00:00Z' },
+      { from: moment('2019-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-02-21T00:00:00Z' },
+      { from: moment('2019-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-03-21T00:00:00Z' },
+      { from: moment('2019-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-04-21T00:00:00Z' },
+      { from: moment('2019-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-05-21T00:00:00Z' },
+      { from: moment('2019-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-06-21T00:00:00Z' },
+      { from: moment('2019-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-07-21T00:00:00Z' },
+      { from: moment('2019-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-08-21T00:00:00Z' },
+      { from: moment('2019-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-09-21T00:00:00Z' },
+      { from: moment('2019-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-10-21T00:00:00Z' },
+      { from: moment('2019-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-11-21T00:00:00Z' },
+      { from: moment('2019-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-12-21T00:00:00Z' },
+      //2020 yr
+      { from: moment('2019-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-01-21T00:00:00Z' },
+      { from: moment('2020-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-02-21T00:00:00Z' },
+      { from: moment('2020-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-03-21T00:00:00Z' },
+      { from: moment('2020-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-04-21T00:00:00Z' },
+      { from: moment('2020-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-05-21T00:00:00Z' },
+      { from: moment('2020-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-06-21T00:00:00Z' },
+      { from: moment('2020-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-07-21T00:00:00Z' },
+      { from: moment('2020-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-08-21T00:00:00Z' },
+      { from: moment('2020-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-09-21T00:00:00Z' },
+      { from: moment('2020-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-10-21T00:00:00Z' },
+      { from: moment('2020-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-11-21T00:00:00Z' },
+      { from: moment('2020-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-12-21T00:00:00Z' },
+    ];
+  } else if (batchSize === '') {}
   return dateSpans;
 }
 
@@ -135,10 +180,23 @@ function getTotalPerformanceReport(backtests = []) {
       maxProfit: Math.max.apply(null, backtests.map(backtest => backtest.performanceReport.profit)),
       periodsProfit: backtests.filter(backtest => backtest.performanceReport.profit >= 0).length,
       periodsLoss: backtests.filter(backtest => backtest.performanceReport.profit < 0).length,
-      periodsTotal: backtests.length
+      periodsTotal: backtests.length,
     });
   }
   return ret;
+}
+function getFakeReport(stats) {
+  return {
+    stats,
+    trades: stats.reduce((acc, s) => {
+      acc += s.profits;
+      return acc;
+    }, 0),
+    total: stats.reduce((acc, s) => {
+      acc += s.profitTot;
+      return acc;
+    }, 0)
+  };
 }
 
 function getBatchBacktestReport(backtests) {
