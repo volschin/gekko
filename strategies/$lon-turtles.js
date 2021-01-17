@@ -7,7 +7,7 @@ let currentCandle ;
 
 strat.init = function() {
   this.input = 'candle';
-  this.currentTrend = 'short';
+  this.currentTrend = 'shortLong';
 
   // Most strategies need a minimal amount of history before the trading strategy can be started.
   // For example the strategy may be calculating a moving average for the first 3 candles,
@@ -104,12 +104,12 @@ const shouldExitLong = function(candle, currentFrame, isShort = false) {
 const checkExitSlowLong = function(candle, currentFrame, isShort) {
   if(!isShort) {
     if (candle.low <= lowest(currentFrame.exitSlow, currentFrame) || (currentFrame.stop !== 0 && candle.close <= currentFrame.stop)) {
-      currentFrame.currentTrend = 'short'
+      currentFrame.currentTrend = 'shortLong'
       return true
     }
   } else {
     if (candle.high >= highest(currentFrame.exitSlow, currentFrame) || (currentFrame.stop !== 0 && candle.close >= currentFrame.stop)) {
-      currentFrame.currentTrend = 'short'
+      currentFrame.currentTrend = 'shortShort'
       return true
     }
   }
@@ -118,12 +118,12 @@ const checkExitSlowLong = function(candle, currentFrame, isShort) {
 const checkExitFastLong = function(candle, currentFrame, isShort = false) {
   if(!isShort) {
     if (candle.low <= lowest(currentFrame.exitFast, currentFrame) || (currentFrame.stop !== 0 && candle.close <= currentFrame.stop)) {
-      currentFrame.currentTrend = 'short'
+      currentFrame.currentTrend = 'shortLong'
       return true
     }
   } else {
     if (candle.high >= highest(currentFrame.exitFast, currentFrame) || (currentFrame.stop !== 0 && candle.close <= currentFrame.stop)) {
-      currentFrame.currentTrend = 'short'
+      currentFrame.currentTrend = 'shortShort'
       return true
     }
   }
@@ -167,20 +167,24 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
   if(!isShort) {
     if (currentFrame.currentTrend === 'fastLong' || currentFrame.currentTrend === 'slowLong') {
       if (shouldExitLong(candle, currentFrame)) {
-        currentFrame.currentTrend = 'short';
-        currentFrame.stop = 0;
-        currentFrame.sell(`exit signal for long trade, currentTrend: ${ currentFrame.currentTrend }`);
+        if (currentFrame.advised) {
+          currentFrame.currentTrend = 'shortLong';
+          currentFrame.stop = 0;
+          currentFrame.sell(`exit signal for long trade, currentTrend: ${currentFrame.currentTrend}`);
+        }
       }
     }
   } else {
     if (currentFrame.currentTrend === 'fastShort' || currentFrame.currentTrend === 'slowShort') {
       if (shouldExitLong(candle, currentFrame, true)) {
-        consoleLog('short, short', candle);
-        currentFrame.currentTrend = 'short';
-        currentFrame.stop = 0;
+        if (currentFrame.advisedShort) {
+          consoleLog('short, short', candle);
+          currentFrame.currentTrend = 'shortShort';
+          currentFrame.stop = 0;
 
-        currentFrame.sell(`exit signal for short trade, currentTrend: ${ currentFrame.currentTrend }`
-          , { margin: { type: 'short', limit: 1 } });
+          currentFrame.sell(`exit signal for short trade, currentTrend: ${currentFrame.currentTrend}`
+            , { margin: { type: 'short', limit: 1 } });
+        }
       }
     }
   }
@@ -188,29 +192,32 @@ const computeExitSignal = function(candle, currentFrame, isShort = false) {
 
 const computeEntrySignal = function(candle, currentFrame, isShort = false) {
   if(!isShort) {
-    if(currentFrame.currentTrend === 'short') {
+    if(currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame)) {
-        manageStopLoss(candle, currentFrame)
-
-        if(!currentFrame.settings.trailingStopLoss) {
-          currentFrame.buy(`buy signal for long trade, currentTrend: ${ currentFrame.currentTrend }`);
-        } else {
-          /*currentFrame.advice({
-            direction: 'long',
-            trigger: {
-              type: 'trailingStop',
-              trailPercentage: currentFrame.settings.trailingStopLoss
-            }
-          });*/
+        if (!currentFrame.advised && !currentFrame.advisedShort) {
+          manageStopLoss(candle, currentFrame)
+          if (!currentFrame.settings.trailingStopLoss) {
+            currentFrame.buy(`buy signal for long trade, currentTrend: ${currentFrame.currentTrend}`);
+          } else {
+            /*currentFrame.advice({
+              direction: 'long',
+              trigger: {
+                type: 'trailingStop',
+                trailPercentage: currentFrame.settings.trailingStopLoss
+              }
+            });*/
+          }
         }
       }
     }
   } else {
-    if(currentFrame.currentTrend === 'short') {
+    if (currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame, true)) {
-        manageStopLoss(candle, currentFrame, true);
-        currentFrame.buy(`buy signal for short trade, currentTrend: ${ currentFrame.currentTrend }`
-        , { margin: { type: 'short', limit: 1 } });
+        if (!currentFrame.advised && !currentFrame.advisedShort) {
+          manageStopLoss(candle, currentFrame, true);
+          currentFrame.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`
+            , { margin: { type: 'short', limit: 1 } });
+        }
       }
     }
   }

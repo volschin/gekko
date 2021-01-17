@@ -173,6 +173,9 @@ SlackAsync.prototype.processAdvice = function(advice) {
 };
 
 SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
+  console.log('slackAsync::processTradeInitiated::', pendingTrade.id);
+  const that = this;
+
   let text, color, options = {}, template, reason = 'N/A';
   if(!initialBalance){
     initialBalance = pendingTrade.balance;
@@ -198,6 +201,11 @@ SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
       "mrkdwn_in": [ "text" ],
       "color": color,
       "fields": [
+        {
+          "title": "Pair",
+          "value": `${ that.createUserName() }`,
+          "short": true
+        },
         {
           "title": "Reason",
           "value": `${ reason }`,
@@ -230,7 +238,7 @@ SlackAsync.prototype.processTradeInitiated = function(pendingTrade) {
 };
 
 SlackAsync.prototype.processTradeAborted = function(trade) {
-  // console.log('processTradeAborted');
+  console.log('slackAsync::processTradeAborted::', trade.id);
   let text, color, options = {};
 
   text = 'Trade Aborted!';
@@ -254,7 +262,7 @@ SlackAsync.prototype.processTradeAborted = function(trade) {
 };
 
 SlackAsync.prototype.processTradeCancelled = function(trade) {
-  // console.log('processTradeCancelled');
+  console.log('slackAsync::processTradeCancelled::', trade.id);
   let text, color, options = {};
 
   text = 'Trade Cancelled!';
@@ -278,7 +286,7 @@ SlackAsync.prototype.processTradeCancelled = function(trade) {
 };
 
 SlackAsync.prototype.processTradeErrored = function(trade) {
-  // console.log('processTradeErrored');
+  console.log('slackAsync::processTradeErrored::', trade.id);
   let text, color, options = {};
 
   text = 'Trade Errored!';
@@ -319,6 +327,8 @@ SlackAsync.prototype.processPortfolioValueChange = function(portfolioValue) {
 };
 
 SlackAsync.prototype.processTradeCompleted = function(trade) {
+  console.log('slackAsync::processTradeCompleted::', trade.id);
+
   let text, color, options = {}, buyTrade, isTradeSuccess = true;
 
   if (trade.action === 'buy') {
@@ -347,6 +357,11 @@ SlackAsync.prototype.processTradeCompleted = function(trade) {
       "mrkdwn_in": [ "text" ],
       "color": color,
       "fields": [
+        {
+          "title": "Pair",
+          "value": `${ this.createUserName() }`,
+          "short": false
+        },
         {
           "title": "Cost",
           "value": `${ trade.cost }`,
@@ -378,7 +393,7 @@ SlackAsync.prototype.processTradeCompleted = function(trade) {
         {
           "title": "Balance",
           "value": trade.action === 'buy'?`${ trade.balance }`:
-            `${ trade.balance } (${ ((trade.balance - buyTrade.balance) / buyTrade.balance * 100).toFixed(3) }%, 
+            `${ trade.balance } (${ ((trade.balance - buyTrade.balance) / buyTrade.balance * 100).toFixed(3) }%,
             total: ${ ((trade.balance - initialBalance) / initialBalance * 100).toFixed(3) }%)`,
           "short": false
         },
@@ -403,7 +418,7 @@ SlackAsync.prototype.processTradeCompleted = function(trade) {
   this.sendGekkoEvent(body, trade);
 };
 SlackAsync.prototype.finalize = function(done) {
-  // console.log('finalize');
+  console.log('slackAsync::finalize::');
   let text, color, options = {}, trade = {
     id: '-'
   };
@@ -434,7 +449,7 @@ SlackAsync.prototype.finalize = function(done) {
   done();
 }
 SlackAsync.prototype.processStratNotification = function({ content }) {
-  console.log('processStratNotification', content);
+  console.log('slackAsync::processStratNotification::', content.type, content.reason);
   if(content.type === 'buy advice' ){
     buyReason = content.reason;
   } else if( content.type === 'sell advice'){
@@ -498,7 +513,7 @@ SlackAsync.prototype.checkResults = function(error) {
 SlackAsync.prototype.createUserName = function() {
   const serverName = config.name || 'unknown server';
   return config.watch.exchange[0].toUpperCase() + config.watch.exchange.slice(1) + '-' + config.watch.currency + '/' + config.watch.asset
-   + `(${ gekkoNameShort } `;
+   + `${ gekkoNameShort ? '(' + gekkoNameShort + ')' : '' }`;
   // + `(${serverName}): ${config.tradingAdvisor.method} `;
 };
 
@@ -543,7 +558,7 @@ function CreateOptionsFromConfig(config) {
 }
 const CreateNameShort = () => {
   let str = config.gekkoId;
-  return `${ GetCodeLetterForGekkoName(config) }-${ str.substr(str.length - 4, str.length) }`;
+  return str ? `${ GetCodeLetterForGekkoName(config) }-${ str.substr(str.length - 4, str.length) }`: '';
 }
 const CreateNameHash = ({ options }) => {
   options = options || CreateOptionsFromConfig(config) || {};
@@ -628,7 +643,7 @@ const DETAILS_OVERFLOW_TEMPLATE = (options, that) => {
             "type": "plain_text",
             "text": "[ View Gekko thread ]"
           },
-          "url": `https://buzzar.slack.com/archives/${ slackConfig.channel }/${ messageId }`
+          "url": `https://${ slackConfig.workspace }.slack.com/archives/${ slackConfig.channel }/${ messageId }`
         },
       ],
       "action_id": "overflow"

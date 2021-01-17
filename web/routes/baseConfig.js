@@ -92,10 +92,11 @@ config.telegrambotAsync = {
 // Ash's plugins
 config.slackAsync = {
   enabled: false,
-  token: 'xoxp-7817417825-700506522018-705610649841-19a206598aae9474b833c43c57c34bb6',
+  token: 'xxx',
   sendMessageOnStart: true,
   muteSoft: true,
-  channel: 'GSHEYLVA4'
+  channel: 'xxx',
+  workspace: 'xxx'
 }
 config.userManager = {
   enabled: true,

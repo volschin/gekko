@@ -243,7 +243,7 @@ Base.prototype.onPendingTradeWrapper = function(pendingTrade) {
   return this.onPendingTrade(pendingTrade);
 }
 Base.prototype.onTradeWrapper = function(trade) {   // see https://www.youtube.com/watch?v=lc21W9_zdME
-  this.consoleLog('onTradeWrapper:: trade: ' + JSON.stringify(trade && trade.action));
+  this.consoleLog(`onTradeWrapper:: trade: ${ JSON.stringify(trade && trade.action) }, id: ${ trade && trade.id }`);
   if(trade.action === 'sell') {
     this.unsetApiTrade();
 

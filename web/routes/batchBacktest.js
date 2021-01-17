@@ -74,7 +74,7 @@ module.exports = async function (ctx, next) {
     backtests,
     performanceReport: getTotalPerformanceReport(backtests),
     batchReport: getBatchBacktestReport(backtests),
-    fakeReport: getFakeReport(backtests.map(b => b.tradingAdvisor.stats))
+    fakeReport: getFakeReport(backtests.map(b => b.tradingAdvisor.stats).filter(b => !!b))
   };
 
   const ts2 = Date.now();
