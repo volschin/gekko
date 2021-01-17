@@ -130,8 +130,8 @@ export default function(_data, _trades, _height) {
       .data(trades)
       .enter().append("circle")
         .attr('class', function(d) { return d.action })
-        .attr("cx", function(d) { return x2(d.date); })
-        .attr("cy", function(d) { return y2(d.price); })
+        .attr("cx", function(d) { return d.action === 'sell' ? x2(d.date) - 1 : x2(d.date); })
+        .attr("cy", function(d) { return d.action === 'sell' ? y2(d.price) - 1: y2(d.price); })
         .attr('r', 3);
 
 
@@ -158,8 +158,10 @@ export default function(_data, _trades, _height) {
       .call(yAxis);
 
     circles
-      .attr("cx", function(d) { return x(d.date); })
-      .attr("cy", function(d) { return y(d.price); })
+      .attr("cx", function(d) { return d.action === 'sell' ? x(d.date) - 1 : x(d.date); })
+      .attr("cy", function(d) { return d.action === 'sell' ? y(d.price) - 1: y(d.price); })
+/*      .attr("cx", function(d) { return x(d.date); })
+      .attr("cy", function(d) { return y(d.price); })*/
 
     focus.select(".line").attr("d", line);
     focus.select(".axis--x").call(xAxis);
@@ -185,7 +187,7 @@ export default function(_data, _trades, _height) {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
     var t = d3.event.transform;
 
-    scaleY(t.rescaleX(x2).domain());    
+    scaleY(t.rescaleX(x2).domain());
 
     svg.select(".axis--y")
       .call(yAxis);
