@@ -217,11 +217,7 @@ Base.prototype.sellCore = async function(reason, options = {}, api) {
       limit: options.limitPrice,
       margin: options.margin
     });
-    if(options.margin && options.margin.type === 'short') {
-      this.advisedShort = false;
-    } else {
-      this.advised = false;
-    }
+
     this.totalSold++;
     this.buyPrice = 0;
   }

@@ -53,8 +53,8 @@ strat.log = function() {
 }
 
 const shouldEnterLong = function(candle, currentFrame, isShort = false) {
-  return checkEnterFastLong(candle, currentFrame, isShort) ? checkEnterFastLong(candle, currentFrame, isShort)
-    : checkEnterSlowLong(candle, currentFrame, isShort)
+  const checkEnterFast = checkEnterFastLong(candle, currentFrame, isShort);
+  return checkEnterFast ? checkEnterFast : checkEnterSlowLong(candle, currentFrame, isShort)
 }
 
 const checkEnterFastLong = function(candle, currentFrame, isShort = false) {
@@ -194,7 +194,7 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
   if(!isShort) {
     if(currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame)) {
-        if (!currentFrame.advised && !currentFrame.advisedShort) {
+        if (!currentFrame.advised) {
           manageStopLoss(candle, currentFrame)
           if (!currentFrame.settings.trailingStopLoss) {
             currentFrame.buy(`buy signal for long trade, currentTrend: ${currentFrame.currentTrend}`);
@@ -213,7 +213,7 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
   } else {
     if (currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame, true)) {
-        if (!currentFrame.advised && !currentFrame.advisedShort) {
+        if (!currentFrame.advisedShort) {
           manageStopLoss(candle, currentFrame, true);
           currentFrame.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`
             , { margin: { type: 'short', limit: 1 } });
