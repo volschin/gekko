@@ -1,16 +1,14 @@
-TAKE_PROFIT = 0.006
-STOP_LOSS = 0.002
+TAKE_PROFIT = 0.003
+STOP_LOSS = 0.035
 #how many times we buy on single line?
-CROSS_ATTEMPTS = 10
+CROSS_ATTEMPTS = 1
 
 [aaat]
 USE_HEIKEN = false
-
-#LOW = 1
-#MEDIUM = 2
 HIGH = 4
+DEVIATION = 0.01
 
-#[margin]
-#useShort = true
+[margin]
+useShort = true
 
 #isPersistent = false

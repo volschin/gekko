@@ -39,6 +39,8 @@ strat.init = function(options = {}) {
   let aaatLenghLow = this.settings.aaat.LOW || 1;
   let aaatLenghMedium = this.settings.aaat.MEDIUM || 2;
   let aaatLenghHigh = this.settings.aaat.HIGH || 4;
+  const usesShort = this.settings.margin && this.settings.margin.useShort === true;
+  const DEVIATION = this.settings.aaat && this.settings.aaat.DEVIATION || 0;
 
   let batcherAaatLow = new CandleBatcher(aaatLenghLow);
   let batcherAaatMedium = new CandleBatcher(aaatLenghMedium);
@@ -118,21 +120,52 @@ strat.init = function(options = {}) {
       // highInit = candle.close;
       highDownsCur = [];
     }
-
+    // short cleanup:
+    if (this.settings.margin && this.settings.margin.useShort) {
+      if (this.indicators.aaatIndHigh.result.trend === -1
+        && this.indicators.aaatIndHigh.result.trend !== trendHighPrev) {
+        highStartCur = JSON.stringify(candle.start);
+        highMax = 0;
+        highMin = 0;
+        // highInit = candle.close;
+        highDownsCur = [];
+      }
+    }
 
     if (highDownsCur.length > 0 && highDownsCur.length <= CROSS_ATTEMPTS) {
       // actual buy / sell here:
       const cur = highDownsCur[highDownsCur.length - 1];
       const price = cur.price;
       const fee = config.paperTrader.feeTaker / 100;
+      const slippage = config.paperTrader.slippage / 100;
+      const openToExit = !cur.isProfit && !cur.isLoss;
+
       // what is first: TP or SL?
-      if (!cur.isProfit && !cur.isLoss && (candle.high - price) / price > TAKE_PROFIT) {
-        cur.profit = (price * TAKE_PROFIT - cur.price * fee - candle.high * fee) / price * 100;
-        cur.isProfit = true;
+      if (usesShort ? cur.isShort === false : true) {
+        if (openToExit && ((price - candle.low) / price > STOP_LOSS - slippage)) {
+          cur.profit = - (STOP_LOSS * (1 - fee) + 2 * fee + slippage) * 100;
+          // cur.profit = - (price * STOP_LOSS + price * fee + candle.high * fee) / price * 100;// цена выхода + фии выхода + фи покупки 30000 * 0.035 + 30000 * 0.001 +
+          cur.isLoss = true;
+        }
+        if (openToExit && ((candle.high - price) / price > TAKE_PROFIT + slippage)) {
+          cur.profit = (TAKE_PROFIT * (1 - fee) - 2 * fee - slippage) * 100;
+          // cur.profit = (price * TAKE_PROFIT - price * fee - candle.high * fee) / price * 100;
+          cur.isProfit = true;
+        }
       }
-      if (!cur.isProfit && !cur.isLoss && (price - candle.low) / price > STOP_LOSS) {
-        cur.profit = (- price * STOP_LOSS - cur.price * fee - candle.high * fee) / price * 100;
-        cur.isLoss = true;
+
+      // short cases for exit:
+      if (usesShort ? cur.isShort === true : false) {
+        if (openToExit && ((candle.high - price) / price > STOP_LOSS - slippage)) {
+          cur.profit = - (STOP_LOSS * (1 - fee) + 2 * fee + slippage) * 100;
+          // cur.profit = - (price * STOP_LOSS + price * fee + candle.high * fee) / price * 100;// цена выхода + фии выхода + фи покупки 30000 * 0.035 + 30000 * 0.001 +
+          cur.isLoss = true;
+        }
+        if (openToExit && ((price - candle.low) / price > TAKE_PROFIT + slippage)) {
+          cur.profit = (TAKE_PROFIT * (1 - fee) - 2 * fee - slippage) * 100;
+          // cur.profit = (price * TAKE_PROFIT - price * fee - candle.high * fee) / price * 100;
+          cur.isProfit = true;
+        }
       }
     }
 
@@ -162,6 +195,18 @@ strat.init = function(options = {}) {
       });
     }
 
+    if (usesShort) { // SHORT cases
+      if (this.indicators.aaatIndHigh.result.trend === 1
+        && this.indicators.aaatIndHigh.result.trend !== trendHighPrev && !!highStartCur) {
+        // trend changed
+        trendHighChanged++;
+        highDowns.push({
+          start: highStartCur,
+          downs: highDownsCur,
+        });
+      }
+    }
+
     /*if (this.indicators.aaatIndHigh.result.trend !== trendHighPrev && trendHighPrev !== null) {
       highMax = 0;
       highMin = 0;
@@ -187,8 +232,8 @@ strat.init = function(options = {}) {
         type: 'tail-green-thick'
       })
     }*/
-    // цена хвостом пересекла thick зеленую
-    if (this.indicators.aaatIndHigh.result.trend === 1 && (candle.low < aaatResultHigh && candle.close > aaatResultHigh)) {
+    // цена пересекла thick зеленую и закрылась НАД ней
+    if (this.indicators.aaatIndHigh.result.trend === 1 && (candle.low * (1 - DEVIATION) < aaatResultHigh && candle.close > aaatResultHigh)) {
       // this.consoleLog('aaatIndLow.green.tail.down++' + JSON.stringify(this.candle.start));
       stats['aaatIndHigh.green.tail.down']++;
       if (highDownsCur.length < CROSS_ATTEMPTS) {
@@ -203,11 +248,34 @@ strat.init = function(options = {}) {
           isProfit: false,
           isLoss: false,
           profit: 0,
+          isShort: false
         });
       }
     }
 
-
+    // shorts cases:
+    if (this.settings.margin && this.settings.margin.useShort) {
+      // цена хвостом пересекла thick красную
+      if (this.indicators.aaatIndHigh.result.trend === -1 && (candle.high * (1 + DEVIATION) > aaatResultHigh && candle.close < aaatResultHigh)) {
+        // this.consoleLog('aaatIndLow.green.tail.down++' + JSON.stringify(this.candle.start));
+        stats['aaatIndHigh.green.tail.up']++;
+        if (highDownsCur.length < CROSS_ATTEMPTS) {
+          highDownsCur.push({
+            start: JSON.stringify(candle.start),
+            trend: this.indicators.aaatIndHigh.result.trend,
+            type: 'tail-red-thick',
+            price: this.indicators.aaatIndHigh.result.stop,
+            candle,
+            highMax: 0,
+            highMin: 0,
+            isProfit: false,
+            isLoss: false,
+            profit: 0,
+            isShort: true
+          });
+        }
+      }
+    }
 
     trendLowPrev = this.indicators.aaatIndLow.result.trend;
     trendMediumPrev = this.indicators.aaatIndMedium.result.trend;
