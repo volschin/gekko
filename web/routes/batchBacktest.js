@@ -46,6 +46,7 @@ module.exports = async function (ctx, next) {
   config.mode = mode;
   const dateSpans = getDateMonthSpansForYear(config)
   let dateSpanCur, resultCur;
+  const batchPeriodProfitThreshold = config.batch && config.batch.batchPeriodProfitThreshold || 0;
 
   if (config.batch && config.batch.noBigData) {
     // Let's not include large data:
@@ -72,7 +73,7 @@ module.exports = async function (ctx, next) {
 
   const ret = {
     backtests,
-    performanceReport: getTotalPerformanceReport(backtests),
+    performanceReport: getTotalPerformanceReport(backtests, batchPeriodProfitThreshold),
     batchReport: getBatchBacktestReport(backtests),
     fakeReport: getFakeReport(backtests.map(b => b.tradingAdvisor.stats).filter(b => !!b))
   };
@@ -95,18 +96,9 @@ function getDateMonthSpansForYear(config = {}) {
   if (!batchSize || batchSize === '1 month') {
     dateSpans = [
       // 2017yr
-      /*{ from: '2017-08-18T00:00:00Z', to: '2017-09-21T00:00:00Z' },
-      { from: '2017-09-10T00:00:00Z', to: '2017-10-21T00:00:00Z' },
-      { from: '2017-10-10T00:00:00Z', to: '2017-11-21T00:00:00Z' },
-      { from: '2017-11-10T00:00:00Z', to: '2017-12-21T00:00:00Z' },
-      { from: '2017-12-10T00:00:00Z', to: '2018-01-21T00:00:00Z' },
-      { from: '2018-01-10T00:00:00Z', to: '2018-02-21T00:00:00Z' },
-      { from: '2018-02-10T00:00:00Z', to: '2018-03-21T00:00:00Z' },
-      { from: '2018-03-10T00:00:00Z', to: '2018-04-21T00:00:00Z' },
-      { from: '2018-04-10T00:00:00Z', to: '2018-05-21T00:00:00Z' },
-      { from: '2018-05-10T00:00:00Z', to: '2018-06-21T00:00:00Z' },
-      { from: '2018-06-10T00:00:00Z', to: '2018-07-21T00:00:00Z' },
-      { from: '2018-07-10T00:00:00Z', to: '2018-08-21T00:00:00Z' },*/
+      /*{ from: moment('2017-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-10-21T00:00:00Z' },
+      { from: moment('2017-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-11-21T00:00:00Z' },
+      { from: moment('2017-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-12-21T00:00:00Z' },*/
       // 2018yr
       { from: moment('2017-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-01-21T00:00:00Z' },
       { from: moment('2018-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-02-21T00:00:00Z' },
@@ -146,12 +138,15 @@ function getDateMonthSpansForYear(config = {}) {
       { from: moment('2020-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-10-21T00:00:00Z' },
       { from: moment('2020-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-11-21T00:00:00Z' },
       { from: moment('2020-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-12-21T00:00:00Z' },
+      // 2021 yr
+      // { from: moment('2020-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-21T00:00:00Z' },
+
     ];
   } else if (batchSize === '') {}
   return dateSpans;
 }
 
-function getTotalPerformanceReport(backtests = []) {
+function getTotalPerformanceReport(backtests = [], batchPeriodProfitThreshold = 0) {
   let ret;
   if(backtests.length > 0) {
 
@@ -178,8 +173,8 @@ function getTotalPerformanceReport(backtests = []) {
       startTime: first.startTime,
       minProfit: Math.min.apply(null, backtests.map(backtest => backtest.performanceReport.profit)),
       maxProfit: Math.max.apply(null, backtests.map(backtest => backtest.performanceReport.profit)),
-      periodsProfit: backtests.filter(backtest => backtest.performanceReport.profit >= 0).length,
-      periodsLoss: backtests.filter(backtest => backtest.performanceReport.profit < 0).length,
+      periodsProfit: backtests.filter(backtest => backtest.performanceReport.profit >= batchPeriodProfitThreshold).length,
+      periodsLoss: backtests.filter(backtest => backtest.performanceReport.profit < batchPeriodProfitThreshold).length,
       periodsTotal: backtests.length,
     });
   }
