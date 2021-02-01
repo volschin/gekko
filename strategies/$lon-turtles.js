@@ -4,6 +4,7 @@ var _ = require('lodash');
 var log = require('../core/log');
 var strat = {};
 let currentCandle ;
+const DependenciesManager = require('../plugins/dependencyManager/web');
 
 strat.init = function() {
   this.input = 'candle';
@@ -32,12 +33,19 @@ strat.init = function() {
   this.atrStop = this.settings.atrStop;
   this.maxCandlesLength = this.settings.enterSlow + 1;
   this.stop = 0
+  // deps related (todo: move to baseTradingMethodAsync)
+  this.useDependencies = this.config.isDependency ? false : this.config.dependencies && !!this.config.dependencies.length;
+  this.dependencyLast = null; // = this.useDependencies ? null : true;
 
   this.addIndicator('atr', 'ATR', this.atrPeriod, this.settings.isPersistent);
 }
 
 // What happens on every new candle?
 strat.update = function(candle) {
+  if (this.useDependencies) {
+    this.dependencyLast = DependenciesManager.getClosestResult(candle.start, this.config.dependencyResults);
+  }
+
   this.indicators.atr.update(candle);
   manageTrailingStopLoss(candle, this);
 
@@ -195,17 +203,19 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
     if(currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame)) {
         if (!currentFrame.advised) {
-          manageStopLoss(candle, currentFrame)
-          if (!currentFrame.settings.trailingStopLoss) {
-            currentFrame.buy(`buy signal for long trade, currentTrend: ${currentFrame.currentTrend}`);
-          } else {
-            /*currentFrame.advice({
-              direction: 'long',
-              trigger: {
-                type: 'trailingStop',
-                trailPercentage: currentFrame.settings.trailingStopLoss
-              }
-            });*/
+          if (this.useDependencies ? currentFrame.dependencyLast.newTrend !== 'shortLong' : true) {
+            manageStopLoss(candle, currentFrame)
+            if (!currentFrame.settings.trailingStopLoss) {
+              currentFrame.buy(`buy signal for long trade, currentTrend: ${currentFrame.currentTrend}`);
+            } else {
+              /*currentFrame.advice({
+                direction: 'long',
+                trigger: {
+                  type: 'trailingStop',
+                  trailPercentage: currentFrame.settings.trailingStopLoss
+                }
+              });*/
+            }
           }
         }
       }
@@ -214,26 +224,37 @@ const computeEntrySignal = function(candle, currentFrame, isShort = false) {
     if (currentFrame.currentTrend === 'shortLong' || currentFrame.currentTrend === 'shortShort') {
       if (shouldEnterLong(candle, currentFrame, true)) {
         if (!currentFrame.advisedShort) {
-          manageStopLoss(candle, currentFrame, true);
-          currentFrame.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`
-            , { margin: { type: 'short', limit: 1 } });
+          if (this.useDependencies ? currentFrame.dependencyLast.newTrend !== 'shortShort' : true) {
+            manageStopLoss(candle, currentFrame, true);
+            currentFrame.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`
+              , { margin: { type: 'short', limit: 1 } });
+          }
         }
       }
     }
   }
 }
 
-let trendPrev, shortPrev = false, longPrev = false;
+let prevTrend, shortPrev = false, longPrev = false;
 strat.check = function(candle) {
-
-  // won't do anything until we have slowEntry+1 number of candles
-  if (this.candles.length === this.maxCandlesLength) {
-    if(this.settings.margin.useShort) {
-      computeExitSignal(candle, this, true);
-      computeEntrySignal(candle, this, true);
+  if (this.useDependencies) {
+    if (this.dependencyLast === 'fastLong' || this.dependencyLast === 'slowLong') {
+      this.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`);
+    } else if (this.dependencyLast === 'fastShort' || this.dependencyLast === 'fastShort') {
+      this.buy(`buy signal for short trade, currentTrend: ${currentFrame.currentTrend}`
+        , { margin: { type: 'short', limit: 1 } });
     }
-    computeExitSignal(candle, this);
-    computeEntrySignal(candle, this);
+  } else {
+    // won't do anything until we have slowEntry+1 number of candles
+    if (this.candles.length === this.maxCandlesLength) {
+      // if (this.candles.length === this.maxCandlesLength && this.useDependencies ? !!this.dependencyLast : true) {
+      if (this.settings.margin.useShort) {
+        computeExitSignal(candle, this, true);
+        computeEntrySignal(candle, this, true);
+      }
+      computeExitSignal(candle, this);
+      computeEntrySignal(candle, this);
+    }
   }
   /*if (checkExitFastLong(candle, this)) {
     consoleLog(`checkExitFastLong, `, candle);
@@ -247,11 +268,21 @@ strat.check = function(candle) {
   if (checkEnterSlowLong(candle, this)) {
     consoleLog(`checkEnterSlowLong, `, candle);
   }*/
-  if(trendPrev !== this.currentTrend) {
-    consoleLog(`trendChanged from ${ trendPrev } to ${ this.currentTrend }`);
+  if(prevTrend !== this.currentTrend) {
+    consoleLog(`trendChanged from ${ prevTrend } to ${ this.currentTrend }`);
+    this.sendTrendChangeNotification({ newTrend: this.currentTrend, prevTrend });
   }
-  trendPrev = this.currentTrend;
+  prevTrend = this.currentTrend;
 }
+
+strat.sendTrendChangeNotification = function({ newTrend, prevTrend }) {
+  this.notify({
+    type: 'dependency-trend-change',
+    reason: 'TREND CHANGE',
+    data: { newTrend, prevTrend }
+  });
+}
+
 function consoleLog(msg = '', curCandle){
   let config = {}
   curCandle = curCandle || currentCandle || {}

@@ -5,7 +5,7 @@ const util = require('../../core/util.js');
 const config = util.getConfig();
 let cache = require('../../web/state/cache');
 const fs = require('fs');
-
+const DependencyManager = require('./web');
 const results = [];
 
 let candleCur;

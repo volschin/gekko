@@ -75,25 +75,22 @@ DependencyManager.getClosestResult = function (date, results) {
   // console.error('config.dependencyResults getClosestResult');
   // console.log(date);
   // console.error('asking  date is:', date.toString())
-  let ret =  {
-    trend: -1,
-    trendChange: -2
-  };
+  let ret;
+
   if(results && date && results.length > 0) {
     const dateTs = new Date(date).getTime();
     let rPrev, dCur, dLast;
     for (let i1 = 0; i1 < results.length; i1++) {
       dCur = results[i1].ts;
       if (dateTs >= dCur) {
-        rPrev = results[i1];
-        dLast = dCur;
+        ret = results[i1].data;
         // console.log(dateTs, dCur, results[i1], i1);
       } else {
         // console.error(dateTs, dCur, results[i1], i1);
         break;
       }
     }
-    ret = rPrev && rPrev.data || ret;
+    // ret = rPrev && rPrev.data || ret;
 
   }
   return ret;
@@ -103,6 +100,7 @@ DependencyManager.GetDepConfigFromConfig = function(config, index) {
   let curDep, configDep = {};
   curDep = config.dependencies[index];
   _.merge(configDep, config, curDep);
+  delete configDep.dependencies;
   configDep.isDependency = true;
   return configDep;
 }
@@ -110,9 +108,20 @@ DependencyManager.GetNameFromConfig = function(config){
   let ret = `${ config.watch.exchange }_${ config.watch.currency }_${ config.watch.asset }_${
     config.tradingAdvisor.method }_${ JSON.stringify(config[ config.tradingAdvisor.method ]) }_${
     config.tradingAdvisor.candleSize }_${ config.tradingAdvisor.historySize }_${ config.backtest.daterange.from }_${ config.backtest.daterange.to }`;
-  ret = ret.replace(new RegExp('[ :, \", {, } ]', 'g'), '_');
+  ret = ret.replace(new RegExp('[ :, \", {, }, \$ ]', 'g'), '_');
+  ret = getHashFromString(ret);
+
   return ret;
 }
+
+function getHashFromString(str) {
+  let hash = 0
+  for (let i = 0; i < str.length; ++i)
+    hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0
+
+  return hash.toString();
+}
+
 module.exports = DependencyManager;
 
 
