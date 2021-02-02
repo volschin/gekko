@@ -9,7 +9,7 @@
       .hr
       label.wrapper Batch Size:
       .custom-select.button
-        select(v-model='selectedBatchSize' v-on:selectedBatchSize='config')
+        select(v-model='selectedBatchSize' v-on:selectedBatchSize='config' v-on:change='updateBatcher')
           option(v-for='(batch) in batchSizes') {{ batch }}
     .hr
     div.my2.contain
@@ -50,7 +50,7 @@ export default {
       performanceAnalyzer: {},
       dependencyPicker: [],
       selectedBatchSize: '1 month',
-      batchSizes: [ '15 minutes', '1 hour', '1 day', '1 week', '1 month']
+      batchSizes: [ '15 minutes', '1 hour', '1 day', '1 week', '1 month', '1 quarter', '1 year']
     }
   },
   components: {
@@ -162,6 +162,9 @@ export default {
     updatePaperTrader: function(pt) {
       this.paperTrader = pt;
       this.paperTrader.enabled = true;
+      this.$emit('config', this.config);
+    },
+    updateBatcher: function(batch) {
       this.$emit('config', this.config);
     },
   }

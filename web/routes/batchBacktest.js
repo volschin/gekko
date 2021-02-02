@@ -94,55 +94,12 @@ function getDateMonthSpansForYear(config = {}) {
   // const months = req.data.batchBacktest && req.data.batchBacktest. // todo
   const warmupMinutes = config.tradingAdvisor.historySize * config.tradingAdvisor.candleSize;
   if (!batchSize || batchSize === '1 month') {
-    dateSpans = [
-      // 2017yr
-      /*{ from: moment('2017-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-10-21T00:00:00Z' },
-      { from: moment('2017-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-11-21T00:00:00Z' },
-      { from: moment('2017-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-12-21T00:00:00Z' },*/
-      // 2018yr
-      { from: moment('2017-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-01-21T00:00:00Z' },
-      { from: moment('2018-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-02-21T00:00:00Z' },
-      { from: moment('2018-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-03-21T00:00:00Z' },
-      { from: moment('2018-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-04-21T00:00:00Z' },
-      { from: moment('2018-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-05-21T00:00:00Z' },
-      { from: moment('2018-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-06-21T00:00:00Z' },
-      { from: moment('2018-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-07-21T00:00:00Z' },
-      { from: moment('2018-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-08-21T00:00:00Z' },
-      { from: moment('2018-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-09-21T00:00:00Z' },
-      { from: moment('2018-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-10-21T00:00:00Z' },
-      { from: moment('2018-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-11-21T00:00:00Z' },
-      { from: moment('2018-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-12-21T00:00:00Z' },
-      //2019 yr
-      { from: moment('2018-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-01-21T00:00:00Z' },
-      { from: moment('2019-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-02-21T00:00:00Z' },
-      { from: moment('2019-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-03-21T00:00:00Z' },
-      { from: moment('2019-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-04-21T00:00:00Z' },
-      { from: moment('2019-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-05-21T00:00:00Z' },
-      { from: moment('2019-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-06-21T00:00:00Z' },
-      { from: moment('2019-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-07-21T00:00:00Z' },
-      { from: moment('2019-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-08-21T00:00:00Z' },
-      { from: moment('2019-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-09-21T00:00:00Z' },
-      { from: moment('2019-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-10-21T00:00:00Z' },
-      { from: moment('2019-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-11-21T00:00:00Z' },
-      { from: moment('2019-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-12-21T00:00:00Z' },
-      //2020 yr
-      { from: moment('2019-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-01-21T00:00:00Z' },
-      { from: moment('2020-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-02-21T00:00:00Z' },
-      { from: moment('2020-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-03-21T00:00:00Z' },
-      { from: moment('2020-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-04-21T00:00:00Z' },
-      { from: moment('2020-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-05-21T00:00:00Z' },
-      { from: moment('2020-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-06-21T00:00:00Z' },
-      { from: moment('2020-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-07-21T00:00:00Z' },
-      { from: moment('2020-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-08-21T00:00:00Z' },
-      { from: moment('2020-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-09-21T00:00:00Z' },
-      { from: moment('2020-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-10-21T00:00:00Z' },
-      { from: moment('2020-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-11-21T00:00:00Z' },
-      { from: moment('2020-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-12-21T00:00:00Z' },
-      // 2021 yr
-      // { from: moment('2020-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-21T00:00:00Z' },
-
-    ];
-  } else if (batchSize === '') {}
+    dateSpans = monthlySpans(warmupMinutes);
+  } else if (batchSize === '1 quarter') {
+    dateSpans = quarterlySpans(warmupMinutes);
+  } else if (batchSize === '1 year') {
+    dateSpans = yearlySpans(warmupMinutes);
+  }
   return dateSpans;
 }
 
@@ -206,3 +163,92 @@ function getBatchBacktestReport(backtests) {
 
 }
 
+const monthlySpans = function(warmupMinutes) {
+  return [
+    // 2017yr
+    /*{ from: moment('2017-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-10-21T00:00:00Z' },
+    { from: moment('2017-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-11-21T00:00:00Z' },
+    { from: moment('2017-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-12-21T00:00:00Z' },*/
+    // 2018yr
+    { from: moment('2017-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-01-21T00:00:00Z' },
+    { from: moment('2018-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-02-21T00:00:00Z' },
+    { from: moment('2018-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-03-21T00:00:00Z' },
+    { from: moment('2018-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-04-21T00:00:00Z' },
+    { from: moment('2018-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-05-21T00:00:00Z' },
+    { from: moment('2018-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-06-21T00:00:00Z' },
+    { from: moment('2018-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-07-21T00:00:00Z' },
+    { from: moment('2018-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-08-21T00:00:00Z' },
+    { from: moment('2018-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-09-21T00:00:00Z' },
+    { from: moment('2018-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-10-21T00:00:00Z' },
+    { from: moment('2018-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-11-21T00:00:00Z' },
+    { from: moment('2018-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-12-21T00:00:00Z' },
+    //2019 yr
+    { from: moment('2018-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-01-21T00:00:00Z' },
+    { from: moment('2019-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-02-21T00:00:00Z' },
+    { from: moment('2019-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-03-21T00:00:00Z' },
+    { from: moment('2019-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-04-21T00:00:00Z' },
+    { from: moment('2019-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-05-21T00:00:00Z' },
+    { from: moment('2019-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-06-21T00:00:00Z' },
+    { from: moment('2019-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-07-21T00:00:00Z' },
+    { from: moment('2019-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-08-21T00:00:00Z' },
+    { from: moment('2019-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-09-21T00:00:00Z' },
+    { from: moment('2019-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-10-21T00:00:00Z' },
+    { from: moment('2019-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-11-21T00:00:00Z' },
+    { from: moment('2019-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-12-21T00:00:00Z' },
+    //2020 yr
+    { from: moment('2019-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-01-21T00:00:00Z' },
+    { from: moment('2020-01-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-02-21T00:00:00Z' },
+    { from: moment('2020-02-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-03-21T00:00:00Z' },
+    { from: moment('2020-03-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-04-21T00:00:00Z' },
+    { from: moment('2020-04-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-05-21T00:00:00Z' },
+    { from: moment('2020-05-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-06-21T00:00:00Z' },
+    { from: moment('2020-06-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-07-21T00:00:00Z' },
+    { from: moment('2020-07-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-08-21T00:00:00Z' },
+    { from: moment('2020-08-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-09-21T00:00:00Z' },
+    { from: moment('2020-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-10-21T00:00:00Z' },
+    { from: moment('2020-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-11-21T00:00:00Z' },
+    { from: moment('2020-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-12-21T00:00:00Z' },
+    // 2021 yr
+    // { from: moment('2020-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-21T00:00:00Z' },
+
+  ];
+}
+
+const quarterlySpans = function(warmupMinutes) {
+  return [
+    // 2017yr
+    /*{ from: moment('2017-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-10-21T00:00:00Z' },
+    { from: moment('2017-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-11-21T00:00:00Z' },
+    { from: moment('2017-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-12-21T00:00:00Z' },*/
+    // 2018yr
+    { from: moment('2018-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-04-01T00:00:00Z' },
+    { from: moment('2018-04-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-07-01T00:00:00Z' },
+    { from: moment('2018-07-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2018-10-01T00:00:00Z' },
+    { from: moment('2018-10-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-01-01T00:00:00Z' },
+    //2019 yr
+    { from: moment('2019-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-04-01T00:00:00Z' },
+    { from: moment('2019-04-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-07-01T00:00:00Z' },
+    { from: moment('2019-07-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-10-01T00:00:00Z' },
+    { from: moment('2019-10-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-01-01T00:00:00Z' },
+    //2020 yr
+    { from: moment('2020-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-04-01T00:00:00Z' },
+    { from: moment('2020-04-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-07-01T00:00:00Z' },
+    { from: moment('2020-07-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-10-01T00:00:00Z' },
+    { from: moment('2020-10-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-01T00:00:00Z' },
+    // 2021 yr
+    // { from: moment('2020-12-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-21T00:00:00Z' },
+
+  ];
+}
+
+const yearlySpans = function(warmupMinutes) {
+  return [
+  // 2017yr
+  /*{ from: moment('2017-09-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-10-21T00:00:00Z' },
+  { from: moment('2017-10-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-11-21T00:00:00Z' },
+  { from: moment('2017-11-21T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2017-12-21T00:00:00Z' },*/
+  { from: moment('2018-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2019-01-01T00:00:00Z' },
+  { from: moment('2019-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2020-01-01T00:00:00Z' },
+  { from: moment('2020-01-01T00:00:00Z').subtract(warmupMinutes, 'minutes').toDate(), to: '2021-01-01T00:00:00Z' },
+  ];
+}
