@@ -1,0 +1,17 @@
+
+enterFast = 11
+exitFast = 20
+enterSlow = 50
+exitSlow = 27
+
+useAtrStop = true
+useTrailingAtrStop = true
+atrPeriod = 26
+atrStop = 25
+
+hiekenAshi = false
+
+[margin]
+useShort = true
+
+BACKTEST_TAKE_PROFIT = 0.44
