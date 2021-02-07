@@ -1,4 +1,4 @@
-FROM node:lts-slim
+FROM node:lts-buster-slim
 
 ENV HOST 0.0.0.0
 ENV PORT 3000
