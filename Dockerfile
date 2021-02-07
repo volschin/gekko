@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:lts-slim
 
 ENV HOST 0.0.0.0
 ENV PORT 3000
