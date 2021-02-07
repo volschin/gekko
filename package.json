@@ -18,7 +18,9 @@
     "debug-server-backtest1": "node ./gekko  --config='config-backtest-$lon-patterns-detection.js' --backtest",
     "debug-server-backtest": "node ./gekko  --config=config-backtest-ATR_ADX-LTC-BTC.js --backtest > logs/backtest.txt --backtest",
     "debug-server-paper": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-papertrading.js",
-    "debug-server-live": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-livetrading.js"
+    "debug-server-live": "node %NODE_DEBUG_OPTION% ./gekko  --config=config-livetrading.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "Mike van Rossum <mike@mvr.me>",
   "dependencies": {
@@ -43,9 +45,9 @@
     "koa-router": "^7.4.0",
     "koa-session": "^5.12.3",
     "koa-static": "^5.0.0",
-    "lodash": "2.x",
+    "lodash": "4.17.20",
     "lodash.pickby": "^4.6.0",
-    "mathjs": "^6.0.2",
+    "mathjs": "^7.5.1",
     "moment": "^2.20.1",
     "opn": "^4.0.2",
     "passport-local": "^1.0.0",
@@ -69,7 +71,8 @@
     "vue-authenticate": "^1.4.1",
     "ws": "^7.2.0",
     "acorn-dynamic-import": "^4.0.0",
-    "ajv": "^6.9.1"
+    "ajv": "^6.12.3",
+    "snyk": "^1.446.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -87,5 +90,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/askmike/gekko.git"
-  }
+  },
+  "snyk": true
 }
