@@ -31,7 +31,7 @@
     "@slack/web-api": "^5.0.1",
     "async": "2.1.2",
     "bcrypt-nodejs": "0.0.3",
-    "bitfinex-api-node": "^1.2.1",
+    "bitfinex-api-node": "^4.0.11",
     "co-fs": "^1.2.0",
     "commander": "^2.13.0",
     "convnetjs": "^0.3.0",
